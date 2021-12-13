@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/ProjectAnni/anniv-go/config"
+	"flag"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
@@ -10,10 +10,11 @@ import (
 )
 
 var db *gorm.DB
+var dbPath = flag.String("db", "data.db", "")
 
 func Start(listen string) error {
 	var err error
-	db, err = gorm.Open(sqlite.Open(config.Cfg.DBPath), &gorm.Config{})
+	db, err = gorm.Open(sqlite.Open(*dbPath), &gorm.Config{})
 	if err != nil {
 		return err
 	}

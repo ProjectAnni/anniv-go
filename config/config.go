@@ -10,7 +10,6 @@ type Config struct {
 	SiteName    string            `yaml:"site_name"`
 	Description string            `yaml:"description"`
 	Listen      string            `yaml:"listen"`
-	DBPath      string            `yaml:"db_path"`
 	Enforce2FA  bool              `yaml:"enforce_2fa"`
 	Headers     map[string]string `yaml:"headers"`
 }
@@ -19,11 +18,10 @@ var Cfg = Config{
 	SiteName:    "Anniv",
 	Description: "",
 	Listen:      ":8080",
-	DBPath:      "data.db",
 	Enforce2FA:  false,
 }
 
-var path = flag.String("path", "config.yaml", "")
+var path = flag.String("conf", "config.yaml", "")
 
 func Load() error {
 	f, err := os.Open(*path)
