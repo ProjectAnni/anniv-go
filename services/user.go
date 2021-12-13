@@ -100,7 +100,7 @@ func EndpointUser(ng *gin.Engine, db *gorm.DB) {
 			return
 		}
 		ctx.SetCookie("session", "", -1, "", "", true, true)
-		ctx.Status(http.StatusNoContent)
+		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 
 	g.POST("/revoke", AuthRequired, func(ctx *gin.Context) {
@@ -109,7 +109,7 @@ func EndpointUser(ng *gin.Engine, db *gorm.DB) {
 			ctx.JSON(http.StatusOK, writeErr(err))
 			return
 		}
-		ctx.Status(http.StatusNoContent)
+		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 }
 
