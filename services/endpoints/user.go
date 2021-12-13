@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"github.com/ProjectAnni/anniv-go/model"
+	"github.com/ProjectAnni/anniv-go/services"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -61,7 +62,7 @@ func User(ng *gin.Engine, db *gorm.DB) {
 		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 
-	g.POST("login", func(ctx *gin.Context) {
+	g.POST("/login", func(ctx *gin.Context) {
 		form := LoginForm{}
 		err := ctx.Bind(&form)
 		if err != nil {
@@ -91,6 +92,20 @@ func User(ng *gin.Engine, db *gorm.DB) {
 		}
 		ctx.SetCookie("session", session.SessionID, 86400, "/", "", true, true)
 		ctx.JSON(http.StatusOK, resOk(userInfo(user)))
+	})
+
+	g.POST("/logout", services.AuthRequired, func(ctx *gin.Context) {
+		ctx.SetCookie("session", "", -1, "", "", true, true)
+		ctx.Status(http.StatusNoContent)
+	})
+
+	g.POST("/revoke", services.AuthRequired, func(ctx *gin.Context) {
+		user := ctx.MustGet("user").(model.User)
+		if err := db.Delete(&user).Error; err != nil {
+			ctx.JSON(http.StatusOK, writeErr(err))
+			return
+		}
+		ctx.Status(http.StatusNoContent)
 	})
 }
 

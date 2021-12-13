@@ -10,8 +10,11 @@ import (
 	"net/http"
 )
 
+var db *gorm.DB
+
 func Start(listen string) error {
-	db, err := gorm.Open(sqlite.Open(config.Cfg.DBPath), &gorm.Config{})
+	var err error
+	db, err = gorm.Open(sqlite.Open(config.Cfg.DBPath), &gorm.Config{})
 	if err != nil {
 		return err
 	}
