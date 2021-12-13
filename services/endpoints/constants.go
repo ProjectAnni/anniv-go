@@ -1,6 +1,7 @@
 package endpoints
 
-const StatusOK = 900000
+const StatusOK = 0
+const InternalError = 900000
 const DbConnErr = 900001
 const WriteErr = 901000
 const ReadErr = 901001

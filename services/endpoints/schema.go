@@ -37,6 +37,14 @@ func writeErr(err error) Response {
 	}
 }
 
+func resErr(status int, msg string) Response {
+	return Response{
+		Status:  status,
+		Message: msg,
+		Data:    nil,
+	}
+}
+
 type SiteInfo struct {
 	SiteName        string   `json:"site_name"`
 	Description     string   `json:"description"`
@@ -77,4 +85,9 @@ type RegisterForm struct {
 	Email    string `json:"email"`
 	Nickname string `json:"nickname"`
 	Avatar   string `json:"avatar"`
+}
+
+type LoginForm struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
