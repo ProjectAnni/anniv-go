@@ -11,6 +11,7 @@ type Config struct {
 	Description string `yaml:"description"`
 	Listen      string `yaml:"listen"`
 	DBPath      string `yaml:"db_path"`
+	Enforce2FA  bool   `yaml:"enforce_2fa"`
 }
 
 var Cfg = Config{
@@ -18,6 +19,7 @@ var Cfg = Config{
 	Description: "",
 	Listen:      ":8080",
 	DBPath:      "data.db",
+	Enforce2FA:  false,
 }
 
 var path = flag.String("path", "config.yaml", "")

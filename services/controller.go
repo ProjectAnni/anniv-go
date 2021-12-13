@@ -19,11 +19,14 @@ func Start(listen string) error {
 	}
 	model.Bind(db)
 
+	initMiddleware()
+
 	g := gin.Default()
 
 	EndpointBasics(g)
 	EndpointUser(g)
 	EndpointToken(g)
+	Endpoint2FA(g)
 
 	return http.ListenAndServe(listen, g)
 }

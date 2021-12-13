@@ -14,3 +14,9 @@ const UsernameUnavailable = 102000
 const EmailUnavailable = 102001
 const InvalidPassword = 102010
 const UserNotExist = 102020
+
+const TFANotEnabled = 202000
+const Wrong2FACode = 202001
+const Illegal2FASecret = 202002
+const TFAAttemptLimited = 202003
+const TFAAlreadyEnabled = 202004

@@ -1,8 +1,10 @@
 package services
 
 import (
+	"github.com/ProjectAnni/anniv-go/config"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
+	"github.com/pquerna/otp/totp"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
@@ -38,6 +40,18 @@ func EndpointUser(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, illegalEmail("email already taken"))
 			return
 		}
+		if config.Cfg.Enforce2FA && form.Secret == "" {
+			ctx.JSON(http.StatusOK, Response{
+				Status:  Illegal2FASecret,
+				Message: "2fa enforced",
+				Data:    nil,
+			})
+			return
+		}
+		if form.Secret != "" && !totp.Validate(form.Code, form.Secret) {
+			ctx.JSON(http.StatusOK, wrong2FACode())
+			return
+		}
 		// TODO nickname avatar check
 		hash, err := bcrypt.GenerateFromPassword([]byte(form.Password), bcrypt.DefaultCost)
 		if err != nil {
@@ -45,11 +59,13 @@ func EndpointUser(ng *gin.Engine) {
 			return
 		}
 		user := model.User{
-			Username: form.Username,
-			Password: string(hash),
-			Email:    form.Email,
-			Nickname: form.Nickname,
-			Avatar:   form.Avatar,
+			Username:  form.Username,
+			Password:  string(hash),
+			Email:     form.Email,
+			Nickname:  form.Nickname,
+			Avatar:    form.Avatar,
+			Enable2FA: form.Secret != "",
+			Secret:    form.Secret,
 		}
 		err = db.Create(&user).Error
 		if err != nil {
@@ -74,6 +90,10 @@ func EndpointUser(ng *gin.Engine) {
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(form.Password))
 		if err != nil {
 			ctx.JSON(http.StatusOK, wrongPassword())
+			return
+		}
+		if user.Enable2FA && !totp.Validate(form.Code, user.Secret) {
+			ctx.JSON(http.StatusOK, wrong2FACode())
 			return
 		}
 		session := model.Session{
@@ -102,7 +122,7 @@ func EndpointUser(ng *gin.Engine) {
 		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 
-	g.POST("/revoke", AuthRequired, func(ctx *gin.Context) {
+	g.POST("/revoke", AuthRequired, TFARequired, func(ctx *gin.Context) {
 		user := ctx.MustGet("user").(model.User)
 		if err := db.Delete(&user).Error; err != nil {
 			ctx.JSON(http.StatusOK, writeErr(err))

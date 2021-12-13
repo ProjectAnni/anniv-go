@@ -61,29 +61,37 @@ type SiteInfo struct {
 }
 
 func siteInfo() SiteInfo {
+	features := make([]string, 0)
+	if config.Cfg.Enforce2FA {
+		features = append(features, "2fa_enforced")
+	} else {
+		features = append(features, "2fa")
+	}
 	return SiteInfo{
 		SiteName:        config.Cfg.SiteName,
 		Description:     config.Cfg.Description,
 		ProtocolVersion: "1",
-		Features:        []string{},
+		Features:        features,
 	}
 }
 
 type UserInfo struct {
-	UserID   string `json:"user_id"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Nickname string `json:"nickname"`
-	Avatar   string `json:"avatar"`
+	UserID    string `json:"user_id"`
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	Nickname  string `json:"nickname"`
+	Avatar    string `json:"avatar"`
+	Enable2FA bool   `json:"2fa_enabled"`
 }
 
 func userInfo(u model.User) UserInfo {
 	return UserInfo{
-		UserID:   strconv.Itoa(int(u.ID)),
-		Username: u.Username,
-		Email:    u.Email,
-		Nickname: u.Nickname,
-		Avatar:   u.Avatar,
+		UserID:    strconv.Itoa(int(u.ID)),
+		Username:  u.Username,
+		Email:     u.Email,
+		Nickname:  u.Nickname,
+		Avatar:    u.Avatar,
+		Enable2FA: u.Enable2FA,
 	}
 }
 
@@ -93,11 +101,14 @@ type RegisterForm struct {
 	Email    string `json:"email"`
 	Nickname string `json:"nickname"`
 	Avatar   string `json:"avatar"`
+	Secret   string `json:"2fa_secret"`
+	Code     string `json:"2fa_code"`
 }
 
 type LoginForm struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	Code     string `json:"2fa_code"`
 }
 
 type TokenInfo struct {
@@ -143,4 +154,9 @@ type TokenPatchForm struct {
 
 type DeleteTokenForm struct {
 	ID string `json:"id"`
+}
+
+type Enable2FAForm struct {
+	Secret string `json:"2fa_secret"`
+	Code   string `json:"2fa_code"`
 }
