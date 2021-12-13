@@ -85,7 +85,7 @@ func TFARequired(ctx *gin.Context) {
 }
 
 func enforce2FA(ctx *gin.Context) {
-	if whitelistEndpoint(ctx.Request.Method, ctx.Request.RequestURI) {
+	if whitelistEndpoint(ctx.Request.Method, ctx.Request.URL.Path) {
 		return
 	}
 	user := ctx.MustGet("user").(model.User)
