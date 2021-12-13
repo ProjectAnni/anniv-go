@@ -93,6 +93,11 @@ func EndpointUser(ng *gin.Engine, db *gorm.DB) {
 	})
 
 	g.POST("/logout", AuthRequired, func(ctx *gin.Context) {
+		session := ctx.MustGet("session").(model.Session)
+		if err := db.Delete(&session).Error; err != nil {
+			ctx.JSON(http.StatusOK, writeErr(err))
+			return
+		}
 		ctx.SetCookie("session", "", -1, "", "", true, true)
 		ctx.Status(http.StatusNoContent)
 	})

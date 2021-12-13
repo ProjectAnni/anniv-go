@@ -25,6 +25,7 @@ func AuthRequired(ctx *gin.Context) {
 	// Renew cookie
 	ctx.SetCookie("session", session.SessionID, 86400*7, "/", "", true, true)
 	ctx.Set("user", session.User)
+	ctx.Set("session", session)
 }
 
 func unauthorized() Response {
