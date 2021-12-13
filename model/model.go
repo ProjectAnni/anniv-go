@@ -21,6 +21,7 @@ type Session struct {
 	SessionID    string `gorm:"unique"`
 	UserAgent    string
 	LastAccessed time.Time
+	IP           string
 }
 
 func Bind(db *gorm.DB) {

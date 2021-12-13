@@ -83,6 +83,7 @@ func EndpointUser(ng *gin.Engine, db *gorm.DB) {
 			SessionID:    uuid.NewV4().String(),
 			UserAgent:    ctx.Request.UserAgent(),
 			LastAccessed: time.Now(),
+			IP:           ctx.ClientIP(),
 		}
 		if err = db.Save(&session).Error; err != nil {
 			ctx.JSON(http.StatusOK, writeErr(err))
