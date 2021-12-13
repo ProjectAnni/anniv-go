@@ -42,5 +42,5 @@ func Save() error {
 	if err != nil {
 		return err
 	}
-	return yaml.NewEncoder(f).Encode(Cfg)
+	return yaml.NewEncoder(f).Encode(&Cfg)
 }

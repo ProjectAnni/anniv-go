@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/ProjectAnni/anniv-go/config"
 	"github.com/ProjectAnni/anniv-go/services"
 	"log"
@@ -13,7 +14,8 @@ func main() {
 
 	err := config.Load()
 	if err != nil {
-		panic("Failed to load config")
+		fmt.Printf("Failed to load config: %v\n", err)
+		os.Exit(1)
 	}
 
 	err = services.Start(config.Cfg.Listen)

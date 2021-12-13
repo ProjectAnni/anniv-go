@@ -3,7 +3,6 @@ package services
 import (
 	"github.com/ProjectAnni/anniv-go/config"
 	"github.com/ProjectAnni/anniv-go/model"
-	"github.com/ProjectAnni/anniv-go/services/endpoints"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -22,8 +21,8 @@ func Start(listen string) error {
 
 	g := gin.Default()
 
-	endpoints.Basics(g)
-	endpoints.User(g, db)
+	EndpointBasics(g)
+	EndpointUser(g, db)
 
 	return http.ListenAndServe(listen, g)
 }

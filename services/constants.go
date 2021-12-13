@@ -1,4 +1,4 @@
-package endpoints
+package services
 
 const StatusOK = 0
 const InternalError = 900000

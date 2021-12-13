@@ -2,7 +2,6 @@ package services
 
 import (
 	"github.com/ProjectAnni/anniv-go/model"
-	"github.com/ProjectAnni/anniv-go/services/endpoints"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -28,9 +27,9 @@ func AuthRequired(ctx *gin.Context) {
 	ctx.Set("user", session.User)
 }
 
-func unauthorized() endpoints.Response {
-	return endpoints.Response{
-		Status:  endpoints.Unauthorized,
+func unauthorized() Response {
+	return Response{
+		Status:  Unauthorized,
 		Message: "unauthorized",
 		Data:    nil,
 	}
