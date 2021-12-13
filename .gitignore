@@ -1,2 +1,5 @@
 .idea/
 
+# Test files
+data.db
+config.yaml

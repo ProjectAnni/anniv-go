@@ -22,7 +22,8 @@ func Start(listen string) error {
 	g := gin.Default()
 
 	EndpointBasics(g)
-	EndpointUser(g, db)
+	EndpointUser(g)
+	EndpointToken(g)
 
 	return http.ListenAndServe(listen, g)
 }

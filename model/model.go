@@ -24,7 +24,19 @@ type Session struct {
 	IP           string
 }
 
+type Token struct {
+	gorm.Model
+	TokenID  string `gorm:"unique"`
+	Name     string
+	URL      string
+	Token    string
+	Priority int
+	UserID   uint
+	User     User
+}
+
 func Bind(db *gorm.DB) {
 	_ = db.AutoMigrate(&User{})
 	_ = db.AutoMigrate(&Session{})
+	_ = db.AutoMigrate(&Token{})
 }

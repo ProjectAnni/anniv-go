@@ -37,6 +37,14 @@ func writeErr(err error) Response {
 	}
 }
 
+func readErr(err error) Response {
+	return Response{
+		Status:  ReadErr,
+		Message: fmt.Sprintf("%v", err),
+		Data:    nil,
+	}
+}
+
 func resErr(status int, msg string) Response {
 	return Response{
 		Status:  status,
@@ -90,4 +98,49 @@ type RegisterForm struct {
 type LoginForm struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type TokenInfo struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	URL      string `json:"url"`
+	Token    string `json:"token"`
+	Priority int    `json:"priority"`
+}
+
+func tokenInfo(token model.Token) TokenInfo {
+	return TokenInfo{
+		ID:       token.TokenID,
+		Name:     token.Name,
+		URL:      token.URL,
+		Token:    token.Token,
+		Priority: token.Priority,
+	}
+}
+
+func tokenInfos(tokens []model.Token) []TokenInfo {
+	ret := make([]TokenInfo, 0, len(tokens))
+	for _, v := range tokens {
+		ret = append(ret, tokenInfo(v))
+	}
+	return ret
+}
+
+type TokenForm struct {
+	Name     string `json:"name"`
+	URL      string `json:"url"`
+	Token    string `json:"token"`
+	Priority int    `json:"priority"`
+}
+
+type TokenPatchForm struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	URL      string `json:"url"`
+	Token    string `json:"token"`
+	Priority int    `json:"priority"`
+}
+
+type DeleteTokenForm struct {
+	ID string `json:"id"`
 }
