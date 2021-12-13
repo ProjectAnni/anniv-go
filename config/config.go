@@ -7,11 +7,12 @@ import (
 )
 
 type Config struct {
-	SiteName    string `yaml:"site_name"`
-	Description string `yaml:"description"`
-	Listen      string `yaml:"listen"`
-	DBPath      string `yaml:"db_path"`
-	Enforce2FA  bool   `yaml:"enforce_2fa"`
+	SiteName    string            `yaml:"site_name"`
+	Description string            `yaml:"description"`
+	Listen      string            `yaml:"listen"`
+	DBPath      string            `yaml:"db_path"`
+	Enforce2FA  bool              `yaml:"enforce_2fa"`
+	Headers     map[string]string `yaml:"headers"`
 }
 
 var Cfg = Config{

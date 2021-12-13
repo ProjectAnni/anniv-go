@@ -21,7 +21,7 @@ func Endpoint2FA(ng *gin.Engine) {
 			return
 		}
 		form := Enable2FAForm{}
-		if err := ctx.BindJSON(form); err != nil {
+		if err := ctx.ShouldBind(&form); err != nil {
 			ctx.JSON(http.StatusOK, illegalParams("malformed 2fa form"))
 			return
 		}

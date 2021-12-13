@@ -23,7 +23,7 @@ func EndpointToken(ng *gin.Engine) {
 	g.POST("", func(ctx *gin.Context) {
 		user := ctx.MustGet("user").(model.User)
 		form := TokenForm{}
-		if err := ctx.BindJSON(&form); err != nil {
+		if err := ctx.ShouldBind(&form); err != nil {
 			ctx.JSON(http.StatusOK, illegalParams("malformed token form"))
 			return
 		}
@@ -46,7 +46,7 @@ func EndpointToken(ng *gin.Engine) {
 	g.PATCH("", func(ctx *gin.Context) {
 		user := ctx.MustGet("user").(model.User)
 		form := TokenPatchForm{}
-		if err := ctx.BindJSON(&form); err != nil {
+		if err := ctx.ShouldBind(&form); err != nil {
 			ctx.JSON(http.StatusOK, illegalParams("malformed token patch form"))
 			return
 		}
@@ -73,7 +73,7 @@ func EndpointToken(ng *gin.Engine) {
 	g.DELETE("", func(ctx *gin.Context) {
 		user := ctx.MustGet("user").(model.User)
 		form := DeleteTokenForm{}
-		if err := ctx.BindJSON(&form); err != nil {
+		if err := ctx.ShouldBind(&form); err != nil {
 			ctx.JSON(http.StatusOK, illegalParams("malformed delete form"))
 			return
 		}

@@ -17,7 +17,7 @@ func AuthRequired(ctx *gin.Context) {
 		return
 	}
 	session := model.Session{}
-	if db.Where("session_id = ?", sid).First(&session).RowsAffected == 0 {
+	if db.Preload("User").Where("session_id = ?", sid).First(&session).RowsAffected == 0 {
 		ctx.JSON(http.StatusOK, unauthorized())
 		ctx.Abort()
 		return
@@ -29,7 +29,9 @@ func AuthRequired(ctx *gin.Context) {
 	ctx.SetCookie("session", session.SessionID, 86400*7, "/", "", true, true)
 	ctx.Set("user", session.User)
 	ctx.Set("session", session)
-	enforce2FA(ctx)
+	if config.Cfg.Enforce2FA {
+		enforce2FA(ctx)
+	}
 }
 
 func unauthorized() Response {
@@ -68,7 +70,7 @@ func TFARequired(ctx *gin.Context) {
 		return
 	}
 	params := map[string]interface{}{}
-	if err := ctx.BindJSON(&params); err != nil {
+	if err := ctx.ShouldBind(&params); err != nil {
 		ctx.JSON(http.StatusOK, illegalParams("failed to read 2fa token"))
 		ctx.Abort()
 	}
@@ -109,5 +111,11 @@ func wrong2FACode() Response {
 		Status:  Wrong2FACode,
 		Message: "wrong 2fa code",
 		Data:    nil,
+	}
+}
+
+func CustomHeaders(ctx *gin.Context) {
+	for k, v := range config.Cfg.Headers {
+		ctx.Header(k, v)
 	}
 }

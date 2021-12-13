@@ -20,7 +20,7 @@ func EndpointUser(ng *gin.Engine) {
 
 	g.POST("/register", func(ctx *gin.Context) {
 		form := RegisterForm{}
-		if err := ctx.BindJSON(&form); err != nil {
+		if err := ctx.ShouldBind(&form); err != nil {
 			ctx.JSON(http.StatusOK, illegalParams("malformed register form"))
 			return
 		}
@@ -77,7 +77,7 @@ func EndpointUser(ng *gin.Engine) {
 
 	g.POST("/login", func(ctx *gin.Context) {
 		form := LoginForm{}
-		err := ctx.BindJSON(&form)
+		err := ctx.ShouldBind(&form)
 		if err != nil {
 			ctx.JSON(http.StatusOK, illegalParams("malformed login form"))
 			return

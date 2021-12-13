@@ -22,6 +22,7 @@ func Start(listen string) error {
 	initMiddleware()
 
 	g := gin.Default()
+	g.Use(CustomHeaders)
 
 	EndpointBasics(g)
 	EndpointUser(g)
