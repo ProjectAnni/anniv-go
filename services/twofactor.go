@@ -54,7 +54,6 @@ func Endpoint2FA(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, writeErr(err))
 			return
 		}
-
 		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 }
