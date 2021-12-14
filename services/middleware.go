@@ -66,7 +66,7 @@ func TFARequired(ctx *gin.Context) {
 		return
 	}
 	user := ctx.MustGet("user").(model.User)
-	if !user.Enable2FA && !config.Cfg.Enforce2FA {
+	if !user.Enable2FA {
 		return
 	}
 	params := map[string]interface{}{}
