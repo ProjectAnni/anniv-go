@@ -77,7 +77,6 @@ func siteInfo() SiteInfo {
 
 type UserInfo struct {
 	UserID    string `json:"user_id"`
-	Username  string `json:"username"`
 	Email     string `json:"email"`
 	Nickname  string `json:"nickname"`
 	Avatar    string `json:"avatar"`
@@ -87,7 +86,6 @@ type UserInfo struct {
 func userInfo(u model.User) UserInfo {
 	return UserInfo{
 		UserID:    strconv.Itoa(int(u.ID)),
-		Username:  u.Username,
 		Email:     u.Email,
 		Nickname:  u.Nickname,
 		Avatar:    u.Avatar,
@@ -96,7 +94,6 @@ func userInfo(u model.User) UserInfo {
 }
 
 type RegisterForm struct {
-	Username string `json:"username"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
 	Nickname string `json:"nickname"`
