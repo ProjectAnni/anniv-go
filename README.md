@@ -6,11 +6,11 @@ anniv-go is a [anniv][anniv] implementation written in go. Still working in prog
 
 ## Features
 
-[x] Basic information
-[x] User system
-[] Playlists
-[x] Token management
-[] Share
-[] Statistics
-[] Invite
-[] 2FA
+- [x] Basic information
+- [x] User system
+- [ ] Playlists
+- [x] Token management
+- [ ] Share
+- [ ] Statistics
+- [ ] Invite
+- [x] 2FA
