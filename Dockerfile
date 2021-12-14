@@ -4,7 +4,8 @@ WORKDIR /app/
 ENV GOPROXY=https://goproxy.io,direct
 RUN go mod download
 COPY ./ /app/
-RUN go build
+RUN --mount=type=cache,target=/root/.cache/go-build\
+     go build
 
 FROM alpine:latest
 WORKDIR /app
