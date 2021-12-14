@@ -130,6 +130,11 @@ func EndpointUser(ng *gin.Engine) {
 		}
 		ctx.JSON(http.StatusOK, resOk(nil))
 	})
+
+	g.GET("/info", AuthRequired, func(ctx *gin.Context) {
+		user := ctx.MustGet("user").(model.User)
+		ctx.JSON(http.StatusOK, resOk(userInfo(user)))
+	})
 }
 
 func illegalUsername(msg string) Response {
