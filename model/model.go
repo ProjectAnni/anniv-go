@@ -36,8 +36,30 @@ type Token struct {
 	User     User
 }
 
+type Playlist struct {
+	gorm.Model
+	Name        string
+	Description string
+	UserID      uint
+	User        User
+	IsPublic    bool
+}
+
+type PlaylistSong struct {
+	gorm.Model
+	PlaylistID  uint
+	Playlist    Playlist
+	AlbumID     string
+	DiscID      int
+	TrackID     int
+	Description string
+	Order       uint
+}
+
 func Bind(db *gorm.DB) {
 	_ = db.AutoMigrate(&User{})
 	_ = db.AutoMigrate(&Session{})
 	_ = db.AutoMigrate(&Token{})
+	_ = db.AutoMigrate(&Playlist{})
+	_ = db.AutoMigrate(&PlaylistSong{})
 }

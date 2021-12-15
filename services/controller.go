@@ -29,6 +29,7 @@ func Start(listen string) error {
 	EndpointUser(g)
 	EndpointToken(g)
 	Endpoint2FA(g)
+	EndpointPlaylist(g)
 
 	return http.ListenAndServe(listen, g)
 }

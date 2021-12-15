@@ -157,3 +157,34 @@ type Enable2FAForm struct {
 	Secret string `json:"2fa_secret"`
 	Code   string `json:"2fa_code"`
 }
+
+type PlaylistSong struct {
+	ID          string `json:"id"`
+	AlbumID     string `json:"album_id"`
+	DiscID      int    `json:"disc_id"`
+	TrackID     int    `json:"track_id"`
+	Description string `json:"description"`
+}
+
+type Playlist struct {
+	ID          string         `json:"id"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Owner       string         `json:"owner"`
+	IsPublic    bool           `json:"is_public"`
+	Songs       []PlaylistSong `json:"songs"`
+}
+
+type PlaylistSongForm struct {
+	AlbumID     string `json:"album_id"`
+	DiscID      int    `json:"disc_id"`
+	TrackID     int    `json:"track_id"`
+	Description string `json:"description"`
+}
+
+type PlaylistForm struct {
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	IsPublic    bool               `json:"is_public"`
+	Songs       []PlaylistSongForm `json:"songs"`
+}
