@@ -49,6 +49,7 @@ func EndpointPlaylist(ng *gin.Engine) {
 
 		if err != nil {
 			ctx.JSON(http.StatusOK, writeErr(err))
+			return
 		}
 
 		ctx.JSON(http.StatusOK, resOk(nil))
