@@ -9,6 +9,7 @@ require (
 	golang.org/x/crypto v0.0.0-20211209193657-4570a0811e8b
 	gorm.io/driver/sqlite v1.1.4
 	gorm.io/gorm v1.21.13
+	github.com/pelletier/go-toml/v2 v2.0.0-beta.4
 )
 
 require (
