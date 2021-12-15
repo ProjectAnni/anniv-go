@@ -2,6 +2,7 @@ package services
 
 import (
 	"flag"
+	"github.com/ProjectAnni/anniv-go/config"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
@@ -23,6 +24,7 @@ func Start(listen string) error {
 	initMiddleware()
 
 	g := gin.Default()
+	g.TrustedProxies = config.Cfg.TrustedProxies
 	g.Use(CustomHeaders)
 
 	EndpointBasics(g)
