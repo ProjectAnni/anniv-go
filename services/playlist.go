@@ -283,6 +283,43 @@ func EndpointPlaylist(ng *gin.Engine) {
 		}
 		ctx.JSON(http.StatusOK, resOk(res))
 	})
+
+	g.GET("", func(ctx *gin.Context) {
+		user := ctx.MustGet("user").(model.User)
+		id, err := strconv.Atoi(ctx.Query("id"))
+		if err != nil {
+			ctx.JSON(http.StatusOK, Response{
+				Status:  NotFound,
+				Message: "playlist not found",
+				Data:    nil,
+			})
+			return
+		}
+		playlist := model.Playlist{}
+		if db.Where("id = ?", id).First(&playlist).RowsAffected == 0 {
+			ctx.JSON(http.StatusOK, Response{
+				Status:  NotFound,
+				Message: "playlist not found",
+				Data:    nil,
+			})
+			return
+		}
+		if playlist.UserID != user.ID && !playlist.IsPublic {
+			ctx.JSON(http.StatusOK, Response{
+				Status:  PermissionDenied,
+				Message: "permission denied",
+				Data:    nil,
+			})
+			return
+		}
+		res, err := queryPlaylist(playlist)
+		if err != nil {
+			ctx.JSON(http.StatusOK, readErr(err))
+			return
+		}
+		ctx.JSON(http.StatusOK, resOk(res))
+	})
+
 }
 
 func queryPlaylist(p model.Playlist) (*Playlist, error) {
