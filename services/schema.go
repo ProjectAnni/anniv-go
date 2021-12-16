@@ -152,7 +152,7 @@ type TokenPatchForm struct {
 	Priority int    `json:"priority"`
 }
 
-type DeleteTokenForm struct {
+type DeleteForm struct {
 	ID string `json:"id"`
 }
 
@@ -190,6 +190,12 @@ type PlaylistForm struct {
 	Description string             `json:"description"`
 	IsPublic    bool               `json:"is_public"`
 	Songs       []PlaylistSongForm `json:"songs"`
+}
+
+type PlaylistPatchForm struct {
+	ID      string      `json:"id"`
+	Command string      `json:"command"`
+	Payload interface{} `json:"payload"`
 }
 
 type AlbumInfo struct {

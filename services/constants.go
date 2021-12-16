@@ -14,6 +14,8 @@ const EmailUnavailable = 102001
 const InvalidPassword = 102010
 const UserNotExist = 102020
 
+const InvalidPatchCommand = 103003
+
 const TFANotEnabled = 202000
 const Wrong2FACode = 202001
 const Illegal2FASecret = 202002

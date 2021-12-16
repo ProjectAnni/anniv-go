@@ -72,7 +72,7 @@ func EndpointToken(ng *gin.Engine) {
 
 	g.DELETE("", func(ctx *gin.Context) {
 		user := ctx.MustGet("user").(model.User)
-		form := DeleteTokenForm{}
+		form := DeleteForm{}
 		if err := ctx.ShouldBind(&form); err != nil {
 			ctx.JSON(http.StatusOK, illegalParams("malformed delete form"))
 			return

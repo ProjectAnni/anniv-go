@@ -1,10 +1,13 @@
 package services
 
 import (
+	"errors"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
+	"github.com/mitchellh/mapstructure"
 	"gorm.io/gorm"
 	"net/http"
+	"strconv"
 )
 
 func EndpointPlaylist(ng *gin.Engine) {
@@ -54,4 +57,257 @@ func EndpointPlaylist(ng *gin.Engine) {
 
 		ctx.JSON(http.StatusOK, resOk(nil))
 	})
+
+	g.DELETE("", func(ctx *gin.Context) {
+		user := ctx.MustGet("user").(model.User)
+		form := DeleteForm{}
+		if err := ctx.ShouldBind(&form); err != nil {
+			ctx.JSON(http.StatusOK, illegalParams("malformed delete form"))
+			return
+		}
+		id, err := strconv.Atoi(form.ID)
+		if err != nil {
+			ctx.JSON(http.StatusOK, Response{
+				Status:  NotFound,
+				Message: "playlist not found",
+				Data:    nil,
+			})
+			return
+		}
+		playlist := model.Playlist{}
+		if err := db.Where("id = ?", id).First(&playlist).Error; err != nil {
+			ctx.JSON(http.StatusOK, Response{
+				Status:  NotFound,
+				Message: "playlist not found",
+				Data:    nil,
+			})
+			return
+		}
+		if playlist.UserID != user.ID {
+			ctx.JSON(http.StatusOK, Response{
+				Status:  PermissionDenied,
+				Message: "permission denied",
+				Data:    nil,
+			})
+			return
+		}
+		err = db.Transaction(func(tx *gorm.DB) error {
+			err := tx.Where("playlist_id = ?", playlist.ID).Delete(&model.PlaylistSong{}).Error
+			if err != nil {
+				return err
+			}
+			return db.Delete(&playlist).Error
+		})
+		if err != nil {
+			ctx.JSON(http.StatusOK, writeErr(err))
+			return
+		}
+		ctx.JSON(http.StatusOK, resOk(nil))
+	})
+
+	g.PATCH("", func(ctx *gin.Context) {
+		user := ctx.MustGet("user").(model.User)
+		form := PlaylistPatchForm{}
+		if err := ctx.ShouldBind(&form); err != nil {
+			ctx.JSON(http.StatusOK, illegalParams("malformed patch form"))
+			return
+		}
+		id, err := strconv.Atoi(form.ID)
+		if err != nil {
+			ctx.JSON(http.StatusOK, Response{
+				Status:  NotFound,
+				Message: "playlist not found",
+				Data:    nil,
+			})
+			return
+		}
+		playlist := model.Playlist{}
+		if err := db.Where("id = ?", id).First(&playlist).Error; err != nil {
+			ctx.JSON(http.StatusOK, Response{
+				Status:  NotFound,
+				Message: "playlist not found",
+				Data:    nil,
+			})
+			return
+		}
+		if playlist.UserID != user.ID {
+			ctx.JSON(http.StatusOK, Response{
+				Status:  PermissionDenied,
+				Message: "permission denied",
+				Data:    nil,
+			})
+			return
+		}
+
+		if form.Command == "append" {
+			var payload []PlaylistSongForm
+			err := mapstructure.Decode(form.Payload, &payload)
+			if err != nil {
+				ctx.JSON(http.StatusOK, illegalParams("malformed payload"))
+				return
+			}
+			var ord int
+			if err := db.Where("playlist_id = ?", playlist.ID).Order("order desc").Select("order").First(&ord).Error; err != nil {
+				ctx.JSON(http.StatusOK, readErr(err))
+				return
+			}
+			ord++
+			err = db.Transaction(func(tx *gorm.DB) error {
+				for k, v := range payload {
+					song := model.PlaylistSong{
+						PlaylistID:  playlist.ID,
+						AlbumID:     v.AlbumID,
+						DiscID:      v.DiscID,
+						TrackID:     v.TrackID,
+						Description: v.Description,
+						Order:       uint(ord + k),
+					}
+					if err := tx.Save(&song).Error; err != nil {
+						return err
+					}
+				}
+				return nil
+			})
+			if err != nil {
+				ctx.JSON(http.StatusOK, writeErr(err))
+				return
+			}
+		} else if form.Command == "remove" {
+			var payload []string
+			err = mapstructure.Decode(form.Payload, &payload)
+			if err != nil {
+				ctx.JSON(http.StatusOK, illegalParams("malformed payload"))
+				return
+			}
+			err = db.Transaction(func(tx *gorm.DB) error {
+				for _, v := range payload {
+					id, err := strconv.Atoi(v)
+					if err != nil {
+						return err
+					}
+					res := db.Where("playlist_id = ? AND id = ?", playlist.ID, id).Delete(&model.PlaylistSong{})
+					if res.Error != nil {
+						return res.Error
+					}
+					if res.RowsAffected != 1 {
+						return errors.New("song not found")
+					}
+				}
+				return nil
+			})
+			if err != nil {
+				ctx.JSON(http.StatusOK, writeErr(err))
+				return
+			}
+		} else if form.Command == "reorder" {
+			var payload []string
+			err = mapstructure.Decode(form.Payload, &payload)
+			if err != nil {
+				ctx.JSON(http.StatusOK, illegalParams("malformed payload"))
+				return
+			}
+			var cnt int64
+			if err := db.Model(&model.PlaylistSong{}).Where("playlist_id = ?", playlist.ID).Count(&cnt).Error; err != nil {
+				ctx.JSON(http.StatusOK, readErr(err))
+				return
+			}
+			if int(cnt) != len(payload) {
+				ctx.JSON(http.StatusOK, illegalParams("malformed payload"))
+				return
+			}
+			err = db.Transaction(func(tx *gorm.DB) error {
+				for k, v := range payload {
+					id, err := strconv.Atoi(v)
+					if err != nil {
+						return err
+					}
+					res := db.Model(&model.PlaylistSong{}).Where("playlist_id = ? AND id = ?", playlist.ID, id).Update("order", k)
+					if res.Error != nil {
+						return res.Error
+					}
+					if res.RowsAffected != 1 {
+						return errors.New("song not found")
+					}
+				}
+				return nil
+			})
+			if err != nil {
+				ctx.JSON(http.StatusOK, writeErr(err))
+				return
+			}
+		} else if form.Command == "replace" {
+			var payload []PlaylistSong
+			err = mapstructure.Decode(form.Payload, &payload)
+			if err != nil {
+				ctx.JSON(http.StatusOK, illegalParams("malformed payload"))
+				return
+			}
+			err = db.Transaction(func(tx *gorm.DB) error {
+				for _, v := range payload {
+					id, err := strconv.Atoi(v.ID)
+					if err != nil {
+						return err
+					}
+					t := db.Model(&model.PlaylistSong{}).Where("playlist_id = ? AND id = ?", playlist.ID, id)
+					t = t.Updates(map[string]interface{}{
+						"album_id":    v.AlbumID,
+						"disc_id":     v.DiscID,
+						"track_id":    v.TrackID,
+						"description": v.Description,
+					})
+					if t.Error != nil {
+						return t.Error
+					}
+					if t.RowsAffected != 1 {
+						return errors.New("song not found")
+					}
+				}
+				return nil
+			})
+			if err != nil {
+				ctx.JSON(http.StatusOK, writeErr(err))
+				return
+			}
+		} else {
+			ctx.JSON(http.StatusOK, Response{
+				Status:  InvalidPatchCommand,
+				Message: "invalid patch command",
+				Data:    nil,
+			})
+			return
+		}
+		res, err := queryPlaylist(playlist)
+		if err != nil {
+			ctx.JSON(http.StatusOK, readErr(err))
+			return
+		}
+		ctx.JSON(http.StatusOK, resOk(res))
+	})
+}
+
+func queryPlaylist(p model.Playlist) (*Playlist, error) {
+	ret := Playlist{
+		ID:          strconv.Itoa(int(p.ID)),
+		Name:        p.Name,
+		Description: p.Description,
+		Owner:       strconv.Itoa(int(p.UserID)),
+		IsPublic:    p.IsPublic,
+		Songs:       []PlaylistSong{},
+	}
+
+	songs := make([]model.PlaylistSong, 0)
+	if err := db.Where("playlist_id = ?", p.ID).Order("order asce").Find(&songs).Error; err != nil {
+		return nil, err
+	}
+	for _, v := range songs {
+		ret.Songs = append(ret.Songs, PlaylistSong{
+			ID:          strconv.Itoa(int(v.ID)),
+			AlbumID:     v.AlbumID,
+			DiscID:      v.DiscID,
+			TrackID:     v.TrackID,
+			Description: v.Description,
+		})
+	}
+
+	return &ret, nil
 }
