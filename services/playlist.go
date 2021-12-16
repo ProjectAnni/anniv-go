@@ -296,7 +296,7 @@ func queryPlaylist(p model.Playlist) (*Playlist, error) {
 	}
 
 	songs := make([]model.PlaylistSong, 0)
-	if err := db.Where("playlist_id = ?", p.ID).Order("order asce").Find(&songs).Error; err != nil {
+	if err := db.Where("playlist_id = ?", p.ID).Order("order").Find(&songs).Error; err != nil {
 		return nil, err
 	}
 	for _, v := range songs {
