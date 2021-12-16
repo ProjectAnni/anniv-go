@@ -31,6 +31,7 @@ func Start(listen string) error {
 	EndpointToken(g)
 	Endpoint2FA(g)
 	EndpointPlaylist(g)
+	EndpointMeta(g)
 
 	return g.Run(listen)
 }

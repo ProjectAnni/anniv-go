@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var Lock = &sync.RWMutex{}
+var lock = &sync.RWMutex{}
 
 func Init(path, url string) error {
 	log.Println("Initializing meta index...")
@@ -45,8 +45,8 @@ func Init(path, url string) error {
 }
 
 func updateIndex(path string) error {
-	Lock.Lock()
-	defer Lock.Unlock()
+	lock.Lock()
+	defer lock.Unlock()
 	log.Println("Indexing repo...")
 	start := time.Now()
 	err := Read(path)
@@ -90,4 +90,24 @@ func initRepo(path, url string) error {
 		URL: url,
 	})
 	return err
+}
+
+func GetTags() []string {
+	lock.RLock()
+	defer lock.RUnlock()
+	return tags
+}
+
+func GetAlbumInfo(id string) (AlbumInfo, bool) {
+	lock.RLock()
+	defer lock.RUnlock()
+	res, ok := albumIdx[id]
+	return res, ok
+}
+
+func GetAlbumsByTag(tag string) ([]AlbumInfo, bool) {
+	lock.RLock()
+	defer lock.RUnlock()
+	res, ok := tagIdx[tag]
+	return res, ok
 }

@@ -29,7 +29,7 @@ type DiscInfo struct {
 type AlbumInfo struct {
 	AlbumID string      `json:"album_id"`
 	Title   string      `json:"title"`
-	Edition string      `json:"edition"`
+	Edition *string     `json:"edition"`
 	Catalog string      `json:"catalog"`
 	Artist  string      `json:"artist"`
 	Date    interface{} `json:"date"`
@@ -41,7 +41,7 @@ type AlbumInfo struct {
 type AlbumMeta struct {
 	AlbumID string      `json:"album_id" toml:"album_id"`
 	Title   string      `json:"title"`
-	Edition string      `json:"edition"`
+	Edition *string     `json:"edition"`
 	Catalog string      `json:"catalog"`
 	Artist  string      `json:"artist"`
 	Date    interface{} `json:"date"`

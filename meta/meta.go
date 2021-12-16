@@ -7,8 +7,9 @@ import (
 	"path"
 )
 
-var AlbumIdx map[string]AlbumInfo
-var TagIdx map[string][]AlbumInfo
+var albumIdx map[string]AlbumInfo
+var tagIdx map[string][]AlbumInfo
+var tags []string
 
 func Read(p string) error {
 	albums, err := readAlbums(path.Join(p, "album"))
@@ -25,11 +26,12 @@ func Read(p string) error {
 		return err
 	}
 
-	AlbumIdx = make(map[string]AlbumInfo)
-	TagIdx = make(map[string][]AlbumInfo)
+	albumIdx = make(map[string]AlbumInfo)
+	tagIdx = make(map[string][]AlbumInfo)
+	tags = V
 
 	for _, v := range albums {
-		AlbumIdx[v.AlbumID] = v
+		albumIdx[v.AlbumID] = v
 	}
 
 	tmp := make(map[string]map[string]bool)
@@ -67,7 +69,7 @@ func Read(p string) error {
 
 	for k, v := range tmp {
 		for albumId := range v {
-			TagIdx[k] = append(TagIdx[k], AlbumIdx[albumId])
+			tagIdx[k] = append(tagIdx[k], albumIdx[albumId])
 		}
 	}
 

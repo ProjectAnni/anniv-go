@@ -3,8 +3,10 @@ package services
 import (
 	"fmt"
 	"github.com/ProjectAnni/anniv-go/config"
+	"github.com/ProjectAnni/anniv-go/meta"
 	"github.com/ProjectAnni/anniv-go/model"
 	"strconv"
+	time2 "time"
 )
 
 type Response struct {
@@ -187,4 +189,53 @@ type PlaylistForm struct {
 	Description string             `json:"description"`
 	IsPublic    bool               `json:"is_public"`
 	Songs       []PlaylistSongForm `json:"songs"`
+}
+
+type AlbumInfo struct {
+	AlbumID string           `json:"album_id"`
+	Title   string           `json:"title"`
+	Edition *string          `json:"edition"`
+	Catalog string           `json:"catalog"`
+	Artist  string           `json:"artist"`
+	Date    string           `json:"date"`
+	Tags    []string         `json:"tags"`
+	Type    string           `json:"type"`
+	Discs   []*meta.DiscInfo `json:"discs"`
+}
+
+func albumInfo(album meta.AlbumInfo) *AlbumInfo {
+	return &AlbumInfo{
+		AlbumID: album.AlbumID,
+		Title:   album.Title,
+		Edition: album.Edition,
+		Catalog: album.Catalog,
+		Artist:  album.Artist,
+		Date:    parseDate(album.Date),
+		Tags:    album.Tags,
+		Type:    album.Type,
+		Discs:   album.Discs,
+	}
+}
+
+func parseDate(v interface{}) string {
+	str, ok := v.(string)
+	if ok {
+		return str
+	}
+	time, ok := v.(time2.Time)
+	if ok {
+		return time.Format("2006-01-02")
+	}
+	m, ok := v.(map[string]int)
+	if ok {
+		year := m["year"]
+		month := m["month"]
+		day, containsDay := m["day"]
+		ret := strconv.Itoa(year) + "-" + strconv.Itoa(month)
+		if containsDay {
+			ret += "-" + strconv.Itoa(day)
+		}
+		return ret
+	}
+	return ""
 }
