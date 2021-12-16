@@ -10,7 +10,7 @@ import (
 )
 
 var db *gorm.DB
-var dbPath = flag.String("db", "data.db", "")
+var dbPath = flag.String("db", "./data/data.db", "")
 
 func Start(listen string) error {
 	var err error

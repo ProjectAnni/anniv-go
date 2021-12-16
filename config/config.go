@@ -13,6 +13,8 @@ type Config struct {
 	Enforce2FA     bool              `yaml:"enforce_2fa"`
 	Headers        map[string]string `yaml:"headers"`
 	TrustedProxies []string          `yaml:"trusted_proxies"`
+	RepoDir        string            `yaml:"repo_dir"`
+	RepoURL        string            `yaml:"repo_url"`
 }
 
 var Cfg = Config{
@@ -21,6 +23,8 @@ var Cfg = Config{
 	Listen:         ":8080",
 	Enforce2FA:     false,
 	TrustedProxies: []string{"127.0.0.1/32"},
+	RepoDir:        "./data/meta",
+	RepoURL:        "https://github.com/ProjectAnni/repo.git",
 }
 
 var path = flag.String("conf", "config.yaml", "")
@@ -37,7 +41,11 @@ func Load() error {
 		}
 	}
 	defer f.Close()
-	return yaml.NewDecoder(f).Decode(&Cfg)
+	err = yaml.NewDecoder(f).Decode(&Cfg)
+	if err == nil {
+		_ = Save()
+	}
+	return err
 }
 
 func Save() error {
