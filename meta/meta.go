@@ -202,6 +202,9 @@ func readAlbums(p string) ([]AlbumInfo, error) {
 			if disc.Title == "" {
 				disc.Title = album.Title
 			}
+			if disc.Tags == nil {
+				disc.Tags = []string{}
+			}
 			for _, track := range disc.Tracks {
 				if track.Title == "" {
 					track.Type = disc.Type
@@ -211,6 +214,9 @@ func readAlbums(p string) ([]AlbumInfo, error) {
 				}
 				if track.Type == "" {
 					track.Type = disc.Type
+				}
+				if track.Tags == nil {
+					track.Tags = []string{}
 				}
 			}
 		}

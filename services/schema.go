@@ -5,6 +5,7 @@ import (
 	"github.com/ProjectAnni/anniv-go/config"
 	"github.com/ProjectAnni/anniv-go/meta"
 	"github.com/ProjectAnni/anniv-go/model"
+	"github.com/pelletier/go-toml/v2"
 	"strconv"
 	time2 "time"
 )
@@ -204,7 +205,7 @@ type AlbumInfo struct {
 }
 
 func albumInfo(album meta.AlbumInfo) *AlbumInfo {
-	return &AlbumInfo{
+	ret := &AlbumInfo{
 		AlbumID: album.AlbumID,
 		Title:   album.Title,
 		Edition: album.Edition,
@@ -215,12 +216,20 @@ func albumInfo(album meta.AlbumInfo) *AlbumInfo {
 		Type:    album.Type,
 		Discs:   album.Discs,
 	}
+	if ret.Tags == nil {
+		ret.Tags = []string{}
+	}
+	return ret
 }
 
 func parseDate(v interface{}) string {
 	str, ok := v.(string)
 	if ok {
 		return str
+	}
+	date, ok := v.(toml.LocalDate)
+	if ok {
+		return date.String()
 	}
 	time, ok := v.(time2.Time)
 	if ok {
