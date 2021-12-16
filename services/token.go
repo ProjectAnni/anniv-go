@@ -40,7 +40,7 @@ func EndpointToken(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, writeErr(err))
 			return
 		}
-		ctx.JSON(http.StatusOK, resOk(nil))
+		ctx.JSON(http.StatusOK, resOk(token))
 	})
 
 	g.PATCH("", func(ctx *gin.Context) {
