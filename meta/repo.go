@@ -14,7 +14,7 @@ var Lock = &sync.RWMutex{}
 func Init(path, url string) error {
 	log.Println("Initializing meta index...")
 	err := updateRepo(path, url)
-	if err != nil {
+	if err != nil && err != git.NoErrAlreadyUpToDate {
 		return err
 	}
 	err = updateIndex(path)
