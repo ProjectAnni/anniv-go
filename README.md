@@ -1,6 +1,6 @@
 # anniv-go
 
-anniv-go is a [anniv][anniv] implementation written in go. Still working in progress.
+anniv-go is an [anniv][anniv] implementation written in go. Still working in progress.
 
 [anniv]: https://book.anni.rs/06.anniv/00.readme.html
 
@@ -8,9 +8,11 @@ anniv-go is a [anniv][anniv] implementation written in go. Still working in prog
 
 - [x] Basic information
 - [x] User system
-- [ ] Playlists
+- [x] Playlists
 - [x] Token management
+- [x] Meta
 - [ ] Share
+- [ ] Search
 - [ ] Statistics
 - [ ] Invite
 - [x] 2FA
