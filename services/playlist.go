@@ -147,7 +147,8 @@ func EndpointPlaylist(ng *gin.Engine) {
 				return
 			}
 			var ord int
-			if err := db.Where("playlist_id = ?", playlist.ID).Order("order desc").Select("order").First(&ord).Error; err != nil {
+			if err := db.Where("playlist_id = ?", playlist.ID).Order("order desc").
+				Select("order").First(&ord).Error; err != nil {
 				ctx.JSON(http.StatusOK, readErr(err))
 				return
 			}
@@ -207,7 +208,8 @@ func EndpointPlaylist(ng *gin.Engine) {
 				return
 			}
 			var cnt int64
-			if err := db.Model(&model.PlaylistSong{}).Where("playlist_id = ?", playlist.ID).Count(&cnt).Error; err != nil {
+			if err := db.Model(&model.PlaylistSong{}).Where("playlist_id = ?", playlist.ID).
+				Count(&cnt).Error; err != nil {
 				ctx.JSON(http.StatusOK, readErr(err))
 				return
 			}
@@ -221,7 +223,8 @@ func EndpointPlaylist(ng *gin.Engine) {
 					if err != nil {
 						return err
 					}
-					res := db.Model(&model.PlaylistSong{}).Where("playlist_id = ? AND id = ?", playlist.ID, id).Update("order", k)
+					res := db.Model(&model.PlaylistSong{}).Where("playlist_id = ? AND id = ?", playlist.ID, id).
+						Update("order", k)
 					if res.Error != nil {
 						return res.Error
 					}
