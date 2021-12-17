@@ -114,12 +114,14 @@ func GetAlbumsByTag(tag string) ([]AlbumInfo, bool) {
 }
 
 func SearchAlbums(keyword string) (ret []AlbumInfo) {
+	lock.RLock()
+	defer lock.RUnlock()
 	ret = make([]AlbumInfo, 0)
 	if keyword == "" {
 		return
 	}
 	for _, v := range albumIdx {
-		if strings.Contains(v.Title, keyword) {
+		if strings.Contains(strings.ToUpper(v.Title), strings.ToUpper(keyword)) {
 			ret = append(ret, v)
 		}
 	}
@@ -127,6 +129,8 @@ func SearchAlbums(keyword string) (ret []AlbumInfo) {
 }
 
 func SearchTracks(keyword string) (ret []*TrackInfoWithAlbum) {
+	lock.RLock()
+	defer lock.RUnlock()
 	ret = make([]*TrackInfoWithAlbum, 0)
 	if keyword == "" {
 		return
@@ -134,7 +138,7 @@ func SearchTracks(keyword string) (ret []*TrackInfoWithAlbum) {
 	for _, album := range albumIdx {
 		for discId, disc := range album.Discs {
 			for trackId, track := range disc.Tracks {
-				if strings.Contains(track.Title, keyword) {
+				if strings.Contains(strings.ToUpper(track.Title), strings.ToUpper(keyword)) {
 					ret = append(ret, &TrackInfoWithAlbum{
 						Title:   track.Title,
 						Artist:  track.Artist,
