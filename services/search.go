@@ -17,7 +17,7 @@ func EndpointSearch(ng *gin.Engine) {
 		keyword := ctx.Query("keyword")
 		if _, f := ctx.GetQuery("search_albums"); f {
 			albums := meta.SearchAlbums(keyword)
-			res.Albums = make([]*AlbumInfo, len(albums))
+			res.Albums = make([]*AlbumInfo, 0, len(albums))
 			for _, v := range albums {
 				res.Albums = append(res.Albums, albumInfo(v))
 			}
