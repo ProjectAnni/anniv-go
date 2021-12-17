@@ -153,3 +153,7 @@ func SearchTracks(keyword string) (ret []*TrackInfoWithAlbum) {
 	}
 	return
 }
+
+func GetTagGraph() map[string][]string {
+	return tagGraph
+}

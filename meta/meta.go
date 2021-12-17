@@ -10,6 +10,7 @@ import (
 var albumIdx map[string]AlbumInfo
 var tagIdx map[string][]AlbumInfo
 var tags []string
+var tagGraph map[string][]string
 
 func Read(p string) error {
 	albums, err := readAlbums(path.Join(p, "album"))
@@ -29,6 +30,7 @@ func Read(p string) error {
 	albumIdx = make(map[string]AlbumInfo)
 	tagIdx = make(map[string][]AlbumInfo)
 	tags = V
+	tagGraph = E
 
 	for _, v := range albums {
 		albumIdx[v.AlbumID] = v
