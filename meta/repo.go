@@ -31,8 +31,7 @@ func Init(path, url string) error {
 			err := updateRepo(path, url)
 			if err != nil && err != git.NoErrAlreadyUpToDate {
 				log.Printf("Failed to update repo: %v\n", err)
-			}
-			if err == git.NoErrAlreadyUpToDate {
+			} else if err == git.NoErrAlreadyUpToDate {
 				log.Println("Already up to date.")
 			} else {
 				err = updateIndex(path)
