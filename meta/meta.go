@@ -36,10 +36,14 @@ func Read(p string) error {
 
 	tmp := make(map[string]map[string]bool)
 
+	for _, v := range tags {
+		tmp[v] = make(map[string]bool)
+	}
+
 	for _, album := range albums {
 		for _, tag := range album.Tags {
 			if tmp[tag] == nil {
-				tmp[tag] = make(map[string]bool)
+				return errors.New("unknown tag: " + tag)
 			}
 			tmp[tag][album.AlbumID] = true
 		}
