@@ -12,7 +12,7 @@ anniv-go is an [anniv][anniv] implementation written in go. Still working in pro
 - [x] Token management
 - [x] Meta
 - [ ] Share
-- [ ] Search
+- [x] Search
 - [ ] Statistics
 - [ ] Invite
 - [x] 2FA

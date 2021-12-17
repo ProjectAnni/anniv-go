@@ -32,6 +32,7 @@ func Start(listen string) error {
 	Endpoint2FA(g)
 	EndpointPlaylist(g)
 	EndpointMeta(g)
+	EndpointSearch(g)
 
 	return g.Run(listen)
 }

@@ -254,3 +254,16 @@ func parseDate(v interface{}) string {
 	}
 	return ""
 }
+
+type PlaylistResult struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Owner       string `json:"owner"`
+}
+
+type SearchResult struct {
+	Albums    []*AlbumInfo               `json:"albums"`
+	Tracks    []*meta.TrackInfoWithAlbum `json:"tracks"`
+	Playlists []*PlaylistResult          `json:"playlists"`
+}
