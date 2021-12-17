@@ -36,6 +36,10 @@ func Load() error {
 			if err := Save(); err != nil {
 				return err
 			}
+			f, err = os.Open(*path)
+			if err != nil {
+				return err
+			}
 		} else {
 			return err
 		}
