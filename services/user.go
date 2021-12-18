@@ -9,6 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"regexp"
+	"strconv"
 	"time"
 )
 
@@ -124,6 +125,21 @@ func EndpointUser(ng *gin.Engine) {
 	g.GET("/info", AuthRequired, func(ctx *gin.Context) {
 		user := ctx.MustGet("user").(model.User)
 		ctx.JSON(http.StatusOK, resOk(userInfo(user)))
+	})
+
+	g.GET("/intro", AuthRequired, func(ctx *gin.Context) {
+		id := ctx.Query("user_id")
+		uid, err := strconv.Atoi(id)
+		if err != nil {
+			ctx.JSON(http.StatusOK, userNotFound())
+			return
+		}
+		var u model.User
+		if err := db.Where("id = ?", uid).First(&u).Error; err != nil {
+			ctx.JSON(http.StatusOK, userNotFound())
+			return
+		}
+		ctx.JSON(http.StatusOK, resOk(userIntro(u)))
 	})
 }
 

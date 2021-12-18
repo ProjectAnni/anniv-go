@@ -96,6 +96,20 @@ func userInfo(u model.User) UserInfo {
 	}
 }
 
+type UserIntro struct {
+	UserID   string `json:"user_id"`
+	Nickname string `json:"nickname"`
+	Avatar   string `json:"avatar"`
+}
+
+func userIntro(u model.User) UserIntro {
+	return UserIntro{
+		UserID:   strconv.Itoa(int(u.ID)),
+		Nickname: u.Nickname,
+		Avatar:   u.Avatar,
+	}
+}
+
 type RegisterForm struct {
 	Password string `json:"password"`
 	Email    string `json:"email"`
