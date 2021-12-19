@@ -16,7 +16,7 @@ jobs:
       - name: Build and publish a Docker image for ${{ github.repository }}
         uses: macbre/push-to-ghcr@master
         with:
-          image_name: project-anni/anniv-go
+          image_name: projectanni/anniv-go
           github_token: ${{ secrets.GITHUB_TOKEN }}
         env:
           DOCKER_BUILDKIT: 1
