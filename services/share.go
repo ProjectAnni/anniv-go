@@ -3,8 +3,9 @@ package services
 import (
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
-	uuid "github.com/satori/go.uuid"
+	"math/rand"
 	"net/http"
+	"time"
 )
 
 func EndpointShare(ng *gin.Engine) {
@@ -74,7 +75,7 @@ func EndpointShare(ng *gin.Engine) {
 		share := model.Share{
 			UserID:  user.ID,
 			Data:    form.Data,
-			ShareID: uuid.NewV4().String(),
+			ShareID: randSeq(8),
 		}
 		if err := db.Save(&share).Error; err != nil {
 			ctx.JSON(http.StatusOK, writeErr(err))
@@ -90,4 +91,15 @@ func shareNotFound() Response {
 		Message: "share not found",
 		Data:    nil,
 	}
+}
+
+var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func randSeq(n int) string {
+	rand.Seed(time.Now().UnixNano())
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
 }
