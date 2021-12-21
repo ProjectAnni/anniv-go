@@ -64,6 +64,21 @@ type Share struct {
 	ShareID string `gorm:"unique"`
 }
 
+type FavoriteMusic struct {
+	UserID  uint
+	User    User
+	AlbumID string
+	DiscID  int
+	TrackID int
+}
+
+type FavoritePlaylist struct {
+	UserID     uint
+	User       User
+	PlaylistID uint
+	Playlist   Playlist
+}
+
 func Bind(db *gorm.DB) {
 	_ = db.AutoMigrate(&User{})
 	_ = db.AutoMigrate(&Session{})
@@ -71,4 +86,6 @@ func Bind(db *gorm.DB) {
 	_ = db.AutoMigrate(&Playlist{})
 	_ = db.AutoMigrate(&PlaylistSong{})
 	_ = db.AutoMigrate(&Share{})
+	_ = db.AutoMigrate(&FavoriteMusic{})
+	_ = db.AutoMigrate(&FavoritePlaylist{})
 }

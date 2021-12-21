@@ -290,3 +290,19 @@ type ShareEntry struct {
 type CreateShareForm struct {
 	Data string `json:"data"`
 }
+
+type FavoriteMusicEntry struct {
+	AlbumID string `json:"album_id"`
+	DiscID  int    `json:"disc_id"`
+	TrackID int    `json:"track_id"`
+}
+
+type FavoritePlaylistEntry struct {
+	PlaylistID string `json:"playlist_id"`
+	Name       string `json:"name"`
+	Owner      string `json:"owner"`
+}
+
+type FavoritePlaylistForm struct {
+	PlaylistID string `json:"playlist_id"`
+}

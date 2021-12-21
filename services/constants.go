@@ -9,6 +9,7 @@ const NotFound = 902000
 const PermissionDenied = 902001
 const Unauthorized = 902002
 const IllegalParams = 902003
+const AlreadyExist = 902004
 
 const EmailUnavailable = 102001
 const InvalidPassword = 102010
