@@ -155,5 +155,7 @@ func SearchTracks(keyword string) (ret []*TrackInfoWithAlbum) {
 }
 
 func GetTagGraph() map[string][]string {
+	lock.RLock()
+	defer lock.RUnlock()
 	return tagGraph
 }
