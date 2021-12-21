@@ -284,11 +284,9 @@ type SearchResult struct {
 
 type ShareEntry struct {
 	ID   string `json:"id"`
-	Name string `json:"name"`
 	Date int64  `json:"date"`
 }
 
 type CreateShareForm struct {
-	Name string `json:"name"`
 	Data string `json:"data"`
 }

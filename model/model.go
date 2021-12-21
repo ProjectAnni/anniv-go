@@ -60,7 +60,6 @@ type Share struct {
 	gorm.Model
 	UserID  uint
 	User    User
-	Name    string
 	Data    string
 	ShareID string `gorm:"unique"`
 }

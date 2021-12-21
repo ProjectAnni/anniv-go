@@ -32,7 +32,6 @@ func EndpointShare(ng *gin.Engine) {
 		for _, v := range shares {
 			res = append(res, ShareEntry{
 				ID:   v.ShareID,
-				Name: v.Name,
 				Date: v.CreatedAt.Unix(),
 			})
 		}
@@ -74,7 +73,6 @@ func EndpointShare(ng *gin.Engine) {
 		}
 		share := model.Share{
 			UserID:  user.ID,
-			Name:    form.Name,
 			Data:    form.Data,
 			ShareID: uuid.NewV4().String(),
 		}
