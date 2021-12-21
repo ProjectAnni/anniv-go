@@ -71,4 +71,5 @@ func Bind(db *gorm.DB) {
 	_ = db.AutoMigrate(&Token{})
 	_ = db.AutoMigrate(&Playlist{})
 	_ = db.AutoMigrate(&PlaylistSong{})
+	_ = db.AutoMigrate(&Share{})
 }
