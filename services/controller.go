@@ -33,6 +33,7 @@ func Start(listen string) error {
 	EndpointPlaylist(g)
 	EndpointMeta(g)
 	EndpointSearch(g)
+	EndpointShare(g)
 
 	return g.Run(listen)
 }

@@ -56,6 +56,15 @@ type PlaylistSong struct {
 	Order       uint
 }
 
+type Share struct {
+	gorm.Model
+	UserID  uint
+	User    User
+	Name    string
+	Data    string
+	ShareID string `gorm:"unique"`
+}
+
 func Bind(db *gorm.DB) {
 	_ = db.AutoMigrate(&User{})
 	_ = db.AutoMigrate(&Session{})
