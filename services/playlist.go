@@ -20,12 +20,18 @@ func EndpointPlaylist(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, illegalParams("malformed playlist form"))
 			return
 		}
+		if form.Cover.DiscID == nil {
+			form.Cover.DiscID = new(int)
+			*form.Cover.DiscID = 1
+		}
 		playlist := model.Playlist{
-			Name:        form.Name,
-			Description: form.Description,
-			UserID:      user.ID,
-			User:        user,
-			IsPublic:    form.IsPublic,
+			Name:         form.Name,
+			Description:  form.Description,
+			UserID:       user.ID,
+			User:         user,
+			IsPublic:     form.IsPublic,
+			CoverAlbumID: form.Cover.AlbumID,
+			CoverDiscID:  *form.Cover.DiscID,
 		}
 		err := db.Transaction(func(db *gorm.DB) error {
 			err := db.Save(&playlist).Error
@@ -333,6 +339,10 @@ func queryPlaylist(p model.Playlist) (*Playlist, error) {
 		Owner:       strconv.Itoa(int(p.UserID)),
 		IsPublic:    p.IsPublic,
 		Songs:       []PlaylistSong{},
+		Cover: Cover{
+			AlbumID: p.CoverAlbumID,
+			DiscID:  &p.CoverDiscID,
+		},
 	}
 
 	songs := make([]model.PlaylistSong, 0)

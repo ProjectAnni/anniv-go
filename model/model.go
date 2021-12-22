@@ -38,11 +38,13 @@ type Token struct {
 
 type Playlist struct {
 	gorm.Model
-	Name        string
-	Description string
-	UserID      uint
-	User        User
-	IsPublic    bool
+	Name         string
+	Description  string
+	UserID       uint
+	User         User
+	IsPublic     bool
+	CoverAlbumID string
+	CoverDiscID  int
 }
 
 type PlaylistSong struct {
