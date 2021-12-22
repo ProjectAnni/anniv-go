@@ -125,6 +125,16 @@ type LoginForm struct {
 	Code     string `json:"2fa_code"`
 }
 
+type ChangePasswordForm struct {
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+}
+
+type UserIntroForm struct {
+	Nickname string `json:"nickname"`
+	Avatar   string `json:"avatar"`
+}
+
 type TokenInfo struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`

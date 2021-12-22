@@ -1,5 +1,7 @@
 package services
 
+const NicknameMaxLen = 20
+
 const StatusOK = 0
 const InternalError = 900000
 const DbConnErr = 900001
@@ -11,6 +13,7 @@ const Unauthorized = 902002
 const IllegalParams = 902003
 const AlreadyExist = 902004
 
+const InvalidNickname = 102000
 const EmailUnavailable = 102001
 const InvalidPassword = 102010
 const UserNotExist = 102020

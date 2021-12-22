@@ -24,6 +24,10 @@ func EndpointUser(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, illegalParams("malformed register form"))
 			return
 		}
+		if len(form.Nickname) > NicknameMaxLen {
+			ctx.JSON(http.StatusOK, resErr(InvalidNickname, "nickname too long"))
+			return
+		}
 		if !emailReg.MatchString(form.Email) {
 			ctx.JSON(http.StatusOK, illegalEmail("invalid email"))
 			return
@@ -44,7 +48,7 @@ func EndpointUser(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, wrong2FACode())
 			return
 		}
-		// TODO nickname avatar check
+		// TODO avatar check
 		hash, err := bcrypt.GenerateFromPassword([]byte(form.Password), bcrypt.DefaultCost)
 		if err != nil {
 			ctx.JSON(http.StatusOK, resErr(InternalError, "error hashing password"))
@@ -140,6 +144,50 @@ func EndpointUser(ng *gin.Engine) {
 			return
 		}
 		ctx.JSON(http.StatusOK, resOk(userIntro(u)))
+	})
+
+	g.PATCH("/password", AuthRequired, TFARequired, func(ctx *gin.Context) {
+		user := ctx.MustGet("user").(model.User)
+		form := ChangePasswordForm{}
+		if err := ctx.ShouldBind(&form); err != nil {
+			ctx.JSON(http.StatusOK, illegalParams("malformed password form"))
+			return
+		}
+		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(form.OldPassword)); err != nil {
+			ctx.JSON(http.StatusOK, wrongPassword())
+			return
+		}
+		hash, err := bcrypt.GenerateFromPassword([]byte(form.NewPassword), bcrypt.DefaultCost)
+		if err != nil {
+			ctx.JSON(http.StatusOK, illegalParams("failed to hash password"))
+			return
+		}
+		user.Password = string(hash)
+		if err := db.Save(&user).Error; err != nil {
+			ctx.JSON(http.StatusOK, writeErr(err))
+			return
+		}
+		ctx.JSON(http.StatusOK, resOk(nil))
+	})
+
+	g.PATCH("/intro", AuthRequired, TFARequired, func(ctx *gin.Context) {
+		user := ctx.MustGet("user").(model.User)
+		form := UserIntroForm{}
+		if err := ctx.ShouldBind(&form); err != nil {
+			ctx.JSON(http.StatusOK, illegalParams("malformed intro form"))
+			return
+		}
+		if len(form.Nickname) > NicknameMaxLen {
+			ctx.JSON(http.StatusOK, resErr(InvalidNickname, "nickname too long"))
+			return
+		}
+		user.Nickname = form.Nickname
+		user.Avatar = form.Avatar
+		if err := db.Save(&user).Error; err != nil {
+			ctx.JSON(http.StatusOK, writeErr(err))
+			return
+		}
+		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 }
 
