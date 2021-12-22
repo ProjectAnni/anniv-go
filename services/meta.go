@@ -44,4 +44,8 @@ func EndpointMeta(ng *gin.Engine) {
 		}
 		ctx.JSON(http.StatusOK, resOk(res))
 	})
+
+	g.GET("/tag-graph", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, resOk(meta.GetTagGraph()))
+	})
 }
