@@ -170,7 +170,7 @@ func EndpointUser(ng *gin.Engine) {
 		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 
-	g.PATCH("/intro", AuthRequired, TFARequired, func(ctx *gin.Context) {
+	g.PATCH("/intro", AuthRequired, func(ctx *gin.Context) {
 		user := ctx.MustGet("user").(model.User)
 		form := UserIntroForm{}
 		if err := ctx.ShouldBind(&form); err != nil {
