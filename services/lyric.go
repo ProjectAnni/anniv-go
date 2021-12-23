@@ -26,7 +26,7 @@ func EndpointLyric(ng *gin.Engine) {
 			return
 		}
 		source := model.Lyric{}
-		if err := db.Preload("user").
+		if err := db.Preload("User").
 			Where("album_id = ? AND disc_id = ? AND track_id = ?", aid, did, tid).
 			Where("source = 1").First(&source).Error; err != nil {
 			ctx.JSON(http.StatusOK, resErr(NotFound, "lyric not found"))
