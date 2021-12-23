@@ -8,7 +8,7 @@ import (
 type User struct {
 	gorm.Model
 	Password  string
-	Email     string `gorm:"unique"`
+	Email     string `gorm:"uniqueIndex"`
 	Nickname  string
 	Avatar    string
 	Enable2FA bool
@@ -19,7 +19,7 @@ type Session struct {
 	gorm.Model
 	UserID       uint
 	User         User
-	SessionID    string `gorm:"unique"`
+	SessionID    string `gorm:"uniqueIndex"`
 	UserAgent    string
 	LastAccessed time.Time
 	IP           string
@@ -27,12 +27,12 @@ type Session struct {
 
 type Token struct {
 	gorm.Model
-	TokenID  string `gorm:"unique"`
+	TokenID  string `gorm:"uniqueIndex"`
 	Name     string
 	URL      string
 	Token    string
 	Priority int
-	UserID   uint
+	UserID   uint `gorm:"index"`
 	User     User
 }
 
@@ -40,7 +40,7 @@ type Playlist struct {
 	gorm.Model
 	Name         string
 	Description  string
-	UserID       uint
+	UserID       uint `gorm:"index"`
 	User         User
 	IsPublic     bool
 	CoverAlbumID string
@@ -63,7 +63,7 @@ type Share struct {
 	UserID  uint
 	User    User
 	Data    string
-	ShareID string `gorm:"unique"`
+	ShareID string `gorm:"uniqueIndex"`
 }
 
 type FavoriteMusic struct {
