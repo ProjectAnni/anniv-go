@@ -325,8 +325,8 @@ type FavoritePlaylistForm struct {
 }
 
 type LyricResponse struct {
-	Source       LyricLanguage
-	Translations []LyricLanguage
+	Source       LyricLanguage   `json:"source"`
+	Translations []LyricLanguage `json:"translations"`
 }
 
 type LyricLanguage struct {
