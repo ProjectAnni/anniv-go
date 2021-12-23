@@ -33,7 +33,7 @@ func EndpointLyric(ng *gin.Engine) {
 			return
 		}
 		translations := make([]model.Lyric, 0)
-		db.Preload("user").
+		db.Preload("User").
 			Where("album_id = ? AND disc_id = ? AND track_id = ?", aid, did, tid).
 			Where("source = 0").Find(&translations)
 
