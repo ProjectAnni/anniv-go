@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"gorm.io/gorm"
 	"time"
 )
@@ -91,7 +92,24 @@ type Lyric struct {
 	Data     string
 	UserID   uint
 	User     User
-	Source   bool // TODO missing constraint
+	Source   bool
+}
+
+func (l *Lyric) BeforeCreate(tx *gorm.DB) error {
+	var cnt int64
+	err := tx.Model(&Lyric{}).
+		Where("album_id = ? AND disc_id = ? AND track_id = ?", l.AlbumID, l.DiscID, l.TrackID).
+		Count(&cnt).Error
+	if err != nil {
+		return err
+	}
+	if cnt == 0 && !l.Source {
+		return errors.New("cannot create translation before source is defined")
+	}
+	if cnt != 0 && l.Source {
+		return errors.New("duplicated source lang")
+	}
+	return nil
 }
 
 func Bind(db *gorm.DB) {
