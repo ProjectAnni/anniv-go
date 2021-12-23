@@ -15,5 +15,6 @@ anniv-go is an [anniv][anniv] implementation written in go. Still working in pro
 - [x] Search
 - [ ] Statistics
 - [x] Favorite
+- [x] Lyric
 - [ ] Invite
 - [x] 2FA

@@ -49,11 +49,11 @@ type Playlist struct {
 
 type PlaylistSong struct {
 	gorm.Model
-	PlaylistID  uint
+	PlaylistID  uint `gorm:"uniqueIndex:playlist_song_index"`
 	Playlist    Playlist
-	AlbumID     string
-	DiscID      int
-	TrackID     int
+	AlbumID     string `gorm:"uniqueIndex:playlist_song_index"`
+	DiscID      int    `gorm:"uniqueIndex:playlist_song_index"`
+	TrackID     int    `gorm:"uniqueIndex:playlist_song_index"`
 	Description string
 	Order       uint
 }
@@ -67,18 +67,31 @@ type Share struct {
 }
 
 type FavoriteMusic struct {
-	UserID  uint
+	UserID  uint `gorm:"uniqueIndex:favorite_music_index"`
 	User    User
-	AlbumID string
-	DiscID  int
-	TrackID int
+	AlbumID string `gorm:"uniqueIndex:favorite_music_index"`
+	DiscID  int    `gorm:"uniqueIndex:favorite_music_index"`
+	TrackID int    `gorm:"uniqueIndex:favorite_music_index"`
 }
 
 type FavoritePlaylist struct {
-	UserID     uint
+	UserID     uint `gorm:"uniqueIndex:favorite_playlist_index"`
 	User       User
-	PlaylistID uint
+	PlaylistID uint `gorm:"uniqueIndex:favorite_playlist_index"`
 	Playlist   Playlist
+}
+
+type Lyric struct {
+	gorm.Model
+	AlbumID  string `gorm:"uniqueIndex:lyric_index"`
+	DiscID   int    `gorm:"uniqueIndex:lyric_index"`
+	TrackID  int    `gorm:"uniqueIndex:lyric_index"`
+	Language string `gorm:"uniqueIndex:lyric_index"`
+	Type     string `gorm:"check:type='text' OR type='lrc'"`
+	Data     string
+	UserID   uint
+	User     User
+	Source   bool // TODO missing constraint
 }
 
 func Bind(db *gorm.DB) {
@@ -90,4 +103,5 @@ func Bind(db *gorm.DB) {
 	_ = db.AutoMigrate(&Share{})
 	_ = db.AutoMigrate(&FavoriteMusic{})
 	_ = db.AutoMigrate(&FavoritePlaylist{})
+	_ = db.AutoMigrate(&Lyric{})
 }

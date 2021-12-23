@@ -323,3 +323,46 @@ type FavoritePlaylistEntry struct {
 type FavoritePlaylistForm struct {
 	PlaylistID string `json:"playlist_id"`
 }
+
+type LyricResponse struct {
+	Source       LyricLanguage
+	Translations []LyricLanguage
+}
+
+type LyricLanguage struct {
+	Language    string    `json:"language"`
+	Type        string    `json:"type"`
+	Data        string    `json:"data"`
+	Contributor UserIntro `json:"contributor"`
+}
+
+func lyricLanguage(lyric model.Lyric) LyricLanguage {
+	return LyricLanguage{
+		Language:    lyric.Language,
+		Type:        lyric.Type,
+		Data:        lyric.Data,
+		Contributor: userIntro(lyric.User),
+	}
+}
+
+func lyricLanguages(lyrics []model.Lyric) []LyricLanguage {
+	res := make([]LyricLanguage, 0, len(lyrics))
+	for _, v := range lyrics {
+		res = append(res, LyricLanguage{
+			Language:    v.Language,
+			Type:        v.Type,
+			Data:        v.Data,
+			Contributor: userIntro(v.User),
+		})
+	}
+	return res
+}
+
+type LyricPatchForm struct {
+	AlbumID string `json:"album_id"`
+	DiscID  int    `json:"disc_id"`
+	TrackID int    `json:"track_id"`
+	Type    string `json:"type"`
+	Lang    string `json:"lang"`
+	Data    string `json:"data"`
+}
