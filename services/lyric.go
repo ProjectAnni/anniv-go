@@ -29,16 +29,14 @@ func EndpointLyric(ng *gin.Engine) {
 		if err := db.Preload("user").
 			Where("album_id = ? AND disc_id = ? AND track_id = ?", aid, did, tid).
 			Where("source = 1").First(&source).Error; err != nil {
-			ctx.JSON(http.StatusOK, readErr(err))
+			ctx.JSON(http.StatusOK, resErr(NotFound, "lyric not found"))
 			return
 		}
-		var translations []model.Lyric
-		if err := db.Preload("user").
+		translations := make([]model.Lyric, 0)
+		db.Preload("user").
 			Where("album_id = ? AND disc_id = ? AND track_id = ?", aid, did, tid).
-			Where("source = 0").Find(&translations).Error; err != nil {
-			ctx.JSON(http.StatusOK, readErr(err))
-			return
-		}
+			Where("source = 0").Find(&translations)
+
 		res := LyricResponse{
 			Source:       lyricLanguage(source),
 			Translations: lyricLanguages(translations),
