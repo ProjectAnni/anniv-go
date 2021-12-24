@@ -45,8 +45,9 @@ func EndpointFavorite(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, illegalParams("malformed music form"))
 			return
 		}
+		cnt := int64(0)
 		if db.Where("user_id = ? AND album_id = ? AND disc_id = ? AND track_id = ?",
-			user.ID, form.AlbumID, form.DiscID, form.TrackID).First(&model.FavoriteMusic{}).RowsAffected != 0 {
+			user.ID, form.AlbumID, form.DiscID, form.TrackID).Count(&cnt); cnt != 0 {
 			ctx.JSON(http.StatusOK, Response{
 				Status:  AlreadyExist,
 				Message: "music already exist",
