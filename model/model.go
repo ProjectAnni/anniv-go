@@ -68,6 +68,7 @@ type Share struct {
 }
 
 type FavoriteMusic struct {
+	gorm.Model
 	UserID  uint `gorm:"uniqueIndex:favorite_music_index"`
 	User    User
 	AlbumID string `gorm:"uniqueIndex:favorite_music_index"`
@@ -76,6 +77,7 @@ type FavoriteMusic struct {
 }
 
 type FavoritePlaylist struct {
+	gorm.Model
 	UserID     uint `gorm:"uniqueIndex:favorite_playlist_index"`
 	User       User
 	PlaylistID uint `gorm:"uniqueIndex:favorite_playlist_index"`

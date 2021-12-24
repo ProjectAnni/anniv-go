@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/ProjectAnni/anniv-go/meta"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -18,13 +19,15 @@ func EndpointFavorite(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, readErr(err))
 			return
 		}
-		res := make([]FavoriteMusicEntry, 0, len(music))
+		res := make([]TrackResponse, 0, len(music))
 		for _, v := range music {
-			res = append(res, FavoriteMusicEntry{
-				AlbumID: v.AlbumID,
-				DiscID:  v.DiscID,
+			entry := TrackResponse{
 				TrackID: v.TrackID,
-			})
+				DiscID:  v.DiscID,
+				AlbumID: v.AlbumID,
+				Info:    queryTrackInfo(v.AlbumID, v.DiscID, v.TrackID),
+			}
+			res = append(res, entry)
 		}
 		ctx.JSON(http.StatusOK, resOk(res))
 	})
@@ -144,4 +147,18 @@ func EndpointFavorite(ng *gin.Engine) {
 		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 
+}
+
+func queryTrackInfo(albumId string, discId, trackId int) *meta.TrackInfo {
+	info, ok := meta.GetAlbumInfo(albumId)
+	if !ok {
+		return nil
+	}
+	if len(info.Discs) < discId {
+		return nil
+	}
+	if len(info.Discs[discId-1].Tracks) < trackId {
+		return nil
+	}
+	return info.Discs[discId-1].Tracks[trackId-1]
 }

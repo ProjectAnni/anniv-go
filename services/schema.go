@@ -324,6 +324,13 @@ type FavoritePlaylistForm struct {
 	PlaylistID string `json:"playlist_id"`
 }
 
+type TrackResponse struct {
+	AlbumID string          `json:"album_id"`
+	DiscID  int             `json:"disc_id"`
+	TrackID int             `json:"track_id"`
+	Info    *meta.TrackInfo `json:"info"`
+}
+
 type LyricResponse struct {
 	Source       LyricLanguage   `json:"source"`
 	Translations []LyricLanguage `json:"translations"`
