@@ -19,22 +19,14 @@ func EndpointFavorite(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, readErr(err))
 			return
 		}
-		res := make([]meta.TrackInfoWithAlbum, 0, len(music))
+		res := make([]TrackResponse, 0, len(music))
 		for _, v := range music {
-			entry := meta.TrackInfoWithAlbum{
+			entry := TrackResponse{
 				TrackID: v.TrackID,
 				DiscID:  v.DiscID,
 				AlbumID: v.AlbumID,
+				Info:    queryTrackInfo(v.AlbumID, v.DiscID, v.TrackID),
 			}
-
-			info := queryTrackInfo(v.AlbumID, v.DiscID, v.TrackID)
-			if info != nil {
-				entry.Title = info.Title
-				entry.Artist = info.Artist
-				entry.Type = info.Type
-				entry.Tags = info.Tags
-			}
-
 			res = append(res, entry)
 		}
 		ctx.JSON(http.StatusOK, resOk(res))
