@@ -75,7 +75,7 @@ func EndpointFavorite(ng *gin.Engine) {
 			return
 		}
 		db.Where("user_id = ? AND album_id = ? AND disc_id = ? AND track_id = ?",
-			user.ID, form.AlbumID, form.DiscID, form.TrackID).Delete(&model.FavoriteMusic{})
+			user.ID, form.AlbumID, form.DiscID, form.TrackID).Unscoped().Delete(&model.FavoriteMusic{})
 		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 

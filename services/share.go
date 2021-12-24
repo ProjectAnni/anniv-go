@@ -59,7 +59,7 @@ func EndpointShare(ng *gin.Engine) {
 			})
 			return
 		}
-		if err := db.Delete(&share).Error; err != nil {
+		if err := db.Unscoped().Delete(&share).Error; err != nil {
 			ctx.JSON(http.StatusOK, writeErr(err))
 		}
 		ctx.JSON(http.StatusOK, resOk(nil))

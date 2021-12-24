@@ -86,7 +86,7 @@ func EndpointToken(ng *gin.Engine) {
 			})
 			return
 		}
-		if err := db.Delete(&token).Error; err != nil {
+		if err := db.Unscoped().Delete(&token).Error; err != nil {
 			ctx.JSON(http.StatusOK, writeErr(err))
 			return
 		}

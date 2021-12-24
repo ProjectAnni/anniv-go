@@ -98,11 +98,11 @@ func EndpointPlaylist(ng *gin.Engine) {
 			return
 		}
 		err = db.Transaction(func(tx *gorm.DB) error {
-			err := tx.Where("playlist_id = ?", playlist.ID).Delete(&model.PlaylistSong{}).Error
+			err := tx.Where("playlist_id = ?", playlist.ID).Unscoped().Delete(&model.PlaylistSong{}).Error
 			if err != nil {
 				return err
 			}
-			return db.Delete(&playlist).Error
+			return db.Unscoped().Delete(&playlist).Error
 		})
 		if err != nil {
 			ctx.JSON(http.StatusOK, writeErr(err))
@@ -192,7 +192,8 @@ func EndpointPlaylist(ng *gin.Engine) {
 					if err != nil {
 						return err
 					}
-					res := db.Where("playlist_id = ? AND id = ?", playlist.ID, id).Delete(&model.PlaylistSong{})
+					res := db.Where("playlist_id = ? AND id = ?", playlist.ID, id).Unscoped().
+						Delete(&model.PlaylistSong{})
 					if res.Error != nil {
 						return res.Error
 					}
