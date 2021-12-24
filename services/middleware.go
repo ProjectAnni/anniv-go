@@ -25,6 +25,7 @@ func AuthRequired(ctx *gin.Context) {
 	session.LastAccessed = time.Now()
 	session.UserAgent = ctx.Request.UserAgent()
 	session.IP = ctx.ClientIP()
+	db.Save(&session)
 	// Renew cookie
 	ctx.SetCookie("session", session.SessionID, 86400*7, "/", "", true, true)
 	ctx.Set("user", session.User)
