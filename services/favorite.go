@@ -21,11 +21,17 @@ func EndpointFavorite(ng *gin.Engine) {
 		}
 		res := make([]TrackResponse, 0, len(music))
 		for _, v := range music {
+			aInfo, ok := meta.GetAlbumInfo(v.AlbumID)
+			var title *string
+			if ok {
+				title = &aInfo.Title
+			}
 			entry := TrackResponse{
-				TrackID: v.TrackID,
-				DiscID:  v.DiscID,
-				AlbumID: v.AlbumID,
-				Info:    queryTrackInfo(v.AlbumID, v.DiscID, v.TrackID),
+				TrackID:    v.TrackID,
+				DiscID:     v.DiscID,
+				AlbumID:    v.AlbumID,
+				Info:       queryTrackInfo(v.AlbumID, v.DiscID, v.TrackID),
+				AlbumTitle: title,
 			}
 			res = append(res, entry)
 		}

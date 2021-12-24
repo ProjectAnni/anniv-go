@@ -325,10 +325,11 @@ type FavoritePlaylistForm struct {
 }
 
 type TrackResponse struct {
-	AlbumID string          `json:"album_id"`
-	DiscID  int             `json:"disc_id"`
-	TrackID int             `json:"track_id"`
-	Info    *meta.TrackInfo `json:"info"`
+	AlbumID    string          `json:"album_id"`
+	DiscID     int             `json:"disc_id"`
+	TrackID    int             `json:"track_id"`
+	Info       *meta.TrackInfo `json:"info"`
+	AlbumTitle *string         `json:"album_title"`
 }
 
 type LyricResponse struct {
