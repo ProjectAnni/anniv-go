@@ -7,6 +7,7 @@ import (
 	"github.com/pquerna/otp/totp"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -163,7 +164,14 @@ func EndpointUser(ng *gin.Engine) {
 			return
 		}
 		user.Password = string(hash)
-		if err := db.Save(&user).Error; err != nil {
+		err = db.Transaction(func(tx *gorm.DB) error {
+			err := tx.Save(&user).Error
+			if err != nil {
+				return err
+			}
+			return tx.Where("user_id=?", user.ID).Unscoped().Delete(&model.Session{}).Error
+		})
+		if err != nil {
 			ctx.JSON(http.StatusOK, writeErr(err))
 			return
 		}
