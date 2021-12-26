@@ -146,6 +146,7 @@ func SearchTracks(keyword string) (ret []*TrackInfoWithAlbum) {
 						TrackID: trackId + 1,
 						DiscID:  discId + 1,
 						AlbumID: album.AlbumID,
+						AlbumTitle: album.Title,
 					})
 				}
 			}
