@@ -19,21 +19,9 @@ func EndpointFavorite(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, readErr(err))
 			return
 		}
-		res := make([]TrackResponse, 0, len(music))
+		res := make([]meta.TrackInfoWithAlbum, 0, len(music))
 		for _, v := range music {
-			aInfo, ok := meta.GetAlbumInfo(v.AlbumID)
-			var title *string
-			if ok {
-				title = &aInfo.Title
-			}
-			entry := TrackResponse{
-				TrackID:    v.TrackID,
-				DiscID:     v.DiscID,
-				AlbumID:    v.AlbumID,
-				Info:       queryTrackInfo(v.AlbumID, v.DiscID, v.TrackID),
-				AlbumTitle: title,
-			}
-			res = append(res, entry)
+			res = append(res, queryTrackInfo(v.AlbumID, v.DiscID, v.TrackID))
 		}
 		ctx.JSON(http.StatusOK, resOk(res))
 	})
@@ -157,16 +145,31 @@ func EndpointFavorite(ng *gin.Engine) {
 
 }
 
-func queryTrackInfo(albumId string, discId, trackId int) *meta.TrackInfo {
+func queryTrackInfo(albumId string, discId, trackId int) meta.TrackInfoWithAlbum {
+	fallback := meta.TrackInfoWithAlbum{
+		TrackID:    trackId,
+		DiscID:     discId,
+		AlbumID:    albumId,
+	}
 	info, ok := meta.GetAlbumInfo(albumId)
 	if !ok {
-		return nil
+		return fallback
 	}
 	if len(info.Discs) < discId {
-		return nil
+		return fallback
 	}
 	if len(info.Discs[discId-1].Tracks) < trackId {
-		return nil
+		return fallback
 	}
-	return info.Discs[discId-1].Tracks[trackId-1]
+	trackInfo := info.Discs[discId-1].Tracks[trackId-1]
+	return meta.TrackInfoWithAlbum{
+		Title:      trackInfo.Title,
+		Artist:     trackInfo.Artist,
+		Type:       trackInfo.Type,
+		Tags:       trackInfo.Tags,
+		TrackID:    trackId,
+		DiscID:     discId,
+		AlbumID:    info.AlbumID,
+		AlbumTitle: info.Title,
+	}
 }
