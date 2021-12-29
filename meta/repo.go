@@ -120,7 +120,7 @@ func SearchAlbums(keyword string) (ret []AlbumInfo) {
 		return
 	}
 	for _, v := range albumIdx {
-		if strings.Contains(strings.ToUpper(v.Title), strings.ToUpper(keyword)) || v.Title == keyword {
+		if strings.Contains(strings.ToUpper(v.Title), strings.ToUpper(keyword)) || v.Catalog == keyword {
 			ret = append(ret, v)
 		}
 	}
