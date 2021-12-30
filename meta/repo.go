@@ -120,7 +120,7 @@ func SearchAlbums(keyword string) (ret []AlbumInfo) {
 		return
 	}
 	for _, v := range albumIdx {
-		if strings.Contains(strings.ToUpper(v.Title), strings.ToUpper(keyword)) {
+		if strings.Contains(strings.ToUpper(v.Title), strings.ToUpper(keyword)) || v.Catalog == keyword {
 			ret = append(ret, v)
 		}
 	}
@@ -139,13 +139,14 @@ func SearchTracks(keyword string) (ret []*TrackInfoWithAlbum) {
 			for trackId, track := range disc.Tracks {
 				if strings.Contains(strings.ToUpper(track.Title), strings.ToUpper(keyword)) {
 					ret = append(ret, &TrackInfoWithAlbum{
-						Title:   track.Title,
-						Artist:  track.Artist,
-						Type:    track.Type,
-						Tags:    track.Tags,
-						TrackID: trackId + 1,
-						DiscID:  discId + 1,
-						AlbumID: album.AlbumID,
+						Title:      track.Title,
+						Artist:     track.Artist,
+						Type:       track.Type,
+						Tags:       track.Tags,
+						TrackID:    trackId + 1,
+						DiscID:     discId + 1,
+						AlbumID:    album.AlbumID,
+						AlbumTitle: album.Title,
 					})
 				}
 			}
