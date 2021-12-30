@@ -39,11 +39,13 @@ func Read(p string) error {
 
 	tmp := make(map[string]map[string]bool)
 
+	tagIdxNonRecursive = make(map[string][]AlbumInfo)
+
 	for _, v := range tags {
 		tmp[v] = make(map[string]bool)
+		tagIdxNonRecursive[v] = make([]AlbumInfo, 0)
 	}
 
-	tagIdxNonRecursive = make(map[string][]AlbumInfo)
 	for _, album := range albums {
 		for _, tag := range album.Tags {
 			if tmp[tag] == nil {
@@ -77,7 +79,7 @@ func Read(p string) error {
 	}
 
 	for k, v := range tmp {
-		tagIdx[k] = nil
+		tagIdx[k] = make([]AlbumInfo, 0)
 		for albumId := range v {
 			tagIdx[k] = append(tagIdx[k], albumIdx[albumId])
 		}
