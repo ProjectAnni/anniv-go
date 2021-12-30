@@ -105,11 +105,16 @@ func GetAlbumInfo(id string) (AlbumInfo, bool) {
 	return res, ok
 }
 
-func GetAlbumsByTag(tag string) ([]AlbumInfo, bool) {
+func GetAlbumsByTag(tag string, recursive bool) ([]AlbumInfo, bool) {
 	lock.RLock()
 	defer lock.RUnlock()
-	res, ok := tagIdx[tag]
-	return res, ok
+	if recursive {
+		res, ok := tagIdx[tag]
+		return res, ok
+	} else {
+		res, ok := tagIdxNonRecursive[tag]
+		return res, ok
+	}
 }
 
 func SearchAlbums(keyword string) (ret []AlbumInfo) {

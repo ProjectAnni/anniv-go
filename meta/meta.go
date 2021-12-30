@@ -9,6 +9,7 @@ import (
 
 var albumIdx map[string]AlbumInfo
 var tagIdx map[string][]AlbumInfo
+var tagIdxNonRecursive map[string][]AlbumInfo
 var tags []string
 var tagGraph map[string][]string
 
@@ -48,6 +49,7 @@ func Read(p string) error {
 				return errors.New("unknown tag: " + tag)
 			}
 			tmp[tag][album.AlbumID] = true
+			tagIdxNonRecursive[tag] = append(tagIdxNonRecursive[tag], album)
 		}
 	}
 
