@@ -43,6 +43,7 @@ func Read(p string) error {
 		tmp[v] = make(map[string]bool)
 	}
 
+	tagIdxNonRecursive = make(map[string][]AlbumInfo)
 	for _, album := range albums {
 		for _, tag := range album.Tags {
 			if tmp[tag] == nil {
