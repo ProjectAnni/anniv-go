@@ -74,6 +74,7 @@ func Read(p string) error {
 	}
 
 	for k, v := range tmp {
+		tagIdx[k] = nil
 		for albumId := range v {
 			tagIdx[k] = append(tagIdx[k], albumIdx[albumId])
 		}
