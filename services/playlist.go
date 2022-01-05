@@ -47,6 +47,7 @@ func EndpointPlaylist(ng *gin.Engine) {
 					TrackID:     v.TrackID,
 					Description: v.Description,
 					Order:       uint(k),
+					Type:        v.Type,
 				}
 				err = db.Save(&song).Error
 				if err != nil {
@@ -168,6 +169,7 @@ func EndpointPlaylist(ng *gin.Engine) {
 						TrackID:     v.TrackID,
 						Description: v.Description,
 						Order:       uint(ord + k),
+						Type:        v.Type,
 					}
 					if err := tx.Save(&song).Error; err != nil {
 						return err
@@ -264,6 +266,7 @@ func EndpointPlaylist(ng *gin.Engine) {
 						"disc_id":     v.DiscID,
 						"track_id":    v.TrackID,
 						"description": v.Description,
+						"type":        v.Type,
 					})
 					if t.Error != nil {
 						return t.Error
