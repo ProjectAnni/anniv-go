@@ -74,28 +74,16 @@ func EndpointPlaylist(ng *gin.Engine) {
 		}
 		id, err := strconv.Atoi(form.ID)
 		if err != nil {
-			ctx.JSON(http.StatusOK, Response{
-				Status:  NotFound,
-				Message: "playlist not found",
-				Data:    nil,
-			})
+			ctx.JSON(http.StatusOK, resErr(NotFound, "playlist not found"))
 			return
 		}
 		playlist := model.Playlist{}
 		if err := db.Where("id = ?", id).First(&playlist).Error; err != nil {
-			ctx.JSON(http.StatusOK, Response{
-				Status:  NotFound,
-				Message: "playlist not found",
-				Data:    nil,
-			})
+			ctx.JSON(http.StatusOK, resErr(NotFound, "playlist not found"))
 			return
 		}
 		if playlist.UserID != user.ID {
-			ctx.JSON(http.StatusOK, Response{
-				Status:  PermissionDenied,
-				Message: "permission denied",
-				Data:    nil,
-			})
+			ctx.JSON(http.StatusOK, resErr(PermissionDenied, "you are not the owner of the play list"))
 			return
 		}
 		err = db.Transaction(func(tx *gorm.DB) error {
@@ -282,11 +270,7 @@ func EndpointPlaylist(ng *gin.Engine) {
 				return
 			}
 		} else {
-			ctx.JSON(http.StatusOK, Response{
-				Status:  InvalidPatchCommand,
-				Message: "invalid patch command",
-				Data:    nil,
-			})
+			ctx.JSON(http.StatusOK, resErr(InvalidPatchCommand, "invalid patch command"))
 			return
 		}
 		res, err := queryPlaylist(playlist)
@@ -301,28 +285,16 @@ func EndpointPlaylist(ng *gin.Engine) {
 		user := ctx.MustGet("user").(model.User)
 		id, err := strconv.Atoi(ctx.Query("id"))
 		if err != nil {
-			ctx.JSON(http.StatusOK, Response{
-				Status:  NotFound,
-				Message: "playlist not found",
-				Data:    nil,
-			})
+			ctx.JSON(http.StatusOK, resErr(NotFound, "playlist not found"))
 			return
 		}
 		playlist := model.Playlist{}
 		if db.Where("id = ?", id).First(&playlist).RowsAffected == 0 {
-			ctx.JSON(http.StatusOK, Response{
-				Status:  NotFound,
-				Message: "playlist not found",
-				Data:    nil,
-			})
+			ctx.JSON(http.StatusOK, resErr(NotFound, "playlist not found"))
 			return
 		}
 		if playlist.UserID != user.ID && !playlist.IsPublic {
-			ctx.JSON(http.StatusOK, Response{
-				Status:  PermissionDenied,
-				Message: "permission denied",
-				Data:    nil,
-			})
+			ctx.JSON(http.StatusOK, resErr(PermissionDenied, "permission denied"))
 			return
 		}
 		res, err := queryPlaylist(playlist)
@@ -349,7 +321,7 @@ func queryPlaylist(p model.Playlist) (*Playlist, error) {
 		},
 	}
 
-	songs := make([]model.PlaylistSong, 0)
+	var songs []model.PlaylistSong
 	if err := db.Where("playlist_id = ?", p.ID).Order("order").Find(&songs).Error; err != nil {
 		return nil, err
 	}
