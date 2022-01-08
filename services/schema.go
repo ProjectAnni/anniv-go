@@ -209,6 +209,15 @@ type Playlist struct {
 	Songs       []PlaylistSong `json:"songs"`
 }
 
+type PlaylistInfo struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Owner       string `json:"owner"`
+	IsPublic    bool   `json:"is_public"`
+	Cover       Cover  `json:"cover"`
+}
+
 type PlaylistSongForm struct {
 	AlbumID     string `json:"album_id"`
 	DiscID      int    `json:"disc_id"`
