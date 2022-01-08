@@ -330,6 +330,39 @@ func EndpointPlaylist(ng *gin.Engine) {
 		ctx.JSON(http.StatusOK, resOk(res))
 	})
 
+	ng.GET("/api/playlists", AuthRequired, func(ctx *gin.Context) {
+		user := ctx.MustGet("user").(model.User)
+		userId, err := strconv.Atoi(ctx.Query("user"))
+		if err != nil {
+			ctx.JSON(http.StatusOK, resErr(NotFound, "user not found"))
+			return
+		}
+		var playlists []model.Playlist
+		tx := db.Where("user_id = ?", userId)
+		if int(user.ID) != userId {
+			tx = tx.Where("is_public")
+		}
+		if err := tx.First(&playlists).Error; err != nil {
+			ctx.JSON(http.StatusOK, resErr(NotFound, "user not found"))
+			return
+		}
+		res := make([]PlaylistInfo, 0, len(playlists))
+		for _, v := range playlists {
+			res = append(res, PlaylistInfo{
+				ID:          strconv.Itoa(int(v.ID)),
+				Name:        v.Name,
+				Description: v.Description,
+				Owner:       strconv.Itoa(int(v.UserID)),
+				IsPublic:    v.IsPublic,
+				Cover: Cover{
+					AlbumID: v.CoverAlbumID,
+					DiscID:  &v.CoverDiscID,
+				},
+			})
+		}
+		ctx.JSON(http.StatusOK, resOk(res))
+	})
+
 }
 
 func queryPlaylist(p model.Playlist) (*Playlist, error) {
