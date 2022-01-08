@@ -9,6 +9,7 @@ import (
 
 var albumIdx map[string]AlbumInfo
 var tagIdx map[string][]AlbumInfo
+var tagIdxNonRecursive map[string][]AlbumInfo
 var tags []string
 var tagGraph map[string][]string
 
@@ -38,8 +39,11 @@ func Read(p string) error {
 
 	tmp := make(map[string]map[string]bool)
 
+	tagIdxNonRecursive = make(map[string][]AlbumInfo)
+
 	for _, v := range tags {
 		tmp[v] = make(map[string]bool)
+		tagIdxNonRecursive[v] = make([]AlbumInfo, 0)
 	}
 
 	for _, album := range albums {
@@ -48,6 +52,7 @@ func Read(p string) error {
 				return errors.New("unknown tag: " + tag)
 			}
 			tmp[tag][album.AlbumID] = true
+			tagIdxNonRecursive[tag] = append(tagIdxNonRecursive[tag], album)
 		}
 	}
 
@@ -74,6 +79,7 @@ func Read(p string) error {
 	}
 
 	for k, v := range tmp {
+		tagIdx[k] = make([]AlbumInfo, 0)
 		for albumId := range v {
 			tagIdx[k] = append(tagIdx[k], albumIdx[albumId])
 		}

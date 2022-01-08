@@ -191,6 +191,7 @@ type PlaylistSong struct {
 	DiscID      int    `json:"disc_id"`
 	TrackID     int    `json:"track_id"`
 	Description string `json:"description"`
+	Type        string `json:"type"`
 }
 
 type Cover struct {
@@ -222,6 +223,7 @@ type PlaylistSongForm struct {
 	DiscID      int    `json:"disc_id"`
 	TrackID     int    `json:"track_id"`
 	Description string `json:"description"`
+	Type        string `json:"type"`
 }
 
 type PlaylistForm struct {

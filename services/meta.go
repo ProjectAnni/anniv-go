@@ -29,7 +29,8 @@ func EndpointMeta(ng *gin.Engine) {
 
 	g.GET("/albums/by-tag", func(ctx *gin.Context) {
 		tag := ctx.Query("tag")
-		albums, ok := meta.GetAlbumsByTag(tag)
+		_, recursive := ctx.GetQuery("recursive")
+		albums, ok := meta.GetAlbumsByTag(tag, recursive)
 		if !ok {
 			ctx.JSON(http.StatusOK, Response{
 				Status:  NotFound,
