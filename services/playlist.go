@@ -318,7 +318,7 @@ func EndpointPlaylist(ng *gin.Engine) {
 			tx = tx.Where("is_public")
 		}
 		if err := tx.First(&playlists).Error; err != nil {
-			ctx.JSON(http.StatusOK, resErr(NotFound, "user not found"))
+			ctx.JSON(http.StatusOK, resOk([]PlaylistInfo(nil)))
 			return
 		}
 		res := make([]PlaylistInfo, 0, len(playlists))
