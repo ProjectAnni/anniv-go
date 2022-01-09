@@ -307,11 +307,19 @@ func EndpointPlaylist(ng *gin.Engine) {
 
 	ng.GET("/api/playlists", AuthRequired, func(ctx *gin.Context) {
 		user := ctx.MustGet("user").(model.User)
-		userId, err := strconv.Atoi(ctx.Query("user"))
-		if err != nil {
-			ctx.JSON(http.StatusOK, resErr(NotFound, "user not found"))
-			return
+		var userId int
+		userIdStr, ok := ctx.GetQuery("user_id")
+		if !ok {
+			userId = int(user.ID)
+		} else {
+			var err error
+			userId, err = strconv.Atoi(userIdStr)
+			if err != nil {
+				ctx.JSON(http.StatusOK, resErr(NotFound, "user not found"))
+				return
+			}
 		}
+
 		var playlists []model.Playlist
 		tx := db.Where("user_id = ?", userId)
 		if int(user.ID) != userId {
