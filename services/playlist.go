@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"net/http"
 	"strconv"
 )
@@ -143,7 +144,13 @@ func EndpointPlaylist(ng *gin.Engine) {
 			}
 			var ord int
 			err = db.Model(&model.PlaylistSong{}).Select("order").
-				Where("`playlist_id` = ?", playlist.ID).Order("`order` DESC").
+				Where("`playlist_id` = ?", playlist.ID).Order(clause.OrderByColumn{
+				Column: clause.Column{
+					Table: clause.CurrentTable,
+					Name:  "order",
+				},
+				Desc: true,
+			}).
 				Limit(1).
 				Scan(&ord).Error
 			if err != nil {
