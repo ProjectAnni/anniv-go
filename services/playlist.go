@@ -398,6 +398,7 @@ func queryPlaylist(p model.Playlist) (*Playlist, error) {
 			DiscID:      v.DiscID,
 			TrackID:     v.TrackID,
 			Description: v.Description,
+			Type:        v.Type,
 		})
 	}
 
