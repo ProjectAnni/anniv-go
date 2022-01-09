@@ -219,9 +219,9 @@ type PlaylistInfo struct {
 }
 
 type PlaylistSongForm struct {
-	AlbumID     string `json:"album_id"`
-	DiscID      int    `json:"disc_id"`
-	TrackID     int    `json:"track_id"`
+	AlbumID     string `json:"album_id" mapstructure:"album_id"`
+	DiscID      int    `json:"disc_id" mapstructure:"disc_id"`
+	TrackID     int    `json:"track_id" mapstructure:"track_id"`
 	Description string `json:"description"`
 	Type        string `json:"type"`
 }
