@@ -142,9 +142,9 @@ func EndpointPlaylist(ng *gin.Engine) {
 				return
 			}
 			var ord int
-			if err := db.Model(&model.PlaylistSong{}).
+			if err := db.Model(&model.PlaylistSong{}).Select("order").
 				Where("playlist_id = ?", playlist.ID).Order("order desc").
-				Select("order").Scan(&ord).Error; err != nil {
+				Scan(&ord).Error; err != nil {
 				ctx.JSON(http.StatusOK, readErr(err))
 				return
 			}
