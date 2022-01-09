@@ -56,7 +56,7 @@ type PlaylistSong struct {
 	DiscID      int    `gorm:"uniqueIndex:playlist_song_index"`
 	TrackID     int    `gorm:"uniqueIndex:playlist_song_index"`
 	Description string
-	Type        string `gorm:"check:type = 'normal' OR type = 'dummy'"`
+	Type        string `gorm:"check:type='normal' OR type='dummy'"`
 	Order       uint
 }
 
