@@ -164,6 +164,9 @@ func EndpointPlaylist(ng *gin.Engine) {
 			ord++
 			err = db.Transaction(func(tx *gorm.DB) error {
 				for k, v := range payload {
+					if v.Type != "normal" && v.Type != "dummy" {
+						return errors.New("type must be normal or dummy")
+					}
 					song := model.PlaylistSong{
 						PlaylistID:  playlist.ID,
 						AlbumID:     v.AlbumID,
@@ -263,6 +266,9 @@ func EndpointPlaylist(ng *gin.Engine) {
 						return err
 					}
 					t := db.Model(&model.PlaylistSong{}).Where("playlist_id = ? AND id = ?", playlist.ID, id)
+					if v.Type != "normal" && v.Type != "dummy" {
+						return errors.New("type must be normal or dummy")
+					}
 					t = t.Updates(map[string]interface{}{
 						"album_id":    v.AlbumID,
 						"disc_id":     v.DiscID,
