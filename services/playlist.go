@@ -377,7 +377,12 @@ func queryPlaylist(p model.Playlist) (*Playlist, error) {
 	}
 
 	var songs []model.PlaylistSong
-	if err := db.Where("playlist_id = ?", p.ID).Order("order").Find(&songs).Error; err != nil {
+	if err := db.Where("playlist_id = ?", p.ID).Order(clause.OrderByColumn{
+		Column: clause.Column{
+			Table: clause.CurrentTable,
+			Name:  "order",
+		},
+	}).Find(&songs).Error; err != nil {
 		return nil, err
 	}
 	for _, v := range songs {
