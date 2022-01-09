@@ -142,11 +142,16 @@ func EndpointPlaylist(ng *gin.Engine) {
 				return
 			}
 			var ord int
-			if err := db.Model(&model.PlaylistSong{}).Select("order").
-				Where("playlist_id = ?", playlist.ID).Order("order desc").
-				Scan(&ord).Error; err != nil {
-				ctx.JSON(http.StatusOK, readErr(err))
-				return
+			err = db.Model(&model.PlaylistSong{}).Select("order").
+				Where("`playlist_id` = ?", playlist.ID).Order("`order` DESC").
+				Scan(&ord).Error
+			if err != nil {
+				if err == gorm.ErrRecordNotFound {
+					ord = 0
+				} else {
+					ctx.JSON(http.StatusOK, readErr(err))
+					return
+				}
 			}
 			ord++
 			err = db.Transaction(func(tx *gorm.DB) error {
