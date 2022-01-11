@@ -65,14 +65,4 @@ type Record struct {
 	Discs []*DiscInfo `json:"discs" toml:"discs"`
 }
 
-type Artists struct {
-	Vocal     *string `json:"vocal" toml:"vocal"`
-	Composer  *string `json:"composer" toml:"composer"`
-	Lyricist  *string `json:"lyricist" toml:"lyricist"`
-	Arranger  *string `json:"arranger" toml:"arranger"`
-	Piano     *string `json:"piano" toml:"piano"`
-	Violin    *string `json:"violin" toml:"violin"`
-	Viola     *string `json:"viola" toml:"viola"`
-	Cello     *string `json:"cello" toml:"cello"`
-	IrishHarp *string `json:"irish_harp" toml:"irish-harp"`
-}
+type Artists map[string]string
