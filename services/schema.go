@@ -246,6 +246,7 @@ type AlbumInfo struct {
 	Edition *string          `json:"edition"`
 	Catalog string           `json:"catalog"`
 	Artist  string           `json:"artist"`
+	Artists *meta.Artists    `json:"artists"`
 	Date    string           `json:"date"`
 	Tags    []string         `json:"tags"`
 	Type    string           `json:"type"`
@@ -259,6 +260,7 @@ func albumInfo(album meta.AlbumInfo) *AlbumInfo {
 		Edition: album.Edition,
 		Catalog: album.Catalog,
 		Artist:  album.Artist,
+		Artists: album.Artists,
 		Date:    parseDate(album.Date),
 		Tags:    album.Tags,
 		Type:    album.Type,

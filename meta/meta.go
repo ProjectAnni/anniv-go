@@ -198,6 +198,7 @@ func readAlbums(p string) ([]AlbumInfo, error) {
 			Edition: record.Album.Edition,
 			Catalog: record.Album.Catalog,
 			Artist:  record.Album.Artist,
+			Artists: record.Album.Artists,
 			Date:    record.Album.Date,
 			Tags:    record.Album.Tags,
 			Type:    record.Album.Type,
@@ -217,6 +218,9 @@ func readAlbums(p string) ([]AlbumInfo, error) {
 			if disc.Tags == nil {
 				disc.Tags = []string{}
 			}
+			if disc.Artists == nil {
+				disc.Artists = album.Artists
+			}
 			for _, track := range disc.Tracks {
 				if track.Title == "" {
 					track.Type = disc.Type
@@ -229,6 +233,9 @@ func readAlbums(p string) ([]AlbumInfo, error) {
 				}
 				if track.Tags == nil {
 					track.Tags = []string{}
+				}
+				if track.Artists == nil {
+					track.Artists = disc.Artists
 				}
 			}
 		}

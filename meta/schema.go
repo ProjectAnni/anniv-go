@@ -1,10 +1,11 @@
 package meta
 
 type TrackInfo struct {
-	Title  string   `json:"title" toml:"title"`
-	Artist string   `json:"artist" toml:"artist"`
-	Type   string   `json:"type" toml:"type"`
-	Tags   []string `json:"tags" toml:"tags"`
+	Title   string   `json:"title" toml:"title"`
+	Artist  string   `json:"artist" toml:"artist"`
+	Artists *Artists `json:"artists" toml:"artists"`
+	Type    string   `json:"type" toml:"type"`
+	Tags    []string `json:"tags" toml:"tags"`
 }
 
 type TrackInfoWithAlbum struct {
@@ -21,6 +22,7 @@ type TrackInfoWithAlbum struct {
 type DiscInfo struct {
 	Title   string       `json:"title" toml:"title"`
 	Artist  string       `json:"artist" toml:"artist"`
+	Artists *Artists     `json:"artists" toml:"artists"`
 	Catalog string       `json:"catalog" toml:"catalog"`
 	Tags    []string     `json:"tags" toml:"tags"`
 	Type    string       `json:"type" toml:"type"`
@@ -33,6 +35,7 @@ type AlbumInfo struct {
 	Edition *string     `json:"edition" toml:"edition"`
 	Catalog string      `json:"catalog" toml:"catalog"`
 	Artist  string      `json:"artist" toml:"artist"`
+	Artists *Artists    `json:"artists" toml:"artists"`
 	Date    interface{} `json:"date" toml:"date"`
 	Tags    []string    `json:"tags" toml:"tags"`
 	Type    string      `json:"type" toml:"type"`
@@ -45,6 +48,7 @@ type AlbumMeta struct {
 	Edition *string     `json:"edition" toml:"edition"`
 	Catalog string      `json:"catalog" toml:"catalog"`
 	Artist  string      `json:"artist" toml:"artist"`
+	Artists *Artists    `json:"artists" toml:"artists"`
 	Date    interface{} `json:"date" toml:"date"`
 	Tags    []string    `json:"tags" toml:"tags"`
 	Type    string      `json:"type" toml:"type"`
@@ -59,4 +63,16 @@ type Tag struct {
 type Record struct {
 	Album AlbumMeta   `json:"album" toml:"album"`
 	Discs []*DiscInfo `json:"discs" toml:"discs"`
+}
+
+type Artists struct {
+	Vocal     *string `json:"vocal" toml:"vocal"`
+	Composer  *string `json:"composer" toml:"composer"`
+	Lyricist  *string `json:"lyricist" toml:"lyricist"`
+	Arranger  *string `json:"arranger" toml:"arranger"`
+	Piano     *string `json:"piano" toml:"piano"`
+	Violin    *string `json:"violin" toml:"violin"`
+	Viola     *string `json:"viola" toml:"viola"`
+	Cello     *string `json:"cello" toml:"cello"`
+	IrishHarp *string `json:"irish_harp" toml:"irish-harp"`
 }
