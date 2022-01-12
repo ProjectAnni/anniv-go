@@ -92,7 +92,7 @@ func EndpointPlaylist(ng *gin.Engine) {
 			if err != nil {
 				return err
 			}
-			return db.Unscoped().Delete(&playlist).Error
+			return tx.Unscoped().Delete(&playlist).Error
 		})
 		if err != nil {
 			ctx.JSON(http.StatusOK, writeErr(err))
