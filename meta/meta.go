@@ -89,13 +89,25 @@ func Read(p string) error {
 }
 
 func checkTags(V []string, E map[string][]string) error {
-	VSet := make(map[string]interface{})
+	VSet := make(map[string]int)
 	for _, v := range V {
-		VSet[v] = nil
+		VSet[v]++
 	}
 	// Node constraints check
 	if len(VSet) != len(V) {
-		return errors.New("invalid includes detected")
+		msg := "duplicated tags detected: "
+		first := true
+		for k, v := range VSet {
+			if v != 1 {
+				if !first {
+					msg += ","
+				} else {
+					first = false
+				}
+				msg += k
+			}
+		}
+		return errors.New(msg)
 	}
 	for k, v := range E {
 		_, e := VSet[k]
@@ -185,11 +197,11 @@ func readAlbums(p string) ([]AlbumInfo, error) {
 
 		f, err := os.Open(path.Join(p, v.Name()))
 		if err != nil {
-			return nil, err
+			return nil, errors.New(v.Name() + ":" + err.Error())
 		}
 		err = toml.NewDecoder(f).Decode(&record)
 		if err != nil {
-			return nil, err
+			return nil, errors.New(v.Name() + ":" + err.Error())
 		}
 		f.Close()
 		album := AlbumInfo{
