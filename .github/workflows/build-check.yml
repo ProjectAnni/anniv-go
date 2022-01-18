@@ -1,4 +1,4 @@
-name: Build and publish a anniv-go
+name: Build and publish a anniv-check
 on:
   release:
     types: [ published ]
