@@ -132,9 +132,11 @@ func checkTags(V []string, E map[string][]string) error {
 			if acc[nx] {
 				return errors.New("loop detected")
 			}
-			err := dfs(nx)
-			if err != nil {
-				return err
+			if !vis[nx] {
+				err := dfs(nx)
+				if err != nil {
+					return err
+				}
 			}
 		}
 		acc[x] = false
