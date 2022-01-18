@@ -10,14 +10,8 @@ func main() {
 	p := os.Args[1]
 	err := meta.Read(p)
 	checkErr(err)
-	graph := meta.GetTagGraph()
-	fmt.Println("digraph {")
-	for u, t := range graph {
-		for _, v := range t {
-			fmt.Printf("    \"%s\" -> \"%s\"\n", u, v)
-		}
-	}
-	fmt.Println("}")
+	fmt.Println("Read complete, no error detected.")
+	fmt.Printf("%d albums, %d tags in total.\n", len(meta.GetAlbums()), len(meta.GetTags()))
 }
 
 func checkErr(err error) {

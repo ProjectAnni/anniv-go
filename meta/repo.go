@@ -165,3 +165,13 @@ func GetTagGraph() map[string][]string {
 	defer lock.RUnlock()
 	return tagGraph
 }
+
+func GetAlbums() []AlbumInfo {
+	lock.RLock()
+	defer lock.RUnlock()
+	res := make([]AlbumInfo, 0, len(albumIdx))
+	for _, v := range albumIdx {
+		res = append(res, v)
+	}
+	return res
+}
