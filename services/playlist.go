@@ -63,7 +63,13 @@ func EndpointPlaylist(ng *gin.Engine) {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, resOk(nil))
+		info, err := queryPlaylist(playlist)
+		if err != nil {
+			ctx.JSON(http.StatusOK, readErr(err))
+			return
+		}
+
+		ctx.JSON(http.StatusOK, resOk(*info))
 	})
 
 	g.DELETE("", func(ctx *gin.Context) {
