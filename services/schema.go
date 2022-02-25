@@ -189,6 +189,7 @@ type PlaylistSong struct {
 	meta.TrackInfoWithAlbum
 	ID          string `json:"id"`
 	Description string `json:"description"`
+	Type        string `json:"type"`
 }
 
 type Cover struct {
