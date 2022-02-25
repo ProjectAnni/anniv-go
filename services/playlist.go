@@ -401,6 +401,7 @@ func queryPlaylist(p model.Playlist) (*Playlist, error) {
 		ret.Songs = append(ret.Songs, PlaylistSong{
 			TrackInfoWithAlbum: queryTrackInfo(v.AlbumID, v.DiscID, v.TrackID),
 			Description:        v.Description,
+			ID:                 strconv.Itoa(int(v.ID)),
 		})
 	}
 
