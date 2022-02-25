@@ -186,12 +186,9 @@ type Enable2FAForm struct {
 }
 
 type PlaylistSong struct {
+	meta.TrackInfoWithAlbum
 	ID          string `json:"id"`
-	AlbumID     string `json:"album_id"`
-	DiscID      int    `json:"disc_id"`
-	TrackID     int    `json:"track_id"`
 	Description string `json:"description"`
-	Type        string `json:"type"`
 }
 
 type Cover struct {
