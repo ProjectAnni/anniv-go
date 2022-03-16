@@ -19,6 +19,7 @@ func EndpointShare(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, shareNotFound())
 			return
 		}
+		ctx.Header("Access-Control-Allow-Origin", "*")
 		ctx.JSON(http.StatusOK, resOk(share.Data))
 	})
 
