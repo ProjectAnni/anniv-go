@@ -7,7 +7,7 @@ require (
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/go-yaml/yaml v2.1.0+incompatible
 	github.com/mitchellh/mapstructure v1.4.3
-	github.com/pelletier/go-toml/v2 v2.0.0-beta.4
+	github.com/pelletier/go-toml/v2 v2.0.0-beta.6
 	github.com/pquerna/otp v1.3.0
 	github.com/satori/go.uuid v1.2.0
 	golang.org/x/crypto v0.0.0-20211209193657-4570a0811e8b
