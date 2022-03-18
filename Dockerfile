@@ -1,20 +1,16 @@
 FROM tetafro/golang-gcc:1.16-alpine AS build
 RUN apk add upx
-COPY go.mod go.sum /app/
 WORKDIR /app/
-RUN --mount=type=cache,target=/root/go\
-    go mod download
 COPY ./ /app/
 RUN --mount=type=cache,target=/root/.cache/go-build\
+    --mount=type=cache,target=/root/go\
     go build && upx anniv-go
 
 FROM node:current-alpine AS frontend-build
-COPY frontend/package.json frontend/yarn.lock /app/
+COPY frontend/ /app/
 WORKDIR /app/
 RUN --mount=type=cache,target=/app/node_modules\
-    yarn install
-COPY frontend /app
-RUN yarn build
+    yarn install && yarn build
 
 FROM alpine:latest
 WORKDIR /app
