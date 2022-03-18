@@ -19,3 +19,4 @@ jobs:
           dockerfile: meta/cmd/Dockerfile
         env:
           DOCKER_BUILDKIT: 1
+
