@@ -2,10 +2,9 @@ FROM tetafro/golang-gcc:1.16-alpine AS build
 RUN apk add upx
 WORKDIR /app/
 COPY ./ /app/
-RUN --mount=type=cache,target=/root/go\
-    go mod download
-RUN --mount=type=cache,target=/root/.cache/go-build\
-    go build && upx anniv-go
+RUN --mount=type=cache,target=/go\
+    --mount=type=cache,target=/root/.cache/go-build\
+    go mod download && go build && upx anniv-go
 
 FROM node:current-alpine AS frontend-build
 COPY frontend/ /app/
