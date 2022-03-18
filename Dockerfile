@@ -11,7 +11,8 @@ RUN --mount=type=cache,target=/root/.cache/go-build\
 FROM node:current-alpine AS frontend-build
 COPY frontend/package.json frontend/yarn.lock /app/
 WORKDIR /app/
-RUN yarn install
+RUN --mount=type=cache,target=/app/node_modules\
+    yarn install
 COPY frontend /app
 RUN yarn build
 
