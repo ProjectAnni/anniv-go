@@ -4,6 +4,7 @@ import (
 	"flag"
 	"github.com/ProjectAnni/anniv-go/config"
 	"github.com/ProjectAnni/anniv-go/model"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -36,6 +37,8 @@ func Start(listen string) error {
 	EndpointShare(g)
 	EndpointFavorite(g)
 	EndpointLyric(g)
+
+	g.NoRoute(static.Serve("/", static.LocalFile("frontend", false)))
 
 	return g.Run(listen)
 }
