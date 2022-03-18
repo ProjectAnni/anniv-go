@@ -24,7 +24,11 @@ func Start(listen string) error {
 	initMiddleware()
 
 	g := gin.Default()
-	g.TrustedProxies = config.Cfg.TrustedProxies
+	err = g.SetTrustedProxies(config.Cfg.TrustedProxies)
+	if err != nil {
+		return err
+	}
+
 	g.Use(CustomHeaders)
 
 	EndpointBasics(g)
