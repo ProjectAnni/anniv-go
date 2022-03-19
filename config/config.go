@@ -1,7 +1,6 @@
 package config
 
 import (
-	"flag"
 	"github.com/go-yaml/yaml"
 	"os"
 )
@@ -27,16 +26,14 @@ var Cfg = Config{
 	RepoURL:        "https://github.com/ProjectAnni/repo.git",
 }
 
-var path = flag.String("conf", "config.yaml", "")
-
 func Load() error {
-	f, err := os.Open(*path)
+	f, err := os.Open(os.Getenv("CONF"))
 	if err != nil {
 		if os.IsNotExist(err) {
 			if err := Save(); err != nil {
 				return err
 			}
-			f, err = os.Open(*path)
+			f, err = os.Open(os.Getenv("CONF"))
 			if err != nil {
 				return err
 			}
@@ -53,7 +50,7 @@ func Load() error {
 }
 
 func Save() error {
-	f, err := os.Create(*path)
+	f, err := os.Create(os.Getenv("CONF"))
 	if err != nil {
 		return err
 	}

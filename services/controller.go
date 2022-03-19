@@ -1,21 +1,22 @@
 package services
 
 import (
-	"flag"
+	"errors"
 	"github.com/ProjectAnni/anniv-go/config"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"os"
 )
 
 var db *gorm.DB
-var dbPath = flag.String("db", "./data/data.db", "")
 
 func Start(listen string) error {
 	var err error
-	db, err = gorm.Open(sqlite.Open(*dbPath), &gorm.Config{})
+	err = initDb()
 	if err != nil {
 		return err
 	}
@@ -45,4 +46,20 @@ func Start(listen string) error {
 	g.NoRoute(static.Serve("/", static.LocalFile("frontend", false)))
 
 	return g.Run(listen)
+}
+
+func initDb() error {
+	vendor := os.Getenv("DB_VENDOR")
+	path := os.Getenv("DB_PATH")
+
+	var err error
+	if vendor == "sqlite" {
+		db, err = gorm.Open(sqlite.Open(path), &gorm.Config{})
+	} else if vendor == "postgres" {
+		db, err = gorm.Open(postgres.Open(path))
+	} else {
+		err = errors.New("unknown db vendor: " + vendor)
+	}
+
+	return err
 }

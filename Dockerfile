@@ -17,6 +17,6 @@ WORKDIR /app
 VOLUME /app/data
 COPY --from=build /app/anniv-go /app/
 COPY --from=frontend-build /app/dist /app/frontend
-ENV GIN_MODE=release
-ENTRYPOINT /app/anniv-go --conf /app/data/config.yml --db /app/data/data.db
+ENV GIN_MODE=release DB_VENDOR=sqlite DB_PATH=/app/data/data.db CONF=/app/data/config.yml
+ENTRYPOINT /app/anniv-go
 EXPOSE 8080/tcp
