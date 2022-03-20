@@ -70,6 +70,9 @@ func siteInfo() SiteInfo {
 	} else {
 		features = append(features, "2fa")
 	}
+	if config.Cfg.RequireInvite {
+		features = append(features, "invite")
+	}
 	return SiteInfo{
 		SiteName:        config.Cfg.SiteName,
 		Description:     config.Cfg.Description,
@@ -111,12 +114,13 @@ func userIntro(u model.User) UserIntro {
 }
 
 type RegisterForm struct {
-	Password string `json:"password"`
-	Email    string `json:"email"`
-	Nickname string `json:"nickname"`
-	Avatar   string `json:"avatar"`
-	Secret   string `json:"2fa_secret"`
-	Code     string `json:"2fa_code"`
+	Password   string `json:"password"`
+	Email      string `json:"email"`
+	Nickname   string `json:"nickname"`
+	Avatar     string `json:"avatar"`
+	Secret     string `json:"2fa_secret"`
+	Code       string `json:"2fa_code"`
+	InviteCode string `json:"invite_code"`
 }
 
 type LoginForm struct {

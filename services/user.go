@@ -25,6 +25,12 @@ func EndpointUser(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, illegalParams("malformed register form"))
 			return
 		}
+		if config.Cfg.RequireInvite {
+			if form.InviteCode != config.Cfg.InviteCode {
+				ctx.JSON(http.StatusOK, resErr(InvalidInviteCode, "invalid invite code"))
+				return
+			}
+		}
 		if len(form.Nickname) > NicknameMaxLen {
 			ctx.JSON(http.StatusOK, resErr(InvalidNickname, "nickname too long"))
 			return

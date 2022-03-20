@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/go-yaml/yaml"
+	uuid "github.com/satori/go.uuid"
 	"os"
 )
 
@@ -14,6 +15,8 @@ type Config struct {
 	TrustedProxies []string          `yaml:"trusted_proxies"`
 	RepoDir        string            `yaml:"repo_dir"`
 	RepoURL        string            `yaml:"repo_url"`
+	RequireInvite  bool              `yaml:"require_invite"`
+	InviteCode     string            `yaml:"invite_code"`
 }
 
 var Cfg = Config{
@@ -24,6 +27,8 @@ var Cfg = Config{
 	TrustedProxies: []string{"127.0.0.1/32"},
 	RepoDir:        "./data/meta",
 	RepoURL:        "https://github.com/ProjectAnni/repo.git",
+	RequireInvite:  false,
+	InviteCode:     uuid.NewV4().String(),
 }
 
 func Load() error {
@@ -43,9 +48,6 @@ func Load() error {
 	}
 	defer f.Close()
 	err = yaml.NewDecoder(f).Decode(&Cfg)
-	if err == nil {
-		_ = Save()
-	}
 	return err
 }
 

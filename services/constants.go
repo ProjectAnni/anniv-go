@@ -25,3 +25,5 @@ const Wrong2FACode = 202001
 const Illegal2FASecret = 202002
 const TFAAttemptLimited = 202003
 const TFAAlreadyEnabled = 202004
+
+const InvalidInviteCode = 201001
