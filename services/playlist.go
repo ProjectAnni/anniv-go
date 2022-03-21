@@ -7,7 +7,6 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"gorm.io/gorm/logger"
 	"net/http"
 	"strconv"
 )
@@ -373,9 +372,7 @@ func EndpointPlaylist(ng *gin.Engine) {
 		if int(user.ID) != userId {
 			tx = tx.Where("is_public")
 		}
-		if err := tx.
-			Session(&gorm.Session{Logger: logger.Default.LogMode(logger.Silent)}).
-			First(&playlists).Error; err != nil {
+		if err := tx.Find(&playlists).Error; err != nil {
 			ctx.JSON(http.StatusOK, resOk(make([]PlaylistInfo, 0, 0)))
 			return
 		}
