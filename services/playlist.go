@@ -295,6 +295,27 @@ func EndpointPlaylist(ng *gin.Engine) {
 				ctx.JSON(http.StatusOK, writeErr(err))
 				return
 			}
+		} else if form.Command == "info" {
+			var payload PlaylistMeta
+			err = mapstructure.Decode(form.Payload, &payload)
+			if err != nil {
+				ctx.JSON(http.StatusOK, illegalParams("malformed payload"))
+				return
+			}
+			if payload.Cover.DiscID == nil {
+				var disc = 1
+				payload.Cover.DiscID = &disc
+			}
+			playlist.Name = payload.Name
+			playlist.Description = payload.Description
+			playlist.CoverAlbumID = payload.Cover.AlbumID
+			playlist.CoverDiscID = *payload.Cover.DiscID
+			playlist.IsPublic = payload.IsPublic
+			err = db.Save(&playlist).Error
+			if err != nil {
+				ctx.JSON(http.StatusOK, writeErr(err))
+				return
+			}
 		} else {
 			ctx.JSON(http.StatusOK, resErr(InvalidPatchCommand, "invalid patch command"))
 			return

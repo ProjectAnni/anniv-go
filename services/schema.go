@@ -228,12 +228,16 @@ type PlaylistSongForm struct {
 	Type        string `json:"type"`
 }
 
+type PlaylistMeta struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	IsPublic    bool   `json:"is_public"`
+	Cover       Cover  `json:"cover"`
+}
+
 type PlaylistForm struct {
-	Name        string             `json:"name"`
-	Description string             `json:"description"`
-	IsPublic    bool               `json:"is_public"`
-	Cover       Cover              `json:"cover"`
-	Songs       []PlaylistSongForm `json:"songs"`
+	PlaylistMeta
+	Songs []PlaylistSongForm `json:"songs"`
 }
 
 type PlaylistPatchForm struct {
