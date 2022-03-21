@@ -115,14 +115,16 @@ func (l *Lyric) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
-func Bind(db *gorm.DB) {
-	_ = db.AutoMigrate(&User{})
-	_ = db.AutoMigrate(&Session{})
-	_ = db.AutoMigrate(&Token{})
-	_ = db.AutoMigrate(&Playlist{})
-	_ = db.AutoMigrate(&PlaylistSong{})
-	_ = db.AutoMigrate(&Share{})
-	_ = db.AutoMigrate(&FavoriteMusic{})
-	_ = db.AutoMigrate(&FavoritePlaylist{})
-	_ = db.AutoMigrate(&Lyric{})
+func AutoMigrate(db *gorm.DB) error {
+	return db.AutoMigrate(
+		&User{},
+		&Session{},
+		&Token{},
+		&Playlist{},
+		&PlaylistSong{},
+		&Share{},
+		&FavoriteMusic{},
+		&FavoritePlaylist{},
+		&Lyric{},
+	)
 }

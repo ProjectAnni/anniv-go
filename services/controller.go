@@ -20,7 +20,10 @@ func Start(listen string) error {
 	if err != nil {
 		return err
 	}
-	model.Bind(db)
+	err = model.AutoMigrate(db)
+	if err != nil {
+		return errors.New("failed to migrate db: " + err.Error())
+	}
 
 	initMiddleware()
 
