@@ -5,6 +5,8 @@ import (
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
 	"github.com/pquerna/otp/totp"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"net/http"
 	"time"
 )
@@ -17,7 +19,10 @@ func AuthRequired(ctx *gin.Context) {
 		return
 	}
 	session := model.Session{}
-	if db.Preload("User").Where("session_id = ?", sid).First(&session).RowsAffected == 0 {
+	if db.Session(&gorm.Session{Logger: logger.Default.LogMode(logger.Silent)}).
+		Preload("User").
+		Where("session_id=?", sid).
+		First(&session).Error != nil {
 		ctx.JSON(http.StatusOK, unauthorized())
 		ctx.Abort()
 		return
