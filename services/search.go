@@ -28,7 +28,7 @@ func EndpointSearch(ng *gin.Engine) {
 		if _, f := ctx.GetQuery("search_playlists"); f {
 			var playlists []model.Playlist
 			err := db.Where("is_public OR user_id = ?", user.ID).
-				Where("UPPER(name) LIKE '%' + UPPER(?) + '%'", keyword).Find(&playlists).Error
+				Where("UPPER(name) LIKE '%' || UPPER(?) || '%'", keyword).Find(&playlists).Error
 			if err != nil {
 				ctx.JSON(http.StatusOK, readErr(err))
 				return
