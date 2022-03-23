@@ -95,7 +95,7 @@ func EndpointUser(ng *gin.Engine) {
 					Priority: 0,
 					UserID:   user.ID,
 				}
-				return db.Save(&t).Error
+				return tx.Save(&t).Error
 			}
 			return nil
 		})
