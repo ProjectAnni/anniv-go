@@ -24,7 +24,7 @@ type AnnilToken struct {
 	Enabled    bool   `yaml:"enabled"`
 	URL        string `yaml:"url"`
 	Secret     string `yaml:"secret"`
-	AllowShare bool   `yaml:"allowShare"`
+	AllowShare bool   `yaml:"allow_share"`
 }
 
 var Cfg = Config{
