@@ -22,7 +22,9 @@ func Start(listen string) error {
 	}
 	err = model.AutoMigrate(db)
 	if err != nil {
-		return errors.New("failed to migrate db: " + err.Error())
+		if !errors.Is(sqlite.ErrConstraintsNotImplemented, err) {
+			return errors.New("failed to migrate db: " + err.Error())
+		}
 	}
 
 	initMiddleware()
