@@ -4,6 +4,7 @@ import (
 	"github.com/ProjectAnni/anniv-go/config"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/pquerna/otp/totp"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -15,6 +16,13 @@ import (
 )
 
 var emailReg = regexp.MustCompile("^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)])$")
+
+type annilTokenClaims struct {
+	jwt.RegisteredClaims
+	Type       string `json:"type"`
+	Username   string `json:"username"`
+	AllowShare bool   `json:"allowShare"`
+}
 
 func EndpointUser(ng *gin.Engine) {
 	g := ng.Group("/api/user")
@@ -69,7 +77,28 @@ func EndpointUser(ng *gin.Engine) {
 			Enable2FA: form.Secret != "",
 			Secret:    form.Secret,
 		}
-		err = db.Create(&user).Error
+		err = db.Transaction(func(tx *gorm.DB) error {
+			err := tx.Create(&user).Error
+			if err != nil {
+				return err
+			}
+			if config.Cfg.AnnilToken.Enabled {
+				token, err := generateAnnilCode(user.Email)
+				if err != nil {
+					return err
+				}
+				t := model.Token{
+					TokenID:  uuid.NewV4().String(),
+					Name:     "Default",
+					URL:      config.Cfg.AnnilToken.URL,
+					Token:    token,
+					Priority: 0,
+					UserID:   user.ID,
+				}
+				return db.Save(&t).Error
+			}
+			return nil
+		})
 		if err != nil {
 			ctx.JSON(http.StatusOK, writeErr(err))
 			return
@@ -227,4 +256,21 @@ func wrongPassword() Response {
 		Message: "email and password does not match",
 		Data:    nil,
 	}
+}
+
+func generateAnnilCode(username string) (string, error) {
+	claims := annilTokenClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer: "anniv",
+		},
+		Type:       "user",
+		Username:   username,
+		AllowShare: config.Cfg.AnnilToken.AllowShare,
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	ss, err := token.SignedString([]byte(config.Cfg.AnnilToken.Secret))
+	if err != nil {
+		return "", err
+	}
+	return ss, nil
 }

@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/go-yaml/yaml v2.1.0+incompatible
+	github.com/golang-jwt/jwt/v4 v4.4.0
 	github.com/mitchellh/mapstructure v1.4.3
 	github.com/pelletier/go-toml/v2 v2.0.0-beta.5
 	github.com/pquerna/otp v1.3.0
