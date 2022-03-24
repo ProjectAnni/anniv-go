@@ -9,14 +9,14 @@ type TrackInfo struct {
 }
 
 type TrackInfoWithAlbum struct {
-	Title      string   `json:"title" toml:"title"`
-	Artist     string   `json:"artist" toml:"artist"`
-	Type       string   `json:"type" toml:"type"`
-	Tags       []string `json:"tags" toml:"tags"`
-	TrackID    int      `json:"track_id" toml:"track_id"`
-	DiscID     int      `json:"disc_id" toml:"disc_id"`
-	AlbumID    string   `json:"album_id" toml:"album_id"`
-	AlbumTitle string   `json:"album_title" toml:"album_title"`
+	Title      string   `json:"title" toml:"title" mapstructure:"title"`
+	Artist     string   `json:"artist" toml:"artist" mapstructure:"artist"`
+	Type       string   `json:"type" toml:"type" mapstructure:"type"`
+	Tags       []string `json:"tags" toml:"tags" mapstructure:"tags"`
+	TrackID    int      `json:"track_id" toml:"track_id" mapstructure:"track_id"`
+	DiscID     int      `json:"disc_id" toml:"disc_id" mapstructure:"disc_id"`
+	AlbumID    string   `json:"album_id" toml:"album_id" mapstructure:"album_id"`
+	AlbumTitle string   `json:"album_title" toml:"album_title" mapstructure:"album_title"`
 }
 
 type DiscInfo struct {
