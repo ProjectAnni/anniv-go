@@ -191,14 +191,14 @@ type Enable2FAForm struct {
 
 type PlaylistSong struct {
 	meta.TrackInfoWithAlbum
-	ID          string `json:"id"`
-	Description string `json:"description"`
-	Type        string `json:"type"`
+	ID          string `json:"id" mapstructure:"id"`
+	Description string `json:"description" mapstructure:"description"`
+	Type        string `json:"type" mapstructure:"type"`
 }
 
 type Cover struct {
-	AlbumID string `json:"album_id"`
-	DiscID  *int   `json:"disc_id"`
+	AlbumID string `json:"album_id" mapstructure:"album_id"`
+	DiscID  *int   `json:"disc_id" mapstructure:"disc_id"`
 }
 
 type Playlist struct {
@@ -224,15 +224,15 @@ type PlaylistSongForm struct {
 	AlbumID     string `json:"album_id" mapstructure:"album_id"`
 	DiscID      int    `json:"disc_id" mapstructure:"disc_id"`
 	TrackID     int    `json:"track_id" mapstructure:"track_id"`
-	Description string `json:"description"`
-	Type        string `json:"type"`
+	Description string `json:"description" mapstructure:"description"`
+	Type        string `json:"type" mapstructure:"type"`
 }
 
 type PlaylistMeta struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	IsPublic    bool   `json:"is_public"`
-	Cover       Cover  `json:"cover"`
+	Name        string `json:"name" mapstructure:"name"`
+	Description string `json:"description" mapstructure:"description"`
+	IsPublic    bool   `json:"is_public" mapstructure:"is_public"`
+	Cover       Cover  `json:"cover" mapstructure:"cover"`
 }
 
 type PlaylistForm struct {
