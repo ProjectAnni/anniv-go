@@ -9,6 +9,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -47,7 +48,8 @@ func EndpointUser(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, illegalEmail("invalid email"))
 			return
 		}
-		if db.Where("email = ?", form.Email).First(&model.User{}).RowsAffected != 0 {
+		if db.Session(&gorm.Session{Logger: logger.Default.LogMode(logger.Silent)}).
+			Where("email = ?", form.Email).First(&model.User{}).RowsAffected != 0 {
 			ctx.JSON(http.StatusOK, illegalEmail("email already taken"))
 			return
 		}
@@ -114,7 +116,8 @@ func EndpointUser(ng *gin.Engine) {
 			return
 		}
 		user := model.User{}
-		if db.Where("email = ?", form.Email).First(&user).RowsAffected == 0 {
+		if db.Session(&gorm.Session{Logger: logger.Default.LogMode(logger.Silent)}).
+			Where("email = ?", form.Email).First(&user).RowsAffected == 0 {
 			ctx.JSON(http.StatusOK, userNotFound())
 			return
 		}
