@@ -166,17 +166,17 @@ func readTags(p string) ([]Tag, map[string][]string, error) {
 	for _, v := range f {
 		f, err := os.Open(path.Join(p, v.Name()))
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, errors.New(v.Name() + ": " + err.Error())
 		}
 		tags := make(map[string][]TagDef, 0)
 		err = toml.NewDecoder(f).Decode(&tags)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, errors.New(v.Name() + ": " + err.Error())
 		}
 		f.Close()
 		for _, tag := range tags["tag"] {
 			if !validateTagType(tag.Type) {
-				return nil, nil, errors.New("invalid tag type: " + tag.Type)
+				return nil, nil, errors.New(v.Name() + ": " + "invalid tag type: " + tag.Type)
 			}
 			V = append(V, Tag{
 				Name: tag.Name,
@@ -184,7 +184,7 @@ func readTags(p string) ([]Tag, map[string][]string, error) {
 			})
 			for typ, child := range tag.Includes {
 				if !validateTagType(typ) {
-					return nil, nil, errors.New("invalid tag type: " + typ)
+					return nil, nil, errors.New(v.Name() + ": " + "invalid tag type: " + typ)
 				}
 				V = append(V, Tag{
 					Name: child,
