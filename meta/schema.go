@@ -55,9 +55,14 @@ type AlbumMeta struct {
 }
 
 type Tag struct {
-	Name       string   `json:"name" toml:"name"`
-	Includes   []string `json:"includes" toml:"includes"`
-	IncludedBy []string `json:"included-by" toml:"included-by"`
+	Name string `json:"name" toml:"name"`
+	Type string `json:"type" toml:"type"`
+}
+
+type TagDef struct {
+	Tag
+	Includes   map[string]string `json:"includes" toml:"includes"`
+	IncludedBy []string          `json:"included-by" toml:"included-by"`
 }
 
 type Record struct {

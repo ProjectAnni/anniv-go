@@ -10,7 +10,7 @@ import (
 var albumIdx map[string]AlbumInfo
 var tagIdx map[string][]AlbumInfo
 var tagIdxNonRecursive map[string][]AlbumInfo
-var tags []string
+var tags []Tag
 var tagGraph map[string][]string
 
 func Read(p string) error {
@@ -42,8 +42,8 @@ func Read(p string) error {
 	tagIdxNonRecursive = make(map[string][]AlbumInfo)
 
 	for _, v := range tags {
-		tmp[v] = make(map[string]bool)
-		tagIdxNonRecursive[v] = make([]AlbumInfo, 0)
+		tmp[v.Name] = make(map[string]bool)
+		tagIdxNonRecursive[v.Name] = make([]AlbumInfo, 0)
 	}
 
 	for _, album := range albums {
@@ -73,8 +73,8 @@ func Read(p string) error {
 		}
 	}
 	for _, x := range V {
-		if !vis[x] {
-			dfs(x)
+		if !vis[x.Name] {
+			dfs(x.Name)
 		}
 	}
 
@@ -88,10 +88,10 @@ func Read(p string) error {
 	return nil
 }
 
-func checkTags(V []string, E map[string][]string) error {
+func checkTags(V []Tag, E map[string][]string) error {
 	VSet := make(map[string]int)
 	for _, v := range V {
-		VSet[v]++
+		VSet[v.Name]++
 	}
 	// Node constraints check
 	if len(VSet) != len(V) {
@@ -144,8 +144,8 @@ func checkTags(V []string, E map[string][]string) error {
 	}
 
 	for _, v := range V {
-		if !vis[v] {
-			err := dfs(v)
+		if !vis[v.Name] {
+			err := dfs(v.Name)
 			if err != nil {
 				return err
 			}
@@ -155,9 +155,9 @@ func checkTags(V []string, E map[string][]string) error {
 	return nil
 }
 
-func readTags(p string) ([]string, map[string][]string, error) {
+func readTags(p string) ([]Tag, map[string][]string, error) {
 	E := make(map[string][]string)
-	V := make([]string, 0)
+	V := make([]Tag, 0)
 
 	f, err := os.ReadDir(p)
 	if err != nil {
@@ -168,16 +168,28 @@ func readTags(p string) ([]string, map[string][]string, error) {
 		if err != nil {
 			return nil, nil, err
 		}
-		tags := make(map[string][]Tag, 0)
+		tags := make(map[string][]TagDef, 0)
 		err = toml.NewDecoder(f).Decode(&tags)
 		if err != nil {
 			return nil, nil, err
 		}
 		f.Close()
 		for _, tag := range tags["tag"] {
-			V = append(V, tag.Name)
-			for _, child := range tag.Includes {
-				V = append(V, child)
+			if !validateTagType(tag.Type) {
+				return nil, nil, errors.New("invalid tag type: " + tag.Type)
+			}
+			V = append(V, Tag{
+				Name: tag.Name,
+				Type: tag.Type,
+			})
+			for typ, child := range tag.Includes {
+				if !validateTagType(typ) {
+					return nil, nil, errors.New("invalid tag type: " + typ)
+				}
+				V = append(V, Tag{
+					Name: child,
+					Type: typ,
+				})
 				E[tag.Name] = append(E[tag.Name], child)
 			}
 			for _, parent := range tag.IncludedBy {
@@ -256,4 +268,15 @@ func readAlbums(p string) ([]AlbumInfo, error) {
 		ret = append(ret, album)
 	}
 	return ret, nil
+}
+
+var validTypes = []string{"artist", "group", "animation", "series", "project", "game", "organization", "default", "category"}
+
+func validateTagType(p string) bool {
+	for _, v := range validTypes {
+		if p == v {
+			return true
+		}
+	}
+	return false
 }
