@@ -61,8 +61,8 @@ type Tag struct {
 
 type TagDef struct {
 	Tag
-	Includes   map[string]string `json:"includes" toml:"includes"`
-	IncludedBy []string          `json:"included-by" toml:"included-by"`
+	Includes   map[string][]string `json:"includes" toml:"includes"`
+	IncludedBy []string            `json:"included-by" toml:"included-by"`
 }
 
 type Record struct {

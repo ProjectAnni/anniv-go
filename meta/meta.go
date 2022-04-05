@@ -186,11 +186,13 @@ func readTags(p string) ([]Tag, map[string][]string, error) {
 				if !validateTagType(typ) {
 					return nil, nil, errors.New(v.Name() + ": " + "invalid tag type: " + typ)
 				}
-				V = append(V, Tag{
-					Name: child,
-					Type: typ,
-				})
-				E[tag.Name] = append(E[tag.Name], child)
+				for _, v := range child {
+					V = append(V, Tag{
+						Name: v,
+						Type: typ,
+					})
+					E[tag.Name] = append(E[tag.Name], v)
+				}
 			}
 			for _, parent := range tag.IncludedBy {
 				E[parent] = append(E[parent], tag.Name)
