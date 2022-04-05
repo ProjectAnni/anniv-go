@@ -92,7 +92,7 @@ func initRepo(path, url string) error {
 	return err
 }
 
-func GetTags() []string {
+func GetTags() []Tag {
 	lock.RLock()
 	defer lock.RUnlock()
 	return tags
