@@ -228,11 +228,11 @@ func readAlbums(p string) ([]AlbumInfo, error) {
 			Artist:  record.Album.Artist,
 			Artists: record.Album.Artists,
 			Date:    record.Album.Date,
-			Tags:    record.Album.Tags,
 			Type:    record.Album.Type,
 			Discs:   record.Discs,
 		}
 
+		albumTags := map[string]bool{}
 		for _, disc := range album.Discs {
 			if disc.Type == "" {
 				disc.Type = album.Type
@@ -249,6 +249,7 @@ func readAlbums(p string) ([]AlbumInfo, error) {
 			if disc.Artists == nil {
 				disc.Artists = album.Artists
 			}
+			discTags := map[string]bool{}
 			for _, track := range disc.Tracks {
 				if track.Title == "" {
 					track.Type = disc.Type
@@ -265,8 +266,15 @@ func readAlbums(p string) ([]AlbumInfo, error) {
 				if track.Artists == nil {
 					track.Artists = disc.Artists
 				}
+				for _, tag := range track.Tags {
+					discTags[tag] = true
+					albumTags[tag] = true
+				}
+				disc.Tags = toArray(discTags)
 			}
 		}
+		album.Tags = toArray(albumTags)
+
 		ret = append(ret, album)
 	}
 	return ret, nil
@@ -281,4 +289,12 @@ func validateTagType(p string) bool {
 		}
 	}
 	return false
+}
+
+func toArray(s map[string]bool) []string {
+	ret := make([]string, len(s), 0)
+	for v := range s {
+		ret = append(ret, v)
+	}
+	return ret
 }
