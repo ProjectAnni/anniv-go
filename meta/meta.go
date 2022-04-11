@@ -292,7 +292,7 @@ func validateTagType(p string) bool {
 }
 
 func toArray(s map[string]bool) []string {
-	ret := make([]string, len(s), 0)
+	ret := make([]string, 0, len(s))
 	for v := range s {
 		ret = append(ret, v)
 	}
