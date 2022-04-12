@@ -258,7 +258,7 @@ func readAlbums(p string) ([]AlbumInfo, error) {
 			}
 			for _, track := range disc.Tracks {
 				if track.Title == "" {
-					track.Type = disc.Type
+					track.Title = disc.Title
 				}
 				if track.Artist == "" {
 					track.Artist = disc.Artist
