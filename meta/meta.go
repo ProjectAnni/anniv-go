@@ -257,9 +257,6 @@ func readAlbums(p string) ([]AlbumDetails, error) {
 			if disc.Artist == nil {
 				disc.Artist = &album.Artist
 			}
-			if disc.Tags == nil {
-				disc.Tags = []string{}
-			}
 			if disc.Artists == nil {
 				disc.Artists = album.Artists
 			}
