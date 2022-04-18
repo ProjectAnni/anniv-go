@@ -55,8 +55,9 @@ type AlbumMeta struct {
 }
 
 type Tag struct {
-	Name string `json:"name" toml:"name"`
-	Type string `json:"type" toml:"type"`
+	Name  string   `json:"name" toml:"name"`
+	Type  string   `json:"type" toml:"type"`
+	Alias []string `json:"alias" toml:"alias"`
 }
 
 type TagDef struct {
