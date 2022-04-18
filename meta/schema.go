@@ -17,7 +17,7 @@ type TrackIdentifier struct {
 type AlbumInfo struct {
 	AlbumID AlbumIdentifier `json:"album_id" toml:"album_id"`
 	Title   string          `json:"title" toml:"title"`
-	Edition *string         `json:"edition" toml:"edition"`
+	Edition *string         `json:"edition,omitempty" toml:"edition"`
 	Catalog string          `json:"catalog" toml:"catalog"`
 	Artist  string          `json:"artist" toml:"artist"`
 	Date    string          `json:"date" toml:"date"`
@@ -37,28 +37,28 @@ type albumInfoDef struct {
 }
 
 type DiscInfo struct {
-	Title   *string `json:"title" toml:"title"`
-	Artist  *string `json:"artist" toml:"artist"`
+	Title   *string `json:"title,omitempty" toml:"title"`
+	Artist  *string `json:"artist,omitempty" toml:"artist"`
 	Catalog string  `json:"catalog" toml:"catalog"`
-	Type    *string `json:"type" toml:"type"`
+	Type    *string `json:"type,omitempty" toml:"type"`
 }
 
 type DiscDetails struct {
 	DiscInfo
-	Artists *Artists       `json:"artists" toml:"artists"`
-	Tags    []string       `json:"tags" toml:"tags"`
+	Artists *Artists       `json:"artists,omitempty" toml:"artists"`
+	Tags    []string       `json:"tags,omitempty" toml:"tags"`
 	Tracks  []*TrackDetail `json:"tracks" toml:"tracks"`
 }
 
 type TrackInfo struct {
 	Title  string  `json:"title" toml:"title"`
-	Artist *string `json:"artist" toml:"artist"`
-	Type   *string `json:"type" toml:"type"`
+	Artist *string `json:"artist,omitempty" toml:"artist"`
+	Type   *string `json:"type,omitempty" toml:"type"`
 }
 
 type TrackDetail struct {
 	TrackInfo
-	Artists *Artists `json:"artists" toml:"artists"`
+	Artists *Artists `json:"artists,omitempty" toml:"artists"`
 	Tags    []string `json:"tags" toml:"tags"`
 }
 
