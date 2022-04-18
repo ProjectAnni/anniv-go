@@ -10,7 +10,7 @@ type DiscIdentifier struct {
 }
 
 type TrackIdentifier struct {
-	DiscIdentifier `mapstructure:"squash"`
+	DiscIdentifier `mapstructure:",squash"`
 	TrackID        uint `json:"track_id" mapstructure:"track_id"`
 }
 
