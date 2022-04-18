@@ -5,7 +5,6 @@ import (
 	"github.com/go-git/go-git/v5"
 	"log"
 	"os"
-	"strings"
 	"sync"
 	"time"
 )
@@ -98,14 +97,14 @@ func GetTags() []Tag {
 	return tags
 }
 
-func GetAlbumInfo(id string) (AlbumInfo, bool) {
+func GetAlbumDetails(id string) (AlbumDetails, bool) {
 	lock.RLock()
 	defer lock.RUnlock()
 	res, ok := albumIdx[id]
 	return res, ok
 }
 
-func GetAlbumsByTag(tag string, recursive bool) ([]AlbumInfo, bool) {
+func GetAlbumsByTag(tag string, recursive bool) ([]AlbumDetails, bool) {
 	lock.RLock()
 	defer lock.RUnlock()
 	if recursive {
@@ -117,59 +116,16 @@ func GetAlbumsByTag(tag string, recursive bool) ([]AlbumInfo, bool) {
 	}
 }
 
-func SearchAlbums(keyword string) (ret []AlbumInfo) {
-	lock.RLock()
-	defer lock.RUnlock()
-	ret = make([]AlbumInfo, 0)
-	if keyword == "" {
-		return
-	}
-	for _, v := range albumIdx {
-		if strings.Contains(strings.ToUpper(v.Title), strings.ToUpper(keyword)) || v.Catalog == keyword {
-			ret = append(ret, v)
-		}
-	}
-	return
-}
-
-func SearchTracks(keyword string) (ret []*TrackInfoWithAlbum) {
-	lock.RLock()
-	defer lock.RUnlock()
-	ret = make([]*TrackInfoWithAlbum, 0)
-	if keyword == "" {
-		return
-	}
-	for _, album := range albumIdx {
-		for discId, disc := range album.Discs {
-			for trackId, track := range disc.Tracks {
-				if strings.Contains(strings.ToUpper(track.Title), strings.ToUpper(keyword)) {
-					ret = append(ret, &TrackInfoWithAlbum{
-						Title:      track.Title,
-						Artist:     track.Artist,
-						Type:       track.Type,
-						Tags:       track.Tags,
-						TrackID:    trackId + 1,
-						DiscID:     discId + 1,
-						AlbumID:    album.AlbumID,
-						AlbumTitle: album.Title,
-					})
-				}
-			}
-		}
-	}
-	return
-}
-
 func GetTagGraph() map[string][]string {
 	lock.RLock()
 	defer lock.RUnlock()
 	return tagGraph
 }
 
-func GetAlbums() []AlbumInfo {
+func GetAlbums() []AlbumDetails {
 	lock.RLock()
 	defer lock.RUnlock()
-	res := make([]AlbumInfo, 0, len(albumIdx))
+	res := make([]AlbumDetails, 0, len(albumIdx))
 	for _, v := range albumIdx {
 		res = append(res, v)
 	}

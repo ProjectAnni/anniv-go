@@ -7,9 +7,9 @@ import (
 	"path"
 )
 
-var albumIdx map[string]AlbumInfo
-var tagIdx map[string][]AlbumInfo
-var tagIdxNonRecursive map[string][]AlbumInfo
+var albumIdx map[string]AlbumDetails
+var tagIdx map[string][]AlbumDetails
+var tagIdxNonRecursive map[string][]AlbumDetails
 var tags []Tag
 var tagGraph map[string][]string
 
@@ -28,8 +28,8 @@ func Read(p string) error {
 		return err
 	}
 
-	albumIdx = make(map[string]AlbumInfo)
-	tagIdx = make(map[string][]AlbumInfo)
+	albumIdx = make(map[string]AlbumDetails)
+	tagIdx = make(map[string][]AlbumDetails)
 	tags = V
 	tagGraph = E
 
@@ -39,11 +39,11 @@ func Read(p string) error {
 
 	tmp := make(map[string]map[string]bool)
 
-	tagIdxNonRecursive = make(map[string][]AlbumInfo)
+	tagIdxNonRecursive = make(map[string][]AlbumDetails)
 
 	for _, v := range tags {
 		tmp[v.Name] = make(map[string]bool)
-		tagIdxNonRecursive[v.Name] = make([]AlbumInfo, 0)
+		tagIdxNonRecursive[v.Name] = make([]AlbumDetails, 0)
 	}
 
 	for _, album := range albums {
@@ -79,7 +79,7 @@ func Read(p string) error {
 	}
 
 	for k, v := range tmp {
-		tagIdx[k] = make([]AlbumInfo, 0)
+		tagIdx[k] = make([]AlbumDetails, 0)
 		for albumId := range v {
 			tagIdx[k] = append(tagIdx[k], albumIdx[albumId])
 		}
@@ -168,7 +168,7 @@ func readTags(p string) ([]Tag, map[string][]string, error) {
 		if err != nil {
 			return nil, nil, errors.New(v.Name() + ": " + err.Error())
 		}
-		tags := make(map[string][]TagDef, 0)
+		tags := make(map[string][]tagDef, 0)
 		err = toml.NewDecoder(f).Decode(&tags)
 		if err != nil {
 			return nil, nil, errors.New(v.Name() + ": " + err.Error())
@@ -203,14 +203,14 @@ func readTags(p string) ([]Tag, map[string][]string, error) {
 	return V, E, nil
 }
 
-func readAlbums(p string) ([]AlbumInfo, error) {
-	ret := make([]AlbumInfo, 0)
+func readAlbums(p string) ([]AlbumDetails, error) {
+	ret := make([]AlbumDetails, 0)
 	f, err := os.ReadDir(p)
 	if err != nil {
 		return nil, err
 	}
 	for _, v := range f {
-		record := Record{}
+		record := record{}
 
 		f, err := os.Open(path.Join(p, v.Name()))
 		if err != nil {
@@ -221,15 +221,17 @@ func readAlbums(p string) ([]AlbumInfo, error) {
 			return nil, errors.New(v.Name() + ":" + err.Error())
 		}
 		f.Close()
-		album := AlbumInfo{
-			AlbumID: record.Album.AlbumID,
-			Title:   record.Album.Title,
-			Edition: record.Album.Edition,
-			Catalog: record.Album.Catalog,
-			Artist:  record.Album.Artist,
+		album := AlbumDetails{
+			AlbumInfo: AlbumInfo{
+				AlbumID: record.Album.AlbumID,
+				Title:   record.Album.Title,
+				Edition: record.Album.Edition,
+				Catalog: record.Album.Catalog,
+				Artist:  record.Album.Artist,
+				Date:    record.Album.Date,
+				Type:    record.Album.Type,
+			},
 			Artists: record.Album.Artists,
-			Date:    record.Album.Date,
-			Type:    record.Album.Type,
 			Discs:   record.Discs,
 		}
 

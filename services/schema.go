@@ -3,11 +3,8 @@ package services
 import (
 	"fmt"
 	"github.com/ProjectAnni/anniv-go/config"
-	"github.com/ProjectAnni/anniv-go/meta"
 	"github.com/ProjectAnni/anniv-go/model"
-	"github.com/pelletier/go-toml/v2"
 	"strconv"
-	time2 "time"
 )
 
 type Response struct {
@@ -189,120 +186,9 @@ type Enable2FAForm struct {
 	Code   string `json:"2fa_code"`
 }
 
-type PlaylistSong struct {
-	meta.TrackInfoWithAlbum
-	ID          string `json:"id" mapstructure:"id"`
-	Description string `json:"description" mapstructure:"description"`
-	Type        string `json:"type" mapstructure:"type"`
-}
-
 type Cover struct {
 	AlbumID string `json:"album_id" mapstructure:"album_id"`
 	DiscID  *int   `json:"disc_id" mapstructure:"disc_id"`
-}
-
-type Playlist struct {
-	ID          string         `json:"id"`
-	Name        string         `json:"name"`
-	Description string         `json:"description"`
-	Owner       string         `json:"owner"`
-	IsPublic    bool           `json:"is_public"`
-	Cover       Cover          `json:"cover"`
-	Songs       []PlaylistSong `json:"songs"`
-}
-
-type PlaylistInfo struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Owner       string `json:"owner"`
-	IsPublic    bool   `json:"is_public"`
-	Cover       Cover  `json:"cover"`
-}
-
-type PlaylistSongForm struct {
-	AlbumID     string `json:"album_id" mapstructure:"album_id"`
-	DiscID      int    `json:"disc_id" mapstructure:"disc_id"`
-	TrackID     int    `json:"track_id" mapstructure:"track_id"`
-	Description string `json:"description" mapstructure:"description"`
-	Type        string `json:"type" mapstructure:"type"`
-}
-
-type PlaylistMeta struct {
-	Name        string `json:"name" mapstructure:"name"`
-	Description string `json:"description" mapstructure:"description"`
-	IsPublic    bool   `json:"is_public" mapstructure:"is_public"`
-	Cover       Cover  `json:"cover" mapstructure:"cover"`
-}
-
-type PlaylistForm struct {
-	PlaylistMeta
-	Songs []PlaylistSongForm `json:"songs"`
-}
-
-type PlaylistPatchForm struct {
-	ID      string      `json:"id"`
-	Command string      `json:"command"`
-	Payload interface{} `json:"payload"`
-}
-
-type AlbumInfo struct {
-	AlbumID string           `json:"album_id"`
-	Title   string           `json:"title"`
-	Edition *string          `json:"edition"`
-	Catalog string           `json:"catalog"`
-	Artist  string           `json:"artist"`
-	Artists *meta.Artists    `json:"artists"`
-	Date    string           `json:"date"`
-	Tags    []string         `json:"tags"`
-	Type    string           `json:"type"`
-	Discs   []*meta.DiscInfo `json:"discs"`
-}
-
-func albumInfo(album meta.AlbumInfo) *AlbumInfo {
-	ret := &AlbumInfo{
-		AlbumID: album.AlbumID,
-		Title:   album.Title,
-		Edition: album.Edition,
-		Catalog: album.Catalog,
-		Artist:  album.Artist,
-		Artists: album.Artists,
-		Date:    parseDate(album.Date),
-		Tags:    album.Tags,
-		Type:    album.Type,
-		Discs:   album.Discs,
-	}
-	if ret.Tags == nil {
-		ret.Tags = []string{}
-	}
-	return ret
-}
-
-func parseDate(v interface{}) string {
-	str, ok := v.(string)
-	if ok {
-		return str
-	}
-	date, ok := v.(toml.LocalDate)
-	if ok {
-		return date.String()
-	}
-	time, ok := v.(time2.Time)
-	if ok {
-		return time.Format("2006-01-02")
-	}
-	m, ok := v.(map[string]int)
-	if ok {
-		year := m["year"]
-		month := m["month"]
-		day, containsDay := m["day"]
-		ret := strconv.Itoa(year) + "-" + strconv.Itoa(month)
-		if containsDay {
-			ret += "-" + strconv.Itoa(day)
-		}
-		return ret
-	}
-	return ""
 }
 
 type PlaylistResult struct {
@@ -310,12 +196,6 @@ type PlaylistResult struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Owner       string `json:"owner"`
-}
-
-type SearchResult struct {
-	Albums    []*AlbumInfo               `json:"albums"`
-	Tracks    []*meta.TrackInfoWithAlbum `json:"tracks"`
-	Playlists []*PlaylistResult          `json:"playlists"`
 }
 
 type ShareEntry struct {

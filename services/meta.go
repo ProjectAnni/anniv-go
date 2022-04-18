@@ -15,11 +15,11 @@ func EndpointMeta(ng *gin.Engine) {
 
 	g.GET("/album", func(ctx *gin.Context) {
 		ids := ctx.QueryArray("id[]")
-		res := make(map[string]*AlbumInfo)
+		res := make(map[string]*meta.AlbumDetails)
 		for _, id := range ids {
-			album, ok := meta.GetAlbumInfo(id)
+			album, ok := meta.GetAlbumDetails(id)
 			if ok {
-				res[id] = albumInfo(album)
+				res[id] = &album
 			} else {
 				res[id] = nil
 			}
@@ -39,11 +39,7 @@ func EndpointMeta(ng *gin.Engine) {
 			})
 			return
 		}
-		res := make([]*AlbumInfo, 0, len(albums))
-		for _, v := range albums {
-			res = append(res, albumInfo(v))
-		}
-		ctx.JSON(http.StatusOK, resOk(res))
+		ctx.JSON(http.StatusOK, resOk(albums))
 	})
 
 	g.GET("/tag-graph", func(ctx *gin.Context) {
