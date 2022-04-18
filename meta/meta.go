@@ -7,7 +7,7 @@ import (
 	"path"
 )
 
-var albumIdx map[string]AlbumDetails
+var albumIdx map[AlbumIdentifier]AlbumDetails
 var tagIdx map[string][]AlbumDetails
 var tagIdxNonRecursive map[string][]AlbumDetails
 var tags []Tag
@@ -28,7 +28,7 @@ func Read(p string) error {
 		return err
 	}
 
-	albumIdx = make(map[string]AlbumDetails)
+	albumIdx = make(map[AlbumIdentifier]AlbumDetails)
 	tagIdx = make(map[string][]AlbumDetails)
 	tags = V
 	tagGraph = E
@@ -37,12 +37,12 @@ func Read(p string) error {
 		albumIdx[v.AlbumID] = v
 	}
 
-	tmp := make(map[string]map[string]bool)
+	tmp := make(map[string]map[AlbumIdentifier]bool)
 
 	tagIdxNonRecursive = make(map[string][]AlbumDetails)
 
 	for _, v := range tags {
-		tmp[v.Name] = make(map[string]bool)
+		tmp[v.Name] = make(map[AlbumIdentifier]bool)
 		tagIdxNonRecursive[v.Name] = make([]AlbumDetails, 0)
 	}
 
@@ -66,7 +66,7 @@ func Read(p string) error {
 			}
 			for album := range tmp[nx] {
 				if tmp[x] == nil {
-					tmp[x] = make(map[string]bool)
+					tmp[x] = make(map[AlbumIdentifier]bool)
 				}
 				tmp[x][album] = true
 			}

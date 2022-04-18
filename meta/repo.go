@@ -5,6 +5,7 @@ import (
 	"github.com/go-git/go-git/v5"
 	"log"
 	"os"
+	"strings"
 	"sync"
 	"time"
 )
@@ -100,7 +101,7 @@ func GetTags() []Tag {
 func GetAlbumDetails(id string) (AlbumDetails, bool) {
 	lock.RLock()
 	defer lock.RUnlock()
-	res, ok := albumIdx[id]
+	res, ok := albumIdx[AlbumIdentifier(id)]
 	return res, ok
 }
 
@@ -130,4 +131,42 @@ func GetAlbums() []AlbumDetails {
 		res = append(res, v)
 	}
 	return res
+}
+
+func SearchAlbums(keyword string) []AlbumDetails {
+	ret := make([]AlbumDetails, 0)
+	for _, v := range albumIdx {
+		if strings.Contains(v.Title, keyword) || v.Catalog == keyword {
+			ret = append(ret, v)
+		}
+	}
+	return ret
+}
+
+func SearchTracks(keyword string) []TrackInfoWithAlbum {
+	ret := make([]TrackInfoWithAlbum, 0)
+	for _, album := range albumIdx {
+		discId := uint(1)
+		for _, disc := range album.Discs {
+			trackId := uint(1)
+			for _, track := range disc.Tracks {
+				if strings.Contains(track.Title, keyword) {
+					ret = append(ret, TrackInfoWithAlbum{
+						TrackIdentifier: TrackIdentifier{
+							DiscIdentifier: DiscIdentifier{
+								AlbumID: album.AlbumID,
+								DiscID:  discId,
+							},
+							TrackID: trackId,
+						},
+						TrackInfo:  track.TrackInfo,
+						AlbumTitle: album.Title,
+					})
+				}
+				trackId++
+			}
+		}
+		discId++
+	}
+	return ret
 }
