@@ -73,8 +73,8 @@ type FavoriteMusic struct {
 	UserID  uint `gorm:"uniqueIndex:favorite_music_index"`
 	User    User
 	AlbumID string `gorm:"uniqueIndex:favorite_music_index"`
-	DiscID  int    `gorm:"uniqueIndex:favorite_music_index"`
-	TrackID int    `gorm:"uniqueIndex:favorite_music_index"`
+	DiscID  uint   `gorm:"uniqueIndex:favorite_music_index"`
+	TrackID uint   `gorm:"uniqueIndex:favorite_music_index"`
 }
 
 type FavoritePlaylist struct {

@@ -21,14 +21,20 @@ func EndpointFavorite(ng *gin.Engine) {
 		}
 		res := make([]meta.TrackInfoWithAlbum, 0, len(music))
 		for _, v := range music {
-			res = append(res, queryTrackInfo(v.AlbumID, v.DiscID, v.TrackID))
+			res = append(res, queryTrackInfo(meta.TrackIdentifier{
+				DiscIdentifier: meta.DiscIdentifier{
+					AlbumID: meta.AlbumIdentifier(v.AlbumID),
+					DiscID:  v.DiscID,
+				},
+				TrackID: v.TrackID,
+			}))
 		}
 		ctx.JSON(http.StatusOK, resOk(res))
 	})
 
 	g.PUT("/music", func(ctx *gin.Context) {
 		user := ctx.MustGet("user").(model.User)
-		form := FavoriteMusicEntry{}
+		form := meta.TrackIdentifier{}
 		if err := ctx.ShouldBind(&form); err != nil {
 			ctx.JSON(http.StatusOK, illegalParams("malformed music form"))
 			return
@@ -46,7 +52,7 @@ func EndpointFavorite(ng *gin.Engine) {
 		}
 		music := model.FavoriteMusic{
 			UserID:  user.ID,
-			AlbumID: form.AlbumID,
+			AlbumID: string(form.AlbumID),
 			DiscID:  form.DiscID,
 			TrackID: form.TrackID,
 		}
@@ -145,31 +151,21 @@ func EndpointFavorite(ng *gin.Engine) {
 
 }
 
-func queryTrackInfo(albumId string, discId, trackId int) meta.TrackInfoWithAlbum {
-	fallback := meta.TrackInfoWithAlbum{
-		TrackID:    trackId,
-		DiscID:     discId,
-		AlbumID:    albumId,
+func queryTrackInfo(trackId meta.TrackIdentifier) meta.TrackInfoWithAlbum {
+	ret := meta.TrackInfoWithAlbum{
+		TrackIdentifier: trackId,
 	}
-	info, ok := meta.GetAlbumInfo(albumId)
+	info, ok := meta.GetAlbumDetails(string(trackId.AlbumID))
 	if !ok {
-		return fallback
+		return ret
 	}
-	if len(info.Discs) < discId {
-		return fallback
+	ret.AlbumTitle = info.Title
+	if uint(len(info.Discs)) < trackId.DiscID {
+		return ret
 	}
-	if len(info.Discs[discId-1].Tracks) < trackId {
-		return fallback
+	if uint(len(info.Discs[trackId.DiscID-1].Tracks)) < trackId.TrackID {
+		return ret
 	}
-	trackInfo := info.Discs[discId-1].Tracks[trackId-1]
-	return meta.TrackInfoWithAlbum{
-		Title:      trackInfo.Title,
-		Artist:     trackInfo.Artist,
-		Type:       trackInfo.Type,
-		Tags:       trackInfo.Tags,
-		TrackID:    trackId,
-		DiscID:     discId,
-		AlbumID:    info.AlbumID,
-		AlbumTitle: info.Title,
-	}
+	ret.TrackInfo = info.Discs[trackId.DiscID-1].Tracks[trackId.TrackID-1].TrackInfo
+	return ret
 }
