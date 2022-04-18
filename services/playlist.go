@@ -13,10 +13,10 @@ import (
 )
 
 type PatchedPlaylistInfo struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	IsPublic    bool   `json:"is_public"`
-	Cover       Cover  `json:"cover"`
+	Name        string `json:"name" mapstructure:"name"`
+	Description string `json:"description" mapstructure:"description"`
+	IsPublic    bool   `json:"is_public" mapstructure:"is_public"`
+	Cover       Cover  `json:"cover" mapstructure:"cover"`
 }
 
 type PlaylistInfo struct {
