@@ -21,7 +21,7 @@ func EndpointFavorite(ng *gin.Engine) {
 		}
 		res := make([]meta.TrackInfoWithAlbum, 0, len(music))
 		for _, v := range music {
-			res = append(res, queryTrackInfo(meta.TrackIdentifier{
+			res = append(res, meta.GetTrackInfo(meta.TrackIdentifier{
 				DiscIdentifier: meta.DiscIdentifier{
 					AlbumID: meta.AlbumIdentifier(v.AlbumID),
 					DiscID:  v.DiscID,
@@ -149,23 +149,4 @@ func EndpointFavorite(ng *gin.Engine) {
 		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 
-}
-
-func queryTrackInfo(trackId meta.TrackIdentifier) meta.TrackInfoWithAlbum {
-	ret := meta.TrackInfoWithAlbum{
-		TrackIdentifier: trackId,
-	}
-	info, ok := meta.GetAlbumDetails(string(trackId.AlbumID))
-	if !ok {
-		return ret
-	}
-	ret.AlbumTitle = info.Title
-	if uint(len(info.Discs)) < trackId.DiscID {
-		return ret
-	}
-	if uint(len(info.Discs[trackId.DiscID-1].Tracks)) < trackId.TrackID {
-		return ret
-	}
-	ret.TrackInfo = info.Discs[trackId.DiscID-1].Tracks[trackId.TrackID-1].TrackInfo
-	return ret
 }

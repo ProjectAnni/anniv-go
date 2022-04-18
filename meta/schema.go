@@ -5,13 +5,13 @@ type Artists map[string]string
 type AlbumIdentifier string
 
 type DiscIdentifier struct {
-	AlbumID AlbumIdentifier `json:"album_id"`
-	DiscID  uint            `json:"disc_id"`
+	AlbumID AlbumIdentifier `json:"album_id"  mapstructure:"albumID"`
+	DiscID  uint            `json:"disc_id" mapstructure:"discID"`
 }
 
 type TrackIdentifier struct {
 	DiscIdentifier
-	TrackID uint `json:"track_id"`
+	TrackID uint `json:"track_id" mapstructure:"track_id"`
 }
 
 type AlbumInfo struct {

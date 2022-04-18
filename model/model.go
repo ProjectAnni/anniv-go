@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"github.com/ProjectAnni/anniv-go/meta"
 	"gorm.io/gorm"
 	"time"
 )
@@ -45,7 +46,7 @@ type Playlist struct {
 	User         User
 	IsPublic     bool
 	CoverAlbumID string
-	CoverDiscID  int
+	CoverDiscID  uint
 }
 
 type PlaylistSong struct {
@@ -53,10 +54,11 @@ type PlaylistSong struct {
 	PlaylistID  uint `gorm:"uniqueIndex:playlist_song_index"`
 	Playlist    Playlist
 	AlbumID     string `gorm:"uniqueIndex:playlist_song_index"`
-	DiscID      int    `gorm:"uniqueIndex:playlist_song_index"`
-	TrackID     int    `gorm:"uniqueIndex:playlist_song_index"`
+	DiscID      uint   `gorm:"uniqueIndex:playlist_song_index"`
+	TrackID     uint   `gorm:"uniqueIndex:playlist_song_index"`
 	Description string
-	Type        string `gorm:"check:type='normal' OR type='dummy'"`
+	Type        string         `gorm:"check:type='normal' OR type='dummy' OR type='album'"`
+	TrackInfo   meta.TrackInfo `gorm:"embedded;embeddedPrefix:track_info_"`
 	Order       uint
 }
 

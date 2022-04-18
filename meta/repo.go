@@ -133,6 +133,27 @@ func GetAlbums() []AlbumDetails {
 	return res
 }
 
+func GetTrackInfo(id TrackIdentifier) TrackInfoWithAlbum {
+	ret := TrackInfoWithAlbum{
+		TrackIdentifier: id,
+	}
+	album, ok := albumIdx[id.AlbumID]
+	if !ok {
+		return ret
+	}
+	ret.Title = album.Title
+	if id.DiscID > uint(len(album.Discs)) {
+		return ret
+	}
+	disc := album.Discs[id.DiscID-1]
+	if id.TrackID > uint(len(disc.Tracks)) {
+		return ret
+	}
+	track := disc.Tracks[id.TrackID-1]
+	ret.TrackInfo = track.TrackInfo
+	return ret
+}
+
 func SearchAlbums(keyword string) []AlbumDetails {
 	ret := make([]AlbumDetails, 0)
 	for _, v := range albumIdx {

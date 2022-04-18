@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"github.com/ProjectAnni/anniv-go/meta"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
@@ -10,6 +11,52 @@ import (
 	"net/http"
 	"strconv"
 )
+
+type PatchedPlaylistInfo struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	IsPublic    bool   `json:"is_public"`
+	Cover       Cover  `json:"cover"`
+}
+
+type PlaylistInfo struct {
+	Name        string              `json:"name"`
+	Description string              `json:"description"`
+	IsPublic    bool                `json:"is_public"`
+	Cover       meta.DiscIdentifier `json:"cover"`
+	ID          string              `json:"id"`
+	Owner       string              `json:"owner"`
+}
+
+type PlaylistDetails struct {
+	PlaylistInfo
+	Items []PlaylistItemWithId `json:"items"`
+}
+
+type PlaylistItem struct {
+	Type        string      `json:"type"`
+	Description string      `json:"description"`
+	Info        interface{} `json:"info"`
+}
+
+type PlaylistForm struct {
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	IsPublic    bool           `json:"is_public"`
+	Cover       Cover          `json:"cover"`
+	Items       []PlaylistItem `json:"items"`
+}
+
+type PlaylistPatchForm struct {
+	ID      string      `json:"id"`
+	Command string      `json:"command"`
+	Payload interface{} `json:"payload"`
+}
+
+type PlaylistItemWithId struct {
+	PlaylistItem
+	ID string `json:"id"`
+}
 
 func EndpointPlaylist(ng *gin.Engine) {
 	g := ng.Group("/api/playlist", AuthRequired)
@@ -22,7 +69,7 @@ func EndpointPlaylist(ng *gin.Engine) {
 			return
 		}
 		if form.Cover.DiscID == nil {
-			form.Cover.DiscID = new(int)
+			form.Cover.DiscID = new(uint)
 			*form.Cover.DiscID = 1
 		}
 		playlist := model.Playlist{
@@ -39,16 +86,14 @@ func EndpointPlaylist(ng *gin.Engine) {
 			if err != nil {
 				return err
 			}
-			for k, v := range form.Songs {
+			for k, v := range form.Items {
 				song := model.PlaylistSong{
-					PlaylistID:  playlist.ID,
-					Playlist:    playlist,
-					AlbumID:     v.AlbumID,
-					DiscID:      v.DiscID,
-					TrackID:     v.TrackID,
-					Description: v.Description,
-					Order:       uint(k),
-					Type:        v.Type,
+					PlaylistID: playlist.ID,
+					Playlist:   playlist,
+					Order:      uint(k),
+				}
+				if err := parsePlaylistItem(&song, v); err != nil {
+					return err
 				}
 				err = db.Save(&song).Error
 				if err != nil {
@@ -142,7 +187,7 @@ func EndpointPlaylist(ng *gin.Engine) {
 		}
 
 		if form.Command == "append" {
-			var payload []PlaylistSongForm
+			var payload []PlaylistItem
 			err := mapstructure.Decode(form.Payload, &payload)
 			if err != nil {
 				ctx.JSON(http.StatusOK, illegalParams("malformed payload"))
@@ -168,17 +213,12 @@ func EndpointPlaylist(ng *gin.Engine) {
 			ord++
 			err = db.Transaction(func(tx *gorm.DB) error {
 				for k, v := range payload {
-					if v.Type != "normal" && v.Type != "dummy" {
-						return errors.New("type must be normal or dummy")
-					}
 					song := model.PlaylistSong{
-						PlaylistID:  playlist.ID,
-						AlbumID:     v.AlbumID,
-						DiscID:      v.DiscID,
-						TrackID:     v.TrackID,
-						Description: v.Description,
-						Order:       uint(ord + k),
-						Type:        v.Type,
+						PlaylistID: playlist.ID,
+						Order:      uint(ord + k),
+					}
+					if err := parsePlaylistItem(&song, v); err != nil {
+						return err
 					}
 					if err := tx.Save(&song).Error; err != nil {
 						return err
@@ -257,51 +297,41 @@ func EndpointPlaylist(ng *gin.Engine) {
 				return
 			}
 		} else if form.Command == "replace" {
-			var payload []PlaylistSong
+			var payload PlaylistItemWithId
 			err = mapstructure.Decode(form.Payload, &payload)
 			if err != nil {
 				ctx.JSON(http.StatusOK, illegalParams("malformed payload"))
 				return
 			}
 			err = db.Transaction(func(tx *gorm.DB) error {
-				for _, v := range payload {
-					id, err := strconv.Atoi(v.ID)
-					if err != nil {
-						return err
-					}
-					t := db.Model(&model.PlaylistSong{}).Where("playlist_id = ? AND id = ?", playlist.ID, id)
-					if v.Type != "normal" && v.Type != "dummy" {
-						return errors.New("type must be normal or dummy")
-					}
-					t = t.Updates(map[string]interface{}{
-						"album_id":    v.AlbumID,
-						"disc_id":     v.DiscID,
-						"track_id":    v.TrackID,
-						"description": v.Description,
-						"type":        v.Type,
-					})
-					if t.Error != nil {
-						return t.Error
-					}
-					if t.RowsAffected != 1 {
-						return errors.New("song not found")
-					}
+				id, err := strconv.Atoi(payload.ID)
+				if err != nil {
+					return err
 				}
-				return nil
+				song := model.PlaylistSong{}
+				err = db.Model(&model.PlaylistSong{}).Where("playlist_id = ? AND id = ?", playlist.ID, id).
+					First(&song).Error
+				if err != nil {
+					return err
+				}
+				if err := parsePlaylistItem(&song, payload.PlaylistItem); err != nil {
+					return err
+				}
+				return db.Save(&song).Error
 			})
 			if err != nil {
 				ctx.JSON(http.StatusOK, writeErr(err))
 				return
 			}
 		} else if form.Command == "info" {
-			var payload PlaylistMeta
+			var payload PatchedPlaylistInfo
 			err = mapstructure.Decode(form.Payload, &payload)
 			if err != nil {
 				ctx.JSON(http.StatusOK, illegalParams("malformed payload"))
 				return
 			}
 			if payload.Cover.DiscID == nil {
-				var disc = 1
+				var disc = uint(1)
 				payload.Cover.DiscID = &disc
 			}
 			playlist.Name = payload.Name
@@ -382,28 +412,28 @@ func EndpointPlaylist(ng *gin.Engine) {
 				Description: v.Description,
 				Owner:       strconv.Itoa(int(v.UserID)),
 				IsPublic:    v.IsPublic,
-				Cover: Cover{
-					AlbumID: v.CoverAlbumID,
-					DiscID:  &v.CoverDiscID,
+				Cover: meta.DiscIdentifier{
+					AlbumID: meta.AlbumIdentifier(v.CoverAlbumID),
+					DiscID:  v.CoverDiscID,
 				},
 			})
 		}
 		ctx.JSON(http.StatusOK, resOk(res))
 	})
-
 }
 
-func queryPlaylist(p model.Playlist) (*Playlist, error) {
-	ret := Playlist{
-		ID:          strconv.Itoa(int(p.ID)),
-		Name:        p.Name,
-		Description: p.Description,
-		Owner:       strconv.Itoa(int(p.UserID)),
-		IsPublic:    p.IsPublic,
-		Songs:       []PlaylistSong{},
-		Cover: Cover{
-			AlbumID: p.CoverAlbumID,
-			DiscID:  &p.CoverDiscID,
+func queryPlaylist(p model.Playlist) (*PlaylistDetails, error) {
+	ret := PlaylistDetails{
+		PlaylistInfo: PlaylistInfo{
+			ID:          strconv.Itoa(int(p.ID)),
+			Name:        p.Name,
+			Description: p.Description,
+			Owner:       strconv.Itoa(int(p.UserID)),
+			IsPublic:    p.IsPublic,
+			Cover: meta.DiscIdentifier{
+				AlbumID: meta.AlbumIdentifier(p.CoverAlbumID),
+				DiscID:  p.CoverDiscID,
+			},
 		},
 	}
 
@@ -417,13 +447,64 @@ func queryPlaylist(p model.Playlist) (*Playlist, error) {
 		return nil, err
 	}
 	for _, v := range songs {
-		ret.Songs = append(ret.Songs, PlaylistSong{
-			TrackInfoWithAlbum: queryTrackInfo(v.AlbumID, v.DiscID, v.TrackID),
-			Description:        v.Description,
-			ID:                 strconv.Itoa(int(v.ID)),
-			Type:               v.Type,
-		})
+		item := PlaylistItemWithId{
+			PlaylistItem: PlaylistItem{
+				Type:        v.Type,
+				Description: v.Description,
+			},
+			ID: strconv.Itoa(int(v.ID)),
+		}
+		if v.Type == "normal" {
+			id := meta.TrackIdentifier{
+				DiscIdentifier: meta.DiscIdentifier{
+					AlbumID: meta.AlbumIdentifier(v.AlbumID),
+					DiscID:  v.DiscID,
+				},
+				TrackID: v.TrackID,
+			}
+			item.Info = meta.GetTrackInfo(id)
+		} else if v.Type == "dummy" {
+			item.Info = v.TrackInfo
+		} else {
+			// type = album
+			album, ok := meta.GetAlbumDetails(v.AlbumID)
+			info := meta.AlbumInfo{}
+			if !ok {
+				info.AlbumID = meta.AlbumIdentifier(v.AlbumID)
+			} else {
+				info = album.AlbumInfo
+			}
+			item.Info = info
+		}
+		ret.Items = append(ret.Items, item)
 	}
 
 	return &ret, nil
+}
+
+func parsePlaylistItem(song *model.PlaylistSong, item PlaylistItem) error {
+	song.Description = item.Description
+	song.Type = item.Type
+	if item.Type == "normal" {
+		info := meta.TrackIdentifier{}
+		if err := mapstructure.Decode(item.Info, &info); err != nil {
+			return err
+		}
+		song.AlbumID = string(info.AlbumID)
+		song.DiscID = info.DiscID
+		song.TrackID = info.TrackID
+	} else if item.Type == "dummy" {
+		if err := mapstructure.Decode(item.Info, &song.TrackInfo); err != nil {
+			return err
+		}
+	} else if item.Type == "album" {
+		albumId, ok := item.Info.(string)
+		if !ok {
+			return errors.New("invalid payload")
+		}
+		song.AlbumID = albumId
+	} else {
+		return errors.New("invalid item type")
+	}
+	return nil
 }
