@@ -37,10 +37,10 @@ type albumInfoDef struct {
 }
 
 type DiscInfo struct {
-	Title   string `json:"title" toml:"title"`
-	Artist  string `json:"artist" toml:"artist"`
-	Catalog string `json:"catalog" toml:"catalog"`
-	Type    string `json:"type" toml:"type"`
+	Title   *string `json:"title" toml:"title"`
+	Artist  *string `json:"artist" toml:"artist"`
+	Catalog string  `json:"catalog" toml:"catalog"`
+	Type    *string `json:"type" toml:"type"`
 }
 
 type DiscDetails struct {
@@ -51,9 +51,9 @@ type DiscDetails struct {
 }
 
 type TrackInfo struct {
-	Title  string `json:"title" toml:"title"`
-	Artist string `json:"artist" toml:"artist"`
-	Type   string `json:"type" toml:"type"`
+	Title  string  `json:"title" toml:"title"`
+	Artist *string `json:"artist" toml:"artist"`
+	Type   *string `json:"type" toml:"type"`
 }
 
 type TrackDetail struct {

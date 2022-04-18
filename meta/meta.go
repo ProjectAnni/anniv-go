@@ -211,7 +211,6 @@ func readAlbums(p string) ([]AlbumDetails, error) {
 	}
 	for _, v := range f {
 		record := record{}
-
 		date := ""
 
 		f, err := os.Open(path.Join(p, v.Name()))
@@ -252,14 +251,11 @@ func readAlbums(p string) ([]AlbumDetails, error) {
 			albumTags[v] = true
 		}
 		for _, disc := range album.Discs {
-			if disc.Type == "" {
-				disc.Type = album.Type
+			if disc.Type == nil {
+				disc.Type = &album.Type
 			}
-			if disc.Artist == "" {
-				disc.Artist = album.Artist
-			}
-			if disc.Title == "" {
-				disc.Title = album.Title
+			if disc.Artist == nil {
+				disc.Artist = &album.Artist
 			}
 			if disc.Tags == nil {
 				disc.Tags = []string{}
@@ -272,17 +268,11 @@ func readAlbums(p string) ([]AlbumDetails, error) {
 				discTags[v] = true
 			}
 			for _, track := range disc.Tracks {
-				if track.Title == "" {
-					track.Title = disc.Title
-				}
-				if track.Artist == "" {
+				if track.Artist == nil {
 					track.Artist = disc.Artist
 				}
-				if track.Type == "" {
+				if track.Type == nil {
 					track.Type = disc.Type
-				}
-				if track.Tags == nil {
-					track.Tags = []string{}
 				}
 				if track.Artists == nil {
 					track.Artists = disc.Artists
