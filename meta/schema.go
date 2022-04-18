@@ -31,6 +31,11 @@ type AlbumDetails struct {
 	Discs   []*DiscDetails `json:"discs" toml:"discs"`
 }
 
+type albumInfoDef struct {
+	AlbumDetails
+	Date interface{} `json:"date" toml:"date"`
+}
+
 type DiscInfo struct {
 	Title   string `json:"title" toml:"title"`
 	Artist  string `json:"artist" toml:"artist"`
@@ -76,6 +81,6 @@ type tagDef struct {
 }
 
 type record struct {
-	Album AlbumDetails   `json:"album" toml:"album"`
+	Album albumInfoDef   `json:"album" toml:"album"`
 	Discs []*DiscDetails `json:"discs" toml:"discs"`
 }
