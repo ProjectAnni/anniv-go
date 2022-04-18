@@ -141,7 +141,7 @@ func GetTrackInfo(id TrackIdentifier) TrackInfoWithAlbum {
 	if !ok {
 		return ret
 	}
-	ret.Title = album.Title
+	ret.AlbumTitle = album.Title
 	if id.DiscID > uint(len(album.Discs)) {
 		return ret
 	}
