@@ -13,10 +13,10 @@ import (
 )
 
 type PatchedPlaylistInfo struct {
-	Name        string `json:"name" mapstructure:"name"`
-	Description string `json:"description" mapstructure:"description"`
-	IsPublic    bool   `json:"is_public" mapstructure:"is_public"`
-	Cover       Cover  `json:"cover" mapstructure:"cover"`
+	Name        *string `json:"name" mapstructure:"name"`
+	Description *string `json:"description" mapstructure:"description"`
+	IsPublic    *bool   `json:"is_public" mapstructure:"is_public"`
+	Cover       *Cover  `json:"cover" mapstructure:"cover"`
 }
 
 type PlaylistInfo struct {
@@ -330,15 +330,23 @@ func EndpointPlaylist(ng *gin.Engine) {
 				ctx.JSON(http.StatusOK, illegalParams("malformed payload"))
 				return
 			}
-			if payload.Cover.DiscID == nil {
-				var disc = uint(1)
-				payload.Cover.DiscID = &disc
+			if payload.Name != nil {
+				playlist.Name = *payload.Name
 			}
-			playlist.Name = payload.Name
-			playlist.Description = payload.Description
-			playlist.CoverAlbumID = payload.Cover.AlbumID
-			playlist.CoverDiscID = *payload.Cover.DiscID
-			playlist.IsPublic = payload.IsPublic
+			if payload.Description != nil {
+				playlist.Description = *payload.Description
+			}
+			if payload.Cover != nil {
+				if payload.Cover.DiscID == nil {
+					var disc = uint(1)
+					payload.Cover.DiscID = &disc
+				}
+				playlist.CoverAlbumID = payload.Cover.AlbumID
+				playlist.CoverDiscID = *payload.Cover.DiscID
+			}
+			if payload.IsPublic != nil {
+				playlist.IsPublic = *payload.IsPublic
+			}
 			err = db.Save(&playlist).Error
 			if err != nil {
 				ctx.JSON(http.StatusOK, writeErr(err))
