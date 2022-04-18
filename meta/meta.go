@@ -214,15 +214,6 @@ func readAlbums(p string) ([]AlbumDetails, error) {
 
 		date := ""
 
-		localDate, ok := record.Album.Date.(toml.LocalDate)
-		if ok {
-			date = localDate.String()
-		} else if str, ok := record.Album.Date.(string); ok {
-			date = str
-		} else {
-			return nil, errors.New(v.Name() + ": invalid date")
-		}
-
 		f, err := os.Open(path.Join(p, v.Name()))
 		if err != nil {
 			return nil, errors.New(v.Name() + ":" + err.Error())
@@ -232,6 +223,16 @@ func readAlbums(p string) ([]AlbumDetails, error) {
 			return nil, errors.New(v.Name() + ":" + err.Error())
 		}
 		f.Close()
+
+		localDate, ok := record.Album.Date.(toml.LocalDate)
+		if ok {
+			date = localDate.String()
+		} else if str, ok := record.Album.Date.(string); ok {
+			date = str
+		} else {
+			return nil, errors.New(v.Name() + ": invalid date")
+		}
+
 		album := AlbumDetails{
 			AlbumInfo: AlbumInfo{
 				AlbumID: record.Album.AlbumID,
