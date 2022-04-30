@@ -157,7 +157,7 @@ func GetTrackInfo(id TrackIdentifier) TrackInfoWithAlbum {
 func SearchAlbums(keyword string) []AlbumDetails {
 	ret := make([]AlbumDetails, 0)
 	for _, v := range albumIdx {
-		if strings.Contains(v.Title, keyword) || v.Catalog == keyword {
+		if strings.Contains(strings.ToLower(v.Title), strings.ToLower(keyword)) || v.Catalog == keyword {
 			ret = append(ret, v)
 		}
 	}
