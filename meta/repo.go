@@ -171,7 +171,7 @@ func SearchTracks(keyword string) []TrackInfoWithAlbum {
 		for _, disc := range album.Discs {
 			trackId := uint(1)
 			for _, track := range disc.Tracks {
-				if strings.Contains(track.Title, keyword) {
+				if strings.Contains(strings.ToLower(track.Title), strings.ToLower(keyword)) {
 					ret = append(ret, TrackInfoWithAlbum{
 						TrackIdentifier: TrackIdentifier{
 							DiscIdentifier: DiscIdentifier{
