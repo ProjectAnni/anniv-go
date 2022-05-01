@@ -186,8 +186,8 @@ func SearchTracks(keyword string) []TrackInfoWithAlbum {
 				}
 				trackId++
 			}
+			discId++
 		}
-		discId++
 	}
 	return ret
 }
