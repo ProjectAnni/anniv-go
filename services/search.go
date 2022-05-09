@@ -7,8 +7,8 @@ import (
 )
 
 type SearchResult struct {
-	Albums []meta.AlbumDetails
-	Tracks []meta.TrackInfoWithAlbum
+	Albums []meta.AlbumDetails       `json:"albums"`
+	Tracks []meta.TrackInfoWithAlbum `json:"tracks"`
 }
 
 func EndpointSearch(ng *gin.Engine) {
