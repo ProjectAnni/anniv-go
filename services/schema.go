@@ -157,15 +157,6 @@ type PlaylistResult struct {
 	Owner       string `json:"owner"`
 }
 
-type ShareEntry struct {
-	ID   string `json:"id"`
-	Date int64  `json:"date"`
-}
-
-type CreateShareForm struct {
-	Data string `json:"data"`
-}
-
 type FavoriteMusicEntry struct {
 	AlbumID string `json:"album_id"`
 	DiscID  int    `json:"disc_id"`

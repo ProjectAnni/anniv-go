@@ -65,10 +65,11 @@ type PlaylistSong struct {
 
 type Share struct {
 	gorm.Model
-	UserID  uint
-	User    User
-	Data    string
-	ShareID string `gorm:"uniqueIndex"`
+	UserID     uint
+	User       User
+	Info       []byte
+	TokenGrant []byte
+	ShareID    string `gorm:"uniqueIndex"`
 }
 
 type FavoriteMusic struct {

@@ -3,6 +3,7 @@ package services
 import (
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
 )
@@ -26,6 +27,25 @@ type TokenPatch struct {
 	URL      *string `json:"url"`
 	Token    *string `json:"token"`
 	Priority *int    `json:"priority"`
+}
+
+type AnnilTokenShareInfo struct {
+	KeyID   string   `json:"key_id"`
+	Secret  string   `json:"secret"`
+	Allowed []string `json:"allowed,omitempty"`
+}
+
+type AnnilUserClaims struct {
+	jwt.RegisteredClaims
+	Type   string               `json:"type"`
+	UserID string               `json:"user_id"`
+	Share  *AnnilTokenShareInfo `json:"share,omitempty"`
+}
+
+type AnnilShareClaims struct {
+	jwt.RegisteredClaims
+	Type   string                       `json:"type"`
+	Audios map[string]map[string][]uint `json:"audios"`
 }
 
 func tokenResponse(t model.Token) TokenResponse {
