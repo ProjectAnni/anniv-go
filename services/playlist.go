@@ -430,19 +430,23 @@ func EndpointPlaylist(ng *gin.Engine) {
 	})
 }
 
+func playlistInfo(p model.Playlist) PlaylistInfo {
+	return PlaylistInfo{
+		ID:          strconv.Itoa(int(p.ID)),
+		Name:        p.Name,
+		Description: p.Description,
+		Owner:       strconv.Itoa(int(p.UserID)),
+		IsPublic:    p.IsPublic,
+		Cover: meta.DiscIdentifier{
+			AlbumID: meta.AlbumIdentifier(p.CoverAlbumID),
+			DiscID:  p.CoverDiscID,
+		},
+	}
+}
+
 func queryPlaylist(p model.Playlist) (*PlaylistDetails, error) {
 	ret := PlaylistDetails{
-		PlaylistInfo: PlaylistInfo{
-			ID:          strconv.Itoa(int(p.ID)),
-			Name:        p.Name,
-			Description: p.Description,
-			Owner:       strconv.Itoa(int(p.UserID)),
-			IsPublic:    p.IsPublic,
-			Cover: meta.DiscIdentifier{
-				AlbumID: meta.AlbumIdentifier(p.CoverAlbumID),
-				DiscID:  p.CoverDiscID,
-			},
-		},
+		PlaylistInfo: playlistInfo(p),
 	}
 
 	var songs []model.PlaylistSong
