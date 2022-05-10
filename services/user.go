@@ -77,7 +77,7 @@ func EndpointUser(ng *gin.Engine) {
 		}
 		tokens, err := signUserTokens(form.Email)
 		if err != nil {
-			ctx.JSON(http.StatusOK, resErr(InternalError, "failed to sign default tokens"))
+			ctx.JSON(http.StatusOK, resErr(InternalError, "failed to sign default tokens: "+err.Error()))
 			return
 		}
 		err = db.Transaction(func(tx *gorm.DB) error {
