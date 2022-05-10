@@ -98,7 +98,7 @@ func EndpointToken(ng *gin.Engine) {
 			})
 			return
 		}
-		if token.Controlled {
+		if token.Controlled && (form.Token != nil || form.Name != nil || form.URL != nil) {
 			ctx.JSON(http.StatusOK, resErr(ControlledToken, "controlled token"))
 			return
 		}
