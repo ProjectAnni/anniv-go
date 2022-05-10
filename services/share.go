@@ -220,8 +220,10 @@ func generateTokenGrants(user model.User, tracks []meta.ExportedTrackList, m map
 			return nil, errors.New("no token available for album " + string(album))
 		}
 		// merge entry sets
-		for k, v := range entries {
-			tokenAlbumsMap[tokenId][album][k] = v
+		for d, t := range entries {
+			for tid := range t {
+				tokenAlbumsMap[tokenId][album][d][tid] = true
+			}
 		}
 	}
 
@@ -254,9 +256,6 @@ func getTokenGrant(userToken string, server string, albums albumShareEntries) (*
 	shareClaims := AnnilShareClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer: "anniv",
-			ExpiresAt: &jwt.NumericDate{
-				Time: time.Now().Add(time.Hour * 24 * 30),
-			},
 		},
 		Type:   "share",
 		Audios: nil,
