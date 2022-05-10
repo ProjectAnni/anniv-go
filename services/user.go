@@ -262,7 +262,7 @@ func wrongPassword() Response {
 	}
 }
 
-var client = &http.Client{Timeout: 10}
+var client = &http.Client{Timeout: time.Second * 10}
 
 func signUserTokens(user string) ([]Token, error) {
 	res := []Token(nil)
