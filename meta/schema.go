@@ -84,3 +84,54 @@ type record struct {
 	Album albumInfoDef   `json:"album" toml:"album"`
 	Discs []*DiscDetails `json:"discs" toml:"discs"`
 }
+
+type ExportedAlbumInfo struct {
+	AlbumInfo
+	Discs []ExportedDiscInfo `json:"discs"`
+}
+
+type ExportedDiscInfo struct {
+	DiscInfo
+	Tracks []*TrackInfo `json:"tracks"`
+}
+
+func ExportAlbumInfo(album AlbumDetails) ExportedAlbumInfo {
+	discs := make([]ExportedDiscInfo, 0, len(album.Discs))
+	for _, v := range album.Discs {
+		tracks := make([]*TrackInfo, 0, len(v.Tracks))
+		for _, t := range v.Tracks {
+			tracks = append(tracks, &t.TrackInfo)
+		}
+		discs = append(discs, ExportedDiscInfo{
+			DiscInfo: v.DiscInfo,
+			Tracks:   tracks,
+		})
+	}
+	return ExportedAlbumInfo{
+		AlbumInfo: album.AlbumInfo,
+		Discs:     discs,
+	}
+}
+
+type ExportedPlaylistInfo struct {
+	Name        string              `json:"name"`
+	Description string              `json:"description"`
+	Cover       DiscIdentifier      `json:"cover"`
+	Songs       []ExportedTrackList `json:"songs"`
+}
+
+type ExportedTrackList struct {
+	DiscIdentifier
+	Tracks []uint `json:"tracks"`
+}
+
+type ExportedToken struct {
+	Server string `json:"server"`
+	Token  string `json:"token"`
+}
+
+type ExportedPlaylist struct {
+	ExportedPlaylistInfo
+	Tokens   []ExportedToken                       `json:"tokens"`
+	Metadata map[AlbumIdentifier]ExportedAlbumInfo `json:"metadata"`
+}

@@ -1,15 +1,18 @@
 package services
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
 	"github.com/ProjectAnni/anniv-go/config"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/pquerna/otp/totp"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -17,13 +20,6 @@ import (
 )
 
 var emailReg = regexp.MustCompile("^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)])$")
-
-type annilTokenClaims struct {
-	jwt.RegisteredClaims
-	Type       string `json:"type"`
-	Username   string `json:"username"`
-	AllowShare bool   `json:"allowShare"`
-}
 
 func EndpointUser(ng *gin.Engine) {
 	g := ng.Group("/api/user")
@@ -79,25 +75,29 @@ func EndpointUser(ng *gin.Engine) {
 			Enable2FA: form.Secret != "",
 			Secret:    form.Secret,
 		}
+		tokens, err := signUserTokens(form.Email)
+		if err != nil {
+			ctx.JSON(http.StatusOK, resErr(InternalError, "failed to sign default tokens"))
+		}
 		err = db.Transaction(func(tx *gorm.DB) error {
 			err := tx.Create(&user).Error
 			if err != nil {
 				return err
 			}
-			if config.Cfg.AnnilToken.Enabled {
-				token, err := generateAnnilCode(user.Email)
+			for _, v := range tokens {
+				t := model.Token{
+					TokenID:    uuid.NewV4().String(),
+					Name:       v.Name,
+					URL:        v.URL,
+					Token:      v.Token,
+					Priority:   v.Priority,
+					UserID:     user.ID,
+					Controlled: true,
+				}
+				err = tx.Create(&t).Error
 				if err != nil {
 					return err
 				}
-				t := model.Token{
-					TokenID:  uuid.NewV4().String(),
-					Name:     "Default",
-					URL:      config.Cfg.AnnilToken.URL,
-					Token:    token,
-					Priority: 0,
-					UserID:   user.ID,
-				}
-				return tx.Save(&t).Error
 			}
 			return nil
 		})
@@ -261,19 +261,46 @@ func wrongPassword() Response {
 	}
 }
 
-func generateAnnilCode(username string) (string, error) {
-	claims := annilTokenClaims{
-		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer: "anniv",
-		},
-		Type:       "user",
-		Username:   username,
-		AllowShare: config.Cfg.AnnilToken.AllowShare,
+var client = &http.Client{Timeout: 10}
+
+func signUserTokens(user string) ([]Token, error) {
+	res := []Token(nil)
+	for _, v := range config.Cfg.AnnilToken {
+		if !v.Enabled {
+			continue
+		}
+		payload := map[string]interface{}{
+			"user_id": user,
+			"share":   v.AllowShare,
+		}
+		b, err := json.Marshal(payload)
+		if err != nil {
+			return nil, err
+		}
+		req, err := http.NewRequest(http.MethodPost, v.URL+"/admin/sign", bytes.NewReader(b))
+		if err != nil {
+			return nil, err
+		}
+		resp, err := client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		if resp.StatusCode != 200 {
+			return nil, errors.New("invalid response code")
+		}
+
+		tokenBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		_ = resp.Body.Close()
+		token := string(tokenBytes)
+		res = append(res, Token{
+			Name:     v.Name,
+			URL:      v.URL,
+			Token:    token,
+			Priority: 0,
+		})
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	ss, err := token.SignedString([]byte(config.Cfg.AnnilToken.Secret))
-	if err != nil {
-		return "", err
-	}
-	return ss, nil
+	return res, nil
 }

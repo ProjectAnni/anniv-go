@@ -1,12 +1,50 @@
 package services
 
 import (
+	"encoding/json"
+	"errors"
+	"github.com/ProjectAnni/anniv-go/meta"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 	"math/rand"
 	"net/http"
+	"strconv"
 	"time"
 )
+
+type ShareEntry struct {
+	ID   string `json:"id"`
+	Date int64  `json:"date"`
+}
+
+type CreateShareForm struct {
+	Info     meta.ExportedPlaylistInfo                       `json:"info"`
+	Metadata map[meta.AlbumIdentifier]meta.ExportedAlbumInfo `json:"metadata"`
+	Albums   map[meta.AlbumIdentifier]string                 `json:"albums"`
+}
+
+type TokenGrant struct {
+	Claims AnnilShareClaims `json:"claims"`
+	Secret string           `json:"secret"`
+	Server string           `json:"server"`
+	Kid    string           `json:"kid"`
+}
+
+func (grant *TokenGrant) Grant() (*meta.ExportedToken, error) {
+	claims := grant.Claims
+	claims.ExpiresAt = &jwt.NumericDate{Time: time.Now().Add(time.Hour * 24)}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token.Header["kid"] = grant.Kid
+	tokenString, err := token.SignedString([]byte(grant.Secret))
+	if err != nil {
+		return nil, err
+	}
+	return &meta.ExportedToken{
+		Server: grant.Server,
+		Token:  tokenString,
+	}, nil
+}
 
 func EndpointShare(ng *gin.Engine) {
 	g := ng.Group("/api/share")
@@ -20,7 +58,30 @@ func EndpointShare(ng *gin.Engine) {
 			return
 		}
 		ctx.Header("Access-Control-Allow-Origin", "*")
-		ctx.JSON(http.StatusOK, resOk(share.Data))
+		var resp meta.ExportedPlaylist
+		err = json.Unmarshal(share.Info, &resp)
+		if err != nil {
+			ctx.JSON(http.StatusOK, resErr(InternalError, err.Error()))
+			return
+		}
+
+		var grants []TokenGrant
+		err = json.Unmarshal(share.TokenGrant, &grants)
+		if err != nil {
+			ctx.JSON(http.StatusOK, resErr(InternalError, err.Error()))
+			return
+		}
+
+		for _, v := range grants {
+			token, err := v.Grant()
+			if err != nil {
+				ctx.JSON(http.StatusOK, resErr(InternalError, err.Error()))
+				return
+			}
+			resp.Tokens = append(resp.Tokens, *token)
+		}
+
+		ctx.JSON(http.StatusOK, resOk(resp))
 	})
 
 	g.GET("/", AuthRequired, func(ctx *gin.Context) {
@@ -73,10 +134,34 @@ func EndpointShare(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, illegalParams("malformed create form"))
 			return
 		}
+		data := meta.ExportedPlaylist{
+			ExportedPlaylistInfo: form.Info,
+			Metadata:             form.Metadata,
+		}
+		completeMetadata(data.Metadata, data.Songs)
+		if form.Albums == nil {
+			ctx.JSON(http.StatusOK, resErr(IllegalParams, "albums must not be null if tokens are not signed yet"))
+			return
+		}
+		grants, err := generateTokenGrants(user, data.Songs, form.Albums)
+		if err != nil {
+			ctx.JSON(http.StatusOK, resErr(InternalError, err.Error()))
+		}
+		d, err := json.Marshal(data)
+		if err != nil {
+			ctx.JSON(http.StatusOK, resErr(InternalError, err.Error()))
+			return
+		}
+		g, err := json.Marshal(grants)
+		if err != nil {
+			ctx.JSON(http.StatusOK, resErr(InternalError, err.Error()))
+			return
+		}
 		share := model.Share{
-			UserID:  user.ID,
-			Data:    form.Data,
-			ShareID: randSeq(8),
+			UserID:     user.ID,
+			Info:       d,
+			TokenGrant: g,
+			ShareID:    randSeq(8),
 		}
 		if err := db.Save(&share).Error; err != nil {
 			ctx.JSON(http.StatusOK, writeErr(err))
@@ -103,4 +188,91 @@ func randSeq(n int) string {
 		b[i] = letters[rand.Intn(len(letters))]
 	}
 	return string(b)
+}
+
+func completeMetadata(metadata map[meta.AlbumIdentifier]meta.ExportedAlbumInfo, songs []meta.ExportedTrackList) {
+	for _, song := range songs {
+		albumId := song.AlbumID
+		if _, ok := metadata[albumId]; !ok {
+			details, exist := meta.GetAlbumDetails(string(albumId))
+			if exist {
+				metadata[albumId] = meta.ExportAlbumInfo(details)
+			}
+		}
+	}
+}
+
+type albumShareEntries map[meta.AlbumIdentifier]map[uint]map[uint]bool
+
+func generateTokenGrants(user model.User, tracks []meta.ExportedTrackList, m map[meta.AlbumIdentifier]string) ([]TokenGrant, error) {
+	var tmp albumShareEntries
+	for _, v := range tracks {
+		for _, tid := range v.Tracks {
+			tmp[v.AlbumID][v.DiscID][tid] = true
+		}
+	}
+
+	var tokenAlbumsMap map[string]albumShareEntries
+
+	for album, entries := range tmp {
+		tokenId, ok := m[album]
+		if !ok {
+			return nil, errors.New("no token available for album " + string(album))
+		}
+		// merge entry sets
+		for d, t := range entries {
+			for tid := range t {
+				tokenAlbumsMap[tokenId][album][d][tid] = true
+			}
+		}
+	}
+
+	res := make([]TokenGrant, 0, len(m))
+	for tid, albums := range tokenAlbumsMap {
+		var userToken model.Token
+		if err := db.Where("token_id=?", tid).Where("user_id=?", user.ID).First(&userToken).Error; err != nil {
+			return nil, err
+		}
+		grant, err := getTokenGrant(userToken.Token, userToken.URL, albums)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, *grant)
+	}
+	return res, nil
+}
+
+func getTokenGrant(userToken string, server string, albums albumShareEntries) (*TokenGrant, error) {
+	userTokenParsed, _, err := new(jwt.Parser).ParseUnverified(userToken, AnnilUserClaims{})
+	if err != nil {
+		return nil, err
+	}
+	userTokenClaims := userTokenParsed.Claims.(AnnilUserClaims)
+	if userTokenClaims.Share == nil {
+		return nil, errors.New("token does not support share")
+	}
+	keyID := userTokenClaims.Share.KeyID
+	secret := userTokenClaims.Share.Secret
+	shareClaims := AnnilShareClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer: "anniv",
+		},
+		Type:   "share",
+		Audios: nil,
+	}
+	for album, entries := range albums {
+		for discId, t := range entries {
+			dId := strconv.Itoa(int(discId))
+			shareClaims.Audios[string(album)][dId] = make([]uint, 0, len(t))
+			for trackId := range t {
+				shareClaims.Audios[string(album)][dId] = append(shareClaims.Audios[string(album)][dId], trackId)
+			}
+		}
+	}
+	return &TokenGrant{
+		Claims: shareClaims,
+		Secret: secret,
+		Server: server,
+		Kid:    keyID,
+	}, nil
 }
