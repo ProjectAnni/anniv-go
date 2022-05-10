@@ -7,6 +7,40 @@ import (
 	"net/http"
 )
 
+type Token struct {
+	Name     string `json:"name"`
+	URL      string `json:"url"`
+	Token    string `json:"token"`
+	Priority int    `json:"priority"`
+}
+
+type TokenResponse struct {
+	ID         string `json:"id"`
+	Controlled bool   `json:"controlled"`
+	Token
+}
+
+type TokenPatch struct {
+	ID       string  `json:"id"`
+	Name     *string `json:"name"`
+	URL      *string `json:"url"`
+	Token    *string `json:"token"`
+	Priority *int    `json:"priority"`
+}
+
+func tokenResponse(t model.Token) TokenResponse {
+	return TokenResponse{
+		ID:         t.TokenID,
+		Controlled: t.Controlled,
+		Token: Token{
+			Name:     t.Name,
+			URL:      t.URL,
+			Token:    t.Token,
+			Priority: t.Priority,
+		},
+	}
+}
+
 func EndpointToken(ng *gin.Engine) {
 	g := ng.Group("/api/credential", AuthRequired)
 
@@ -17,35 +51,40 @@ func EndpointToken(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, readErr(err))
 			return
 		}
-		ctx.JSON(http.StatusOK, resOk(tokenInfos(tokens)))
+		res := make([]TokenResponse, 0, len(tokens))
+		for _, v := range tokens {
+			res = append(res, tokenResponse(v))
+		}
+		ctx.JSON(http.StatusOK, resOk(res))
 	})
 
 	g.POST("", func(ctx *gin.Context) {
 		user := ctx.MustGet("user").(model.User)
-		form := TokenForm{}
+		form := Token{}
 		if err := ctx.ShouldBind(&form); err != nil {
 			ctx.JSON(http.StatusOK, illegalParams("malformed token form"))
 			return
 		}
 		token := model.Token{
-			TokenID:  uuid.NewV4().String(),
-			Name:     form.Name,
-			URL:      form.URL,
-			Token:    form.Token,
-			Priority: form.Priority,
-			UserID:   user.ID,
-			User:     user,
+			TokenID:    uuid.NewV4().String(),
+			Name:       form.Name,
+			URL:        form.URL,
+			Token:      form.Token,
+			Priority:   form.Priority,
+			UserID:     user.ID,
+			User:       user,
+			Controlled: false,
 		}
 		if err := db.Save(&token).Error; err != nil {
 			ctx.JSON(http.StatusOK, writeErr(err))
 			return
 		}
-		ctx.JSON(http.StatusOK, resOk(tokenInfo(token)))
+		ctx.JSON(http.StatusOK, resOk(tokenResponse(token)))
 	})
 
 	g.PATCH("", func(ctx *gin.Context) {
 		user := ctx.MustGet("user").(model.User)
-		form := TokenPatchForm{}
+		form := TokenPatch{}
 		if err := ctx.ShouldBind(&form); err != nil {
 			ctx.JSON(http.StatusOK, illegalParams("malformed token patch form"))
 			return
@@ -59,10 +98,22 @@ func EndpointToken(ng *gin.Engine) {
 			})
 			return
 		}
-		token.Token = form.Token
-		token.Name = form.Name
-		token.URL = form.URL
-		token.Priority = form.Priority
+		if token.Controlled {
+			ctx.JSON(http.StatusOK, resErr(ControlledToken, "controlled token"))
+			return
+		}
+		if form.Token != nil {
+			token.Token = *form.Token
+		}
+		if form.Name != nil {
+			token.Name = *form.Name
+		}
+		if form.URL != nil {
+			token.URL = *form.URL
+		}
+		if form.Priority != nil {
+			token.Priority = *form.Priority
+		}
 		if err := db.Model(&token).Updates(&token).Error; err != nil {
 			ctx.JSON(http.StatusOK, writeErr(err))
 			return
@@ -84,6 +135,10 @@ func EndpointToken(ng *gin.Engine) {
 				Message: "token not exist",
 				Data:    nil,
 			})
+			return
+		}
+		if token.Controlled {
+			ctx.JSON(http.StatusOK, resErr(ControlledToken, "controlled token"))
 			return
 		}
 		if err := db.Unscoped().Delete(&token).Error; err != nil {

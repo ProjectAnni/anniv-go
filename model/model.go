@@ -29,13 +29,14 @@ type Session struct {
 
 type Token struct {
 	gorm.Model
-	TokenID  string `gorm:"uniqueIndex"`
-	Name     string
-	URL      string
-	Token    string
-	Priority int
-	UserID   uint `gorm:"index"`
-	User     User
+	TokenID    string `gorm:"uniqueIndex"`
+	Name       string
+	URL        string
+	Token      string
+	Priority   int
+	UserID     uint `gorm:"index"`
+	User       User
+	Controlled bool
 }
 
 type Playlist struct {

@@ -136,47 +136,6 @@ type UserIntroForm struct {
 	Avatar   string `json:"avatar"`
 }
 
-type TokenInfo struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	URL      string `json:"url"`
-	Token    string `json:"token"`
-	Priority int    `json:"priority"`
-}
-
-func tokenInfo(token model.Token) TokenInfo {
-	return TokenInfo{
-		ID:       token.TokenID,
-		Name:     token.Name,
-		URL:      token.URL,
-		Token:    token.Token,
-		Priority: token.Priority,
-	}
-}
-
-func tokenInfos(tokens []model.Token) []TokenInfo {
-	ret := make([]TokenInfo, 0, len(tokens))
-	for _, v := range tokens {
-		ret = append(ret, tokenInfo(v))
-	}
-	return ret
-}
-
-type TokenForm struct {
-	Name     string `json:"name"`
-	URL      string `json:"url"`
-	Token    string `json:"token"`
-	Priority int    `json:"priority"`
-}
-
-type TokenPatchForm struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	URL      string `json:"url"`
-	Token    string `json:"token"`
-	Priority int    `json:"priority"`
-}
-
 type DeleteForm struct {
 	ID string `json:"id"`
 }

@@ -20,6 +20,8 @@ const UserNotExist = 102020
 
 const InvalidPatchCommand = 103003
 
+const ControlledToken = 104002
+
 const TFANotEnabled = 202000
 const Wrong2FACode = 202001
 const Illegal2FASecret = 202002
