@@ -138,6 +138,9 @@ func EndpointShare(ng *gin.Engine) {
 			ExportedPlaylistInfo: form.Info,
 			Metadata:             form.Metadata,
 		}
+		if data.Metadata == nil {
+			data.Metadata = make(map[meta.AlbumIdentifier]meta.ExportedAlbumInfo)
+		}
 		completeMetadata(data.Metadata, data.Songs)
 		if form.Albums == nil {
 			ctx.JSON(http.StatusOK, resErr(IllegalParams, "albums must not be null if tokens are not signed yet"))
@@ -146,6 +149,7 @@ func EndpointShare(ng *gin.Engine) {
 		grants, err := generateTokenGrants(user, data.Songs, form.Albums)
 		if err != nil {
 			ctx.JSON(http.StatusOK, resErr(InternalError, err.Error()))
+			return
 		}
 		d, err := json.Marshal(data)
 		if err != nil {
@@ -205,14 +209,20 @@ func completeMetadata(metadata map[meta.AlbumIdentifier]meta.ExportedAlbumInfo, 
 type albumShareEntries map[meta.AlbumIdentifier]map[uint]map[uint]bool
 
 func generateTokenGrants(user model.User, tracks []meta.ExportedTrackList, m map[meta.AlbumIdentifier]string) ([]TokenGrant, error) {
-	var tmp albumShareEntries
+	tmp := make(albumShareEntries)
 	for _, v := range tracks {
 		for _, tid := range v.Tracks {
+			if tmp[v.AlbumID] == nil {
+				tmp[v.AlbumID] = make(map[uint]map[uint]bool)
+			}
+			if tmp[v.AlbumID][v.DiscID] == nil {
+				tmp[v.AlbumID][v.DiscID] = make(map[uint]bool)
+			}
 			tmp[v.AlbumID][v.DiscID][tid] = true
 		}
 	}
 
-	var tokenAlbumsMap map[string]albumShareEntries
+	tokenAlbumsMap := make(map[string]albumShareEntries)
 
 	for album, entries := range tmp {
 		tokenId, ok := m[album]
@@ -222,6 +232,15 @@ func generateTokenGrants(user model.User, tracks []meta.ExportedTrackList, m map
 		// merge entry sets
 		for d, t := range entries {
 			for tid := range t {
+				if tokenAlbumsMap[tokenId] == nil {
+					tokenAlbumsMap[tokenId] = make(albumShareEntries)
+				}
+				if tokenAlbumsMap[tokenId][album] == nil {
+					tokenAlbumsMap[tokenId][album] = make(map[uint]map[uint]bool)
+				}
+				if tokenAlbumsMap[tokenId][album][d] == nil {
+					tokenAlbumsMap[tokenId][album][d] = make(map[uint]bool)
+				}
 				tokenAlbumsMap[tokenId][album][d][tid] = true
 			}
 		}
@@ -243,11 +262,11 @@ func generateTokenGrants(user model.User, tracks []meta.ExportedTrackList, m map
 }
 
 func getTokenGrant(userToken string, server string, albums albumShareEntries) (*TokenGrant, error) {
-	userTokenParsed, _, err := new(jwt.Parser).ParseUnverified(userToken, AnnilUserClaims{})
+	userTokenParsed, _, err := new(jwt.Parser).ParseUnverified(userToken, &AnnilUserClaims{})
 	if err != nil {
 		return nil, err
 	}
-	userTokenClaims := userTokenParsed.Claims.(AnnilUserClaims)
+	userTokenClaims := userTokenParsed.Claims.(*AnnilUserClaims)
 	if userTokenClaims.Share == nil {
 		return nil, errors.New("token does not support share")
 	}
@@ -258,11 +277,14 @@ func getTokenGrant(userToken string, server string, albums albumShareEntries) (*
 			Issuer: "anniv",
 		},
 		Type:   "share",
-		Audios: nil,
+		Audios: make(map[string]map[string][]uint),
 	}
 	for album, entries := range albums {
 		for discId, t := range entries {
 			dId := strconv.Itoa(int(discId))
+			if shareClaims.Audios[string(album)] == nil {
+				shareClaims.Audios[string(album)] = make(map[string][]uint)
+			}
 			shareClaims.Audios[string(album)][dId] = make([]uint, 0, len(t))
 			for trackId := range t {
 				shareClaims.Audios[string(album)][dId] = append(shareClaims.Audios[string(album)][dId], trackId)
