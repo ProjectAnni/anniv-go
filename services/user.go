@@ -279,6 +279,7 @@ func signUserTokens(user string) ([]Token, error) {
 			return nil, err
 		}
 		req, err := http.NewRequest(http.MethodPost, v.URL+"/admin/sign", bytes.NewReader(b))
+		req.Header.Set("Authorization", v.Credential)
 		if err != nil {
 			return nil, err
 		}
