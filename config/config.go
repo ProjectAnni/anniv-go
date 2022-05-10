@@ -17,13 +17,14 @@ type Config struct {
 	RepoURL        string            `yaml:"repo_url"`
 	RequireInvite  bool              `yaml:"require_invite"`
 	InviteCode     string            `yaml:"invite_code"`
-	AnnilToken     AnnilToken        `yaml:"annil_token"`
+	AnnilToken     []AnnilToken      `yaml:"annil_token"`
 }
 
 type AnnilToken struct {
 	Enabled    bool   `yaml:"enabled"`
+	Name       string `yaml:"name"`
 	URL        string `yaml:"url"`
-	Secret     string `yaml:"secret"`
+	Credential string `yaml:"credential"`
 	AllowShare bool   `yaml:"allow_share"`
 }
 
@@ -37,11 +38,14 @@ var Cfg = Config{
 	RepoURL:        "https://github.com/ProjectAnni/repo.git",
 	RequireInvite:  false,
 	InviteCode:     uuid.NewV4().String(),
-	AnnilToken: AnnilToken{
-		Enabled:    false,
-		URL:        "",
-		Secret:     "",
-		AllowShare: false,
+	AnnilToken: []AnnilToken{
+		{
+			Enabled:    false,
+			Name:       "Default Library",
+			URL:        "",
+			Credential: "",
+			AllowShare: false,
+		},
 	},
 }
 
