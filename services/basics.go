@@ -25,7 +25,7 @@ func siteInfo() SiteInfo {
 		features = append(features, "invite")
 	}
 	if meta.DBAvailable() {
-		features = append(features, "anni-db")
+		features = append(features, "metadata-db")
 	}
 	return SiteInfo{
 		SiteName:        config.Cfg.SiteName,

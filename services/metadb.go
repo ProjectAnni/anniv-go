@@ -7,9 +7,9 @@ import (
 )
 
 func EndpointAnniDB(g *gin.Engine) {
-	g.GET("/api/features/anni-db", AuthRequired, func(ctx *gin.Context) {
+	g.GET("/api/features/metadata-db", AuthRequired, func(ctx *gin.Context) {
 		if !meta.DBAvailable() {
-			ctx.String(http.StatusNotFound, "404 page not found")
+			ctx.Status(http.StatusNotFound)
 			return
 		}
 		ctx.File("./tmp/repo.db")
