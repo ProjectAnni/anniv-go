@@ -3,6 +3,7 @@ package meta
 import (
 	"errors"
 	"github.com/pelletier/go-toml/v2"
+	"log"
 	"os"
 	"os/exec"
 	"path"
@@ -91,7 +92,13 @@ func Read(p string) error {
 		}
 	}
 
-	dbAvailable = generateAnniDb() != nil
+	err = generateAnniDb()
+	if err != nil {
+		log.Printf("Failed to generate anni db: %v\n", err)
+		dbAvailable = false
+	} else {
+		dbAvailable = true
+	}
 
 	return nil
 }
