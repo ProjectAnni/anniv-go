@@ -16,7 +16,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = meta.Init(config.Cfg.RepoDir, config.Cfg.RepoURL)
+	err = meta.Init("./tmp/meta", config.Cfg.RepoURL)
 	if err != nil {
 		log.Printf("Failed to init meta repo: %v\n", err)
 		os.Exit(1)

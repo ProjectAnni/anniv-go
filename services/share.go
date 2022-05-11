@@ -33,7 +33,7 @@ type TokenGrant struct {
 
 func (grant *TokenGrant) Grant() (*meta.ExportedToken, error) {
 	claims := grant.Claims
-	claims.ExpiresAt = &jwt.NumericDate{Time: time.Now().Add(time.Hour * 24)}
+	claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Hour * 24))
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token.Header["kid"] = grant.Kid
 	tokenString, err := token.SignedString([]byte(grant.Secret))

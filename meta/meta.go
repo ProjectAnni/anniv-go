@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/pelletier/go-toml/v2"
 	"os"
+	"os/exec"
 	"path"
 )
 
@@ -12,6 +13,11 @@ var tagIdx map[string][]AlbumDetails
 var tagIdxNonRecursive map[string][]AlbumDetails
 var tags []Tag
 var tagGraph map[string][]string
+var dbAvailable = false
+
+func DBAvailable() bool {
+	return dbAvailable
+}
 
 func Read(p string) error {
 	albums, err := readAlbums(path.Join(p, "album"))
@@ -84,6 +90,8 @@ func Read(p string) error {
 			tagIdx[k] = append(tagIdx[k], albumIdx[albumId])
 		}
 	}
+
+	dbAvailable = generateAnniDb() != nil
 
 	return nil
 }
@@ -305,4 +313,13 @@ func toArray(s map[string]bool) []string {
 		ret = append(ret, v)
 	}
 	return ret
+}
+
+func generateAnniDb() error {
+	_, err := exec.LookPath("anni")
+	if err != nil {
+		return err
+	}
+	cmd := exec.Command("anni", "repo", "--root", "./tmp/meta", "db", "./tmp")
+	return cmd.Run()
 }

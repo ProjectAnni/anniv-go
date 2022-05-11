@@ -13,7 +13,6 @@ type Config struct {
 	Enforce2FA     bool              `yaml:"enforce_2fa"`
 	Headers        map[string]string `yaml:"headers"`
 	TrustedProxies []string          `yaml:"trusted_proxies"`
-	RepoDir        string            `yaml:"repo_dir"`
 	RepoURL        string            `yaml:"repo_url"`
 	RequireInvite  bool              `yaml:"require_invite"`
 	InviteCode     string            `yaml:"invite_code"`
@@ -34,7 +33,6 @@ var Cfg = Config{
 	Listen:         ":8080",
 	Enforce2FA:     false,
 	TrustedProxies: []string{"127.0.0.1/32"},
-	RepoDir:        "./data/meta",
 	RepoURL:        "https://github.com/ProjectAnni/repo.git",
 	RequireInvite:  false,
 	InviteCode:     uuid.NewV4().String(),
