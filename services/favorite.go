@@ -43,11 +43,7 @@ func EndpointFavorite(ng *gin.Engine) {
 		if db.Model(&model.FavoriteMusic{}).
 			Where("user_id = ? AND album_id = ? AND disc_id = ? AND track_id = ?",
 				user.ID, form.AlbumID, form.DiscID, form.TrackID).Count(&cnt); cnt != 0 {
-			ctx.JSON(http.StatusOK, Response{
-				Status:  AlreadyExist,
-				Message: "music already exist",
-				Data:    nil,
-			})
+			ctx.JSON(http.StatusOK, resOk(nil))
 			return
 		}
 		music := model.FavoriteMusic{
@@ -116,11 +112,7 @@ func EndpointFavorite(ng *gin.Engine) {
 		}
 		if db.Where("user_id = ? AND playlist_id = ?", user.ID, pid).
 			Find(&model.FavoritePlaylist{}).RowsAffected != 0 {
-			ctx.JSON(http.StatusOK, Response{
-				Status:  AlreadyExist,
-				Message: "playlist already exist",
-				Data:    nil,
-			})
+			ctx.JSON(http.StatusOK, resOk(nil))
 			return
 		}
 		playlist := model.FavoritePlaylist{
