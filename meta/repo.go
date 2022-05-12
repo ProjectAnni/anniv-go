@@ -62,6 +62,7 @@ func updateRepo(path, url string) error {
 	if os.IsNotExist(err) {
 		err = initRepo(path, url)
 		if err != nil {
+			_ = os.RemoveAll(path)
 			return err
 		}
 	} else {
