@@ -47,5 +47,5 @@ func EndpointMeta(ng *gin.Engine) {
 		ctx.JSON(http.StatusOK, resOk(meta.GetTagGraph()))
 	})
 
-	g.GET("/db/*", static.ServeRoot("/api/meta/db", "./tmp/prebuilt"))
+	g.GET("/db/*path", static.ServeRoot("/api/meta/db", "./tmp/prebuilt"))
 }
