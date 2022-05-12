@@ -16,6 +16,7 @@ FROM alpine:latest
 WORKDIR /app
 VOLUME /app/data
 VOLUME /app/tmp
+COPY --from=ghcr.io/projectanni/annil:latest /app/anni /usr/bin
 COPY --from=build /app/anniv-go /app/
 COPY --from=frontend-build /app/dist /app/frontend
 ENV GIN_MODE=release DB_VENDOR=sqlite DB_PATH=/app/data/data.db CONF=/app/data/config.yml
