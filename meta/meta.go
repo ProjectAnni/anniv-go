@@ -3,6 +3,7 @@ package meta
 import (
 	"errors"
 	"github.com/pelletier/go-toml/v2"
+	"io/fs"
 	"log"
 	"os"
 	"os/exec"
@@ -327,6 +328,7 @@ func generateAnniDb() error {
 	if err != nil {
 		return err
 	}
-	cmd := exec.Command("anni", "repo", "--root", "./tmp/meta", "db", "./tmp")
+	_ = os.Mkdir("./tmp/prebuilt", fs.ModePerm)
+	cmd := exec.Command("anni", "repo", "--root", "./tmp/meta", "db", "./tmp/prebuilt")
 	return cmd.Run()
 }

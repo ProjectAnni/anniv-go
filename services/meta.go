@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/ProjectAnni/anniv-go/meta"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -45,4 +46,6 @@ func EndpointMeta(ng *gin.Engine) {
 	g.GET("/tag-graph", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, resOk(meta.GetTagGraph()))
 	})
+
+	g.GET("/db/*", static.ServeRoot("/api/meta/db", "./tmp/prebuilt"))
 }

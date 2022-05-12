@@ -47,7 +47,6 @@ func Start(listen string) error {
 	EndpointShare(g)
 	EndpointFavorite(g)
 	EndpointLyric(g)
-	EndpointAnniDB(g)
 
 	g.NoRoute(static.Serve("/", static.LocalFile("frontend", false)))
 
