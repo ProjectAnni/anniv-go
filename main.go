@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/ProjectAnni/anniv-go/config"
 	"github.com/ProjectAnni/anniv-go/meta"
@@ -10,6 +11,7 @@ import (
 )
 
 func main() {
+	flag.Parse()
 	err := config.Load()
 	if err != nil {
 		fmt.Printf("Failed to load config: %v\n", err)
