@@ -37,11 +37,13 @@ func Start(listen string) error {
 		db.Find(&users)
 		for _, user := range users {
 			err := db.Transaction(func(tx *gorm.DB) error {
-				err := tx.Unscoped().Where("controlled IS NULL").Delete(&model.Token{}).Error
+				err := tx.Unscoped().Where("user_id=?", user.ID).
+					Where("controlled IS NULL").Delete(&model.Token{}).Error
 				if err != nil {
 					return err
 				}
-				err = tx.Unscoped().Where("controlled").Delete(&model.Token{}).Error
+				err = tx.Unscoped().Where("user_id=?", user.ID).
+					Where("controlled").Delete(&model.Token{}).Error
 				if err != nil {
 					return err
 				}
