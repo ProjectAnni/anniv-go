@@ -135,6 +135,8 @@ func GetAlbums() []AlbumDetails {
 }
 
 func GetTrackInfo(id TrackIdentifier) TrackInfoWithAlbum {
+	lock.RLock()
+	defer lock.RUnlock()
 	ret := TrackInfoWithAlbum{
 		TrackIdentifier: id,
 	}
@@ -156,6 +158,8 @@ func GetTrackInfo(id TrackIdentifier) TrackInfoWithAlbum {
 }
 
 func SearchAlbums(keyword string) []AlbumDetails {
+	lock.RLock()
+	defer lock.RUnlock()
 	ret := make([]AlbumDetails, 0)
 	for _, v := range albumIdx {
 		if strings.Contains(strings.ToLower(v.Title), strings.ToLower(keyword)) || v.Catalog == keyword {
@@ -166,6 +170,8 @@ func SearchAlbums(keyword string) []AlbumDetails {
 }
 
 func SearchTracks(keyword string) []TrackInfoWithAlbum {
+	lock.RLock()
+	defer lock.RUnlock()
 	ret := make([]TrackInfoWithAlbum, 0)
 	for _, album := range albumIdx {
 		discId := uint(1)
