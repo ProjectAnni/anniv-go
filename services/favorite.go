@@ -39,23 +39,13 @@ func EndpointFavorite(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, illegalParams("malformed music form"))
 			return
 		}
-		cnt := int64(0)
-		if db.Model(&model.FavoriteMusic{}).
-			Where("user_id = ? AND album_id = ? AND disc_id = ? AND track_id = ?",
-				user.ID, form.AlbumID, form.DiscID, form.TrackID).Count(&cnt); cnt != 0 {
-			ctx.JSON(http.StatusOK, resOk(nil))
-			return
-		}
 		music := model.FavoriteMusic{
 			UserID:  user.ID,
 			AlbumID: string(form.AlbumID),
 			DiscID:  form.DiscID,
 			TrackID: form.TrackID,
 		}
-		if err := db.Save(&music).Error; err != nil {
-			ctx.JSON(http.StatusOK, writeErr(err))
-			return
-		}
+		db.Save(&music)
 		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 
