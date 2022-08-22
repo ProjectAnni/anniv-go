@@ -20,12 +20,13 @@ type PatchedPlaylistInfo struct {
 }
 
 type PlaylistInfo struct {
-	Name        string              `json:"name"`
-	Description string              `json:"description"`
-	IsPublic    bool                `json:"is_public"`
-	Cover       meta.DiscIdentifier `json:"cover"`
-	ID          string              `json:"id"`
-	Owner       string              `json:"owner"`
+	Name         string               `json:"name"`
+	Description  string               `json:"description"`
+	IsPublic     bool                 `json:"is_public"`
+	Cover        *meta.DiscIdentifier `json:"cover"`
+	ID           string               `json:"id"`
+	Owner        string               `json:"owner"`
+	LastModified int64                `json:"last_modified"`
 }
 
 type PlaylistDetails struct {
@@ -68,6 +69,9 @@ func EndpointPlaylist(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, illegalParams("malformed playlist form"))
 			return
 		}
+		if form.Cover.AlbumID == nil {
+			form.Cover.AlbumID = new(string)
+		}
 		if form.Cover.DiscID == nil {
 			form.Cover.DiscID = new(uint)
 			*form.Cover.DiscID = 1
@@ -78,7 +82,7 @@ func EndpointPlaylist(ng *gin.Engine) {
 			UserID:       user.ID,
 			User:         user,
 			IsPublic:     form.IsPublic,
-			CoverAlbumID: form.Cover.AlbumID,
+			CoverAlbumID: *form.Cover.AlbumID,
 			CoverDiscID:  *form.Cover.DiscID,
 		}
 		err := db.Transaction(func(db *gorm.DB) error {
@@ -341,7 +345,7 @@ func EndpointPlaylist(ng *gin.Engine) {
 					var disc = uint(1)
 					payload.Cover.DiscID = &disc
 				}
-				playlist.CoverAlbumID = payload.Cover.AlbumID
+				playlist.CoverAlbumID = *payload.Cover.AlbumID
 				playlist.CoverDiscID = *payload.Cover.DiscID
 			}
 			if payload.IsPublic != nil {
@@ -414,34 +418,29 @@ func EndpointPlaylist(ng *gin.Engine) {
 		}
 		res := make([]PlaylistInfo, 0, len(playlists))
 		for _, v := range playlists {
-			res = append(res, PlaylistInfo{
-				ID:          strconv.Itoa(int(v.ID)),
-				Name:        v.Name,
-				Description: v.Description,
-				Owner:       strconv.Itoa(int(v.UserID)),
-				IsPublic:    v.IsPublic,
-				Cover: meta.DiscIdentifier{
-					AlbumID: meta.AlbumIdentifier(v.CoverAlbumID),
-					DiscID:  v.CoverDiscID,
-				},
-			})
+			res = append(res, playlistInfo(v))
 		}
 		ctx.JSON(http.StatusOK, resOk(res))
 	})
 }
 
 func playlistInfo(p model.Playlist) PlaylistInfo {
-	return PlaylistInfo{
-		ID:          strconv.Itoa(int(p.ID)),
-		Name:        p.Name,
-		Description: p.Description,
-		Owner:       strconv.Itoa(int(p.UserID)),
-		IsPublic:    p.IsPublic,
-		Cover: meta.DiscIdentifier{
+	res := PlaylistInfo{
+		ID:           strconv.Itoa(int(p.ID)),
+		Name:         p.Name,
+		Description:  p.Description,
+		Owner:        strconv.Itoa(int(p.UserID)),
+		IsPublic:     p.IsPublic,
+		Cover:        nil,
+		LastModified: p.UpdatedAt.Unix(),
+	}
+	if p.CoverAlbumID != "" {
+		res.Cover = &meta.DiscIdentifier{
 			AlbumID: meta.AlbumIdentifier(p.CoverAlbumID),
 			DiscID:  p.CoverDiscID,
-		},
+		}
 	}
+	return res
 }
 
 func queryPlaylist(p model.Playlist) (*PlaylistDetails, error) {

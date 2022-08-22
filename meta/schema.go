@@ -116,7 +116,7 @@ func ExportAlbumInfo(album AlbumDetails) ExportedAlbumInfo {
 type ExportedPlaylistInfo struct {
 	Name        string              `json:"name"`
 	Description string              `json:"description"`
-	Cover       DiscIdentifier      `json:"cover"`
+	Cover       *DiscIdentifier     `json:"cover"`
 	Songs       []ExportedTrackList `json:"songs"`
 }
 

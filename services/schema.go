@@ -120,8 +120,8 @@ type Enable2FAForm struct {
 }
 
 type Cover struct {
-	AlbumID string `json:"album_id" mapstructure:"album_id"`
-	DiscID  *uint  `json:"disc_id" mapstructure:"disc_id"`
+	AlbumID *string `json:"album_id" mapstructure:"album_id"`
+	DiscID  *uint   `json:"disc_id" mapstructure:"disc_id"`
 }
 
 type PlaylistResult struct {
