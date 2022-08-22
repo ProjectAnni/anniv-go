@@ -10,6 +10,7 @@ import (
 	"gorm.io/gorm/clause"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type PatchedPlaylistInfo struct {
@@ -216,6 +217,10 @@ func EndpointPlaylist(ng *gin.Engine) {
 			}
 			ord++
 			err = db.Transaction(func(tx *gorm.DB) error {
+				playlist.UpdatedAt = time.Now()
+				if err := db.Save(&playlist).Error; err != nil {
+					return err
+				}
 				for k, v := range payload {
 					song := model.PlaylistSong{
 						PlaylistID: playlist.ID,
@@ -242,6 +247,10 @@ func EndpointPlaylist(ng *gin.Engine) {
 				return
 			}
 			err = db.Transaction(func(tx *gorm.DB) error {
+				playlist.UpdatedAt = time.Now()
+				if err := db.Save(&playlist).Error; err != nil {
+					return err
+				}
 				for _, v := range payload {
 					id, err := strconv.Atoi(v)
 					if err != nil {
@@ -280,6 +289,10 @@ func EndpointPlaylist(ng *gin.Engine) {
 				return
 			}
 			err = db.Transaction(func(tx *gorm.DB) error {
+				playlist.UpdatedAt = time.Now()
+				if err := db.Save(&playlist).Error; err != nil {
+					return err
+				}
 				for k, v := range payload {
 					id, err := strconv.Atoi(v)
 					if err != nil {
@@ -308,6 +321,10 @@ func EndpointPlaylist(ng *gin.Engine) {
 				return
 			}
 			err = db.Transaction(func(tx *gorm.DB) error {
+				playlist.UpdatedAt = time.Now()
+				if err := db.Save(&playlist).Error; err != nil {
+					return err
+				}
 				id, err := strconv.Atoi(payload.ID)
 				if err != nil {
 					return err
