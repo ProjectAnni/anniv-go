@@ -99,7 +99,10 @@ type Lyric struct {
 	Data     string
 	UserID   uint
 	User     User
-	Source   bool
+	// Is track original language
+	Source bool
+	// Lyric source
+	LyricSource string
 }
 
 func (l *Lyric) BeforeCreate(tx *gorm.DB) error {

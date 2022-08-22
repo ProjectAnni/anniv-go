@@ -157,6 +157,7 @@ type LyricLanguage struct {
 	Type        string    `json:"type"`
 	Data        string    `json:"data"`
 	Contributor UserIntro `json:"contributor"`
+	Source      string    `json:"source"`
 }
 
 func lyricLanguage(lyric model.Lyric) LyricLanguage {
@@ -165,6 +166,7 @@ func lyricLanguage(lyric model.Lyric) LyricLanguage {
 		Type:        lyric.Type,
 		Data:        lyric.Data,
 		Contributor: userIntro(lyric.User),
+		Source:      lyric.LyricSource,
 	}
 }
 
