@@ -26,9 +26,7 @@ func Start(listen string) error {
 	}
 	err = model.AutoMigrate(db)
 	if err != nil {
-		if !errors.Is(sqlite.ErrConstraintsNotImplemented, err) {
-			return errors.New("failed to migrate db: " + err.Error())
-		}
+		return errors.New("failed to migrate db: " + err.Error())
 	}
 
 	if *migrateTokens {
@@ -94,6 +92,7 @@ func Start(listen string) error {
 	EndpointShare(g)
 	EndpointFavorite(g)
 	EndpointLyric(g)
+	EndpointStat(g)
 
 	g.NoRoute(static.Serve("/", static.LocalFile("frontend", false)))
 

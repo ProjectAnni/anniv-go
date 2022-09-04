@@ -105,6 +105,14 @@ type Lyric struct {
 	LyricSource string
 }
 
+type PlayRecord struct {
+	gorm.Model
+	UserID uint
+	User   User
+	Track  meta.TrackIdentifier `gorm:"column:track;type:text"`
+	At     time.Time
+}
+
 func (l *Lyric) BeforeCreate(tx *gorm.DB) error {
 	var cnt int64
 	err := tx.Model(&Lyric{}).
@@ -133,5 +141,6 @@ func AutoMigrate(db *gorm.DB) error {
 		&FavoriteMusic{},
 		&FavoritePlaylist{},
 		&Lyric{},
+		&PlayRecord{},
 	)
 }

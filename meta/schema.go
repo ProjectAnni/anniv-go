@@ -1,5 +1,10 @@
 package meta
 
+import (
+	"database/sql/driver"
+	"encoding/json"
+)
+
 type Artists map[string]string
 
 type AlbumIdentifier string
@@ -12,6 +17,15 @@ type DiscIdentifier struct {
 type TrackIdentifier struct {
 	DiscIdentifier `mapstructure:",squash"`
 	TrackID        uint `json:"track_id" mapstructure:"track_id"`
+}
+
+func (trackId *TrackIdentifier) Scan(src interface{}) error {
+	return json.Unmarshal([]byte(src.(string)), &trackId)
+}
+
+func (trackId TrackIdentifier) Value() (driver.Value, error) {
+	val, err := json.Marshal(trackId)
+	return string(val), err
 }
 
 type AlbumInfo struct {
