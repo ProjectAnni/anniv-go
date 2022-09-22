@@ -89,6 +89,13 @@ type FavoritePlaylist struct {
 	Playlist   Playlist
 }
 
+type FavoriteAlbum struct {
+	gorm.Model
+	UserID  uint `gorm:"uniqueIndex:favorite_album_index"`
+	User    User
+	AlbumID string `gorm:"uniqueIndex:favorite_album_index"`
+}
+
 type Lyric struct {
 	gorm.Model
 	AlbumID  string `gorm:"uniqueIndex:lyric_index"`
@@ -140,6 +147,7 @@ func AutoMigrate(db *gorm.DB) error {
 		&Share{},
 		&FavoriteMusic{},
 		&FavoritePlaylist{},
+		&FavoriteAlbum{},
 		&Lyric{},
 		&PlayRecord{},
 	)
