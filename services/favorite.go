@@ -8,6 +8,10 @@ import (
 	"strconv"
 )
 
+type AlbumFavForm struct {
+	AlbumID string `json:"album_id"`
+}
+
 func EndpointFavorite(ng *gin.Engine) {
 	g := ng.Group("/api/favorite", AuthRequired)
 
@@ -131,4 +135,50 @@ func EndpointFavorite(ng *gin.Engine) {
 		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 
+	g.GET("/album", func(ctx *gin.Context) {
+		user := ctx.MustGet("user").(model.User)
+		var albums []model.FavoriteAlbum
+		err := db.Order("created_at DESC").
+			Where("user_id=?", user.ID).
+			Find(&albums).Error
+		if err != nil {
+			ctx.JSON(http.StatusOK, readErr(err))
+			return
+		}
+		res := make([]string, 0, len(albums))
+		for _, v := range albums {
+			res = append(res, v.AlbumID)
+		}
+		ctx.JSON(http.StatusOK, resOk(res))
+	})
+
+	g.PUT("/album", func(ctx *gin.Context) {
+		user := ctx.MustGet("user").(model.User)
+		var form AlbumFavForm
+		if err := ctx.ShouldBindJSON(&form); err != nil {
+			ctx.JSON(http.StatusOK, illegalParams(err.Error()))
+			return
+		}
+		entry := model.FavoriteAlbum{
+			UserID:  user.ID,
+			AlbumID: form.AlbumID,
+		}
+		err := db.Save(&entry).Error
+		if err != nil {
+			ctx.JSON(http.StatusOK, writeErr(err))
+			return
+		}
+		ctx.JSON(http.StatusOK, resOk(nil))
+	})
+
+	g.DELETE("/album", func(ctx *gin.Context) {
+		user := ctx.MustGet("user").(model.User)
+		var form AlbumFavForm
+		if err := ctx.ShouldBindJSON(&form); err != nil {
+			ctx.JSON(http.StatusOK, illegalParams(err.Error()))
+			return
+		}
+		db.Where("user_id=?", user.ID).Where("album_id=?", form.AlbumID).Delete(&model.FavoriteAlbum{})
+		ctx.JSON(http.StatusOK, resOk(nil))
+	})
 }
