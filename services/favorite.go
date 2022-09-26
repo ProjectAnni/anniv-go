@@ -8,6 +8,10 @@ import (
 	"strconv"
 )
 
+type AlbumFavForm struct {
+	AlbumID string `json:"album_id"`
+}
+
 func EndpointFavorite(ng *gin.Engine) {
 	g := ng.Group("/api/favorite", AuthRequired)
 
@@ -150,14 +154,14 @@ func EndpointFavorite(ng *gin.Engine) {
 
 	g.PUT("/album", func(ctx *gin.Context) {
 		user := ctx.MustGet("user").(model.User)
-		var form string
+		var form AlbumFavForm
 		if err := ctx.ShouldBindJSON(&form); err != nil {
 			ctx.JSON(http.StatusOK, illegalParams(err.Error()))
 			return
 		}
 		entry := model.FavoriteAlbum{
 			UserID:  user.ID,
-			AlbumID: form,
+			AlbumID: form.AlbumID,
 		}
 		err := db.Save(&entry).Error
 		if err != nil {
@@ -169,12 +173,12 @@ func EndpointFavorite(ng *gin.Engine) {
 
 	g.DELETE("/album", func(ctx *gin.Context) {
 		user := ctx.MustGet("user").(model.User)
-		var form string
+		var form AlbumFavForm
 		if err := ctx.ShouldBindJSON(&form); err != nil {
 			ctx.JSON(http.StatusOK, illegalParams(err.Error()))
 			return
 		}
-		db.Where("user_id=?", user.ID).Where("album_id=?", form).Delete(&model.FavoriteAlbum{})
+		db.Where("user_id=?", user.ID).Where("album_id=?", form.AlbumID).Delete(&model.FavoriteAlbum{})
 		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 }
