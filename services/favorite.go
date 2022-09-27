@@ -131,7 +131,7 @@ func EndpointFavorite(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, resOk(nil))
 			return
 		}
-		db.Where("user_id = ? AND playlist_id = ?", user.ID, pid).Delete(&model.FavoritePlaylist{})
+		db.Unscoped().Where("user_id = ? AND playlist_id = ?", user.ID, pid).Delete(&model.FavoritePlaylist{})
 		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 
@@ -178,7 +178,7 @@ func EndpointFavorite(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, illegalParams(err.Error()))
 			return
 		}
-		db.Where("user_id=?", user.ID).Where("album_id=?", form.AlbumID).Delete(&model.FavoriteAlbum{})
+		db.Unscoped().Where("user_id=?", user.ID).Where("album_id=?", form.AlbumID).Delete(&model.FavoriteAlbum{})
 		ctx.JSON(http.StatusOK, resOk(nil))
 	})
 }
