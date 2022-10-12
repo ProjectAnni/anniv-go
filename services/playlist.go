@@ -248,7 +248,7 @@ func EndpointPlaylist(ng *gin.Engine) {
 			}
 			err = db.Transaction(func(tx *gorm.DB) error {
 				playlist.UpdatedAt = time.Now()
-				if err := db.Save(&playlist).Error; err != nil {
+				if err := tx.Save(&playlist).Error; err != nil {
 					return err
 				}
 				for _, v := range payload {
@@ -256,7 +256,7 @@ func EndpointPlaylist(ng *gin.Engine) {
 					if err != nil {
 						return err
 					}
-					res := db.Where("playlist_id = ? AND id = ?", playlist.ID, id).Unscoped().
+					res := tx.Where("playlist_id = ? AND id = ?", playlist.ID, id).Unscoped().
 						Delete(&model.PlaylistSong{})
 					if res.Error != nil {
 						return res.Error
