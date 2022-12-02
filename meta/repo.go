@@ -41,10 +41,10 @@ func Init(path, url string) error {
 				if err != nil {
 					log.Printf("Failed to index repo: %v\n", err)
 				}
-			}
-			err = initSearchIndex()
-			if err != nil {
-				log.Printf("Failed to update search index: %v\n", err)
+				err = initSearchIndex()
+				if err != nil {
+					log.Printf("Failed to update search index: %v\n", err)
+				}
 			}
 		}
 	}()
