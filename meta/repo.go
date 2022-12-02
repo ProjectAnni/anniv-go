@@ -5,7 +5,6 @@ import (
 	"github.com/go-git/go-git/v5"
 	"log"
 	"os"
-	"strings"
 	"sync"
 	"time"
 )
@@ -19,6 +18,10 @@ func Init(path, url string) error {
 		return err
 	}
 	err = updateIndex(path)
+	if err != nil {
+		return err
+	}
+	err = initSearchIndex()
 	if err != nil {
 		return err
 	}
@@ -38,6 +41,10 @@ func Init(path, url string) error {
 				if err != nil {
 					log.Printf("Failed to index repo: %v\n", err)
 				}
+			}
+			err = initSearchIndex()
+			if err != nil {
+				log.Printf("Failed to update search index: %v\n", err)
 			}
 		}
 	}()
@@ -154,47 +161,5 @@ func GetTrackInfo(id TrackIdentifier) TrackInfoWithAlbum {
 	}
 	track := disc.Tracks[id.TrackID-1]
 	ret.TrackInfo = track.TrackInfo
-	return ret
-}
-
-func SearchAlbums(keyword string) []AlbumDetails {
-	lock.RLock()
-	defer lock.RUnlock()
-	ret := make([]AlbumDetails, 0)
-	for _, v := range albumIdx {
-		if strings.Contains(strings.ToLower(v.Title), strings.ToLower(keyword)) || v.Catalog == keyword {
-			ret = append(ret, v)
-		}
-	}
-	return ret
-}
-
-func SearchTracks(keyword string) []TrackInfoWithAlbum {
-	lock.RLock()
-	defer lock.RUnlock()
-	ret := make([]TrackInfoWithAlbum, 0)
-	for _, album := range albumIdx {
-		discId := uint(1)
-		for _, disc := range album.Discs {
-			trackId := uint(1)
-			for _, track := range disc.Tracks {
-				if strings.Contains(strings.ToLower(track.Title), strings.ToLower(keyword)) {
-					ret = append(ret, TrackInfoWithAlbum{
-						TrackIdentifier: TrackIdentifier{
-							DiscIdentifier: DiscIdentifier{
-								AlbumID: album.AlbumID,
-								DiscID:  discId,
-							},
-							TrackID: trackId,
-						},
-						TrackInfo:  track.TrackInfo,
-						AlbumTitle: album.Title,
-					})
-				}
-				trackId++
-			}
-			discId++
-		}
-	}
 	return ret
 }
