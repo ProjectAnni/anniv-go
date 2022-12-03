@@ -7,10 +7,12 @@ import (
 	"path"
 )
 
+type TagRef interface{}
+
 var tagIdx map[string][]AlbumDetails
 var tagIdxNonRecursive map[string][]AlbumDetails
 var tags []Tag
-var tagNameIdx map[string]Tag
+var tagNameIdx map[string][]Tag
 var tagGraph map[string][]string
 
 func checkTags(V []Tag, E map[string][]string) error {
@@ -137,4 +139,73 @@ func isValidTagType(p string) bool {
 		}
 	}
 	return false
+}
+
+var ErrTagNotFound = errors.New("tag not found")
+var ErrTagAmbiguous = errors.New("ambiguous tag")
+var ErrInvalidTagRef = errors.New("invalid tag ref")
+
+func QueryTag(ref TagRef) (*Tag, error) {
+	var err error
+	if tagName, ok := ref.(string); ok {
+		arr := tagNameIdx[tagName]
+		if len(arr) == 0 {
+			return nil, ErrTagNotFound
+		}
+		if len(arr) > 1 {
+			return nil, ErrTagAmbiguous
+		}
+		return &arr[0], nil
+	}
+
+	if tagArray, ok := ref.([]string); ok {
+		if len(tagArray) == 0 {
+			return nil, ErrInvalidTagRef
+		}
+		if len(tagArray) == 1 {
+			return QueryTag(tagArray[0])
+		}
+		var maybeTag []*Tag
+		for _, v := range tagNameIdx[tagArray[0]] {
+			maybeTag = append(maybeTag, &v)
+		}
+
+		var parentTag *Tag
+
+		if isValidTagType(tagArray[1]) {
+			var tmpMaybeTag []*Tag
+			for _, v := range maybeTag {
+				if v.Type == tagArray[1] {
+					tmpMaybeTag = append(tmpMaybeTag, v)
+				}
+			}
+			maybeTag = tmpMaybeTag
+			parentTag, err = QueryTag(tagArray[2:])
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			parentTag, err = QueryTag(tagArray[1:])
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		var res []*Tag
+		for _, v := range maybeTag {
+			if v.parent == parentTag {
+				res = append(res, v)
+			}
+		}
+
+		if len(res) == 0 {
+			return nil, ErrTagNotFound
+		}
+		if len(res) > 1 {
+			return nil, ErrTagAmbiguous
+		}
+		return res[0], nil
+	}
+
+	return nil, ErrInvalidTagRef
 }

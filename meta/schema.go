@@ -80,6 +80,8 @@ type Tag struct {
 	Name  string            `json:"name" toml:"name"`
 	Type  string            `json:"type" toml:"type"`
 	Names map[string]string `json:"names" toml:"names"`
+	// TODO
+	parent *Tag
 }
 
 type TrackInfoWithAlbum struct {
