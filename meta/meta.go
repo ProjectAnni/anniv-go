@@ -14,6 +14,7 @@ var albumIdx map[AlbumIdentifier]AlbumDetails
 var tagIdx map[string][]AlbumDetails
 var tagIdxNonRecursive map[string][]AlbumDetails
 var tags []Tag
+var tagNameIdx map[string]Tag
 var tagGraph map[string][]string
 var dbAvailable = false
 
@@ -43,6 +44,11 @@ func Read(p string) error {
 
 	for _, v := range albums {
 		albumIdx[v.AlbumID] = v
+	}
+
+	tagNameIdx = make(map[string]Tag)
+	for _, v := range tags {
+		tagNameIdx[v.Name] = v
 	}
 
 	tmp := make(map[string]map[AlbumIdentifier]bool)
@@ -197,7 +203,7 @@ func readTags(p string) ([]Tag, map[string][]string, error) {
 			V = append(V, Tag{
 				Name:  tag.Name,
 				Type:  tag.Type,
-				Alias: tag.Alias,
+				Names: tag.Names,
 			})
 			for typ, child := range tag.Includes {
 				if !validateTagType(typ) {

@@ -8,8 +8,19 @@ import (
 	"time"
 )
 
-var tracksIdx bleve.Index
-var albumsIdx bleve.Index
+type trackDetails struct {
+	TrackInfoWithAlbum
+	AlbumTags []Tag
+	//Tags  []Tag        `json:"tags"`
+}
+
+type albumDetails struct {
+	AlbumDetails
+	Tags []Tag
+}
+
+var tracksSearchIdx bleve.Index
+var albumsSearchIdx bleve.Index
 
 func initSearchIndex() error {
 	log.Println("Building search index...")
@@ -18,11 +29,11 @@ func initSearchIndex() error {
 	lock.RLock()
 	defer lock.RUnlock()
 	mapping := bleve.NewIndexMapping()
-	tracksIdx, err = bleve.New("", mapping)
+	tracksSearchIdx, err = bleve.New("", mapping)
 	if err != nil {
 		return err
 	}
-	tracksBatch := tracksIdx.NewBatch()
+	tracksBatch := tracksSearchIdx.NewBatch()
 	for _, album := range albumIdx {
 		discId := uint(1)
 		for _, disc := range album.Discs {
@@ -40,7 +51,16 @@ func initSearchIndex() error {
 					AlbumTitle: album.Title,
 				}
 				key, _ := json.Marshal(t)
-				if err := tracksBatch.Index(string(key), t); err != nil {
+				val := trackDetails{
+					TrackInfoWithAlbum: t,
+				}
+				for _, tag := range album.Tags {
+					val.AlbumTags = append(val.AlbumTags, tagNameIdx[tag])
+				}
+				//for _, tagName := range albumIdx[t.AlbumID].Discs[t.DiscID-1].Tracks[t.TrackID-1].Tags {
+				//	val.Tags = append(val.Tags, tagNameIdx[tagName])
+				//}
+				if err := tracksBatch.Index(string(key), val); err != nil {
 					return err
 				}
 				trackId++
@@ -49,21 +69,25 @@ func initSearchIndex() error {
 		}
 	}
 
-	err = tracksIdx.Batch(tracksBatch)
+	err = tracksSearchIdx.Batch(tracksBatch)
 	if err != nil {
 		return err
 	}
 
-	albumsIdx, err = bleve.New("", mapping)
-	albumsBatch := albumsIdx.NewBatch()
+	albumsSearchIdx, err = bleve.New("", mapping)
+	albumsBatch := albumsSearchIdx.NewBatch()
 	for _, v := range albumIdx {
 		key, _ := json.Marshal(v)
-		if err := albumsBatch.Index(string(key), v); err != nil {
+		val := albumDetails{AlbumDetails: v}
+		for _, tagName := range v.Tags {
+			val.Tags = append(val.Tags, tagNameIdx[tagName])
+		}
+		if err := albumsBatch.Index(string(key), val); err != nil {
 			return err
 		}
 	}
 
-	err = albumsIdx.Batch(albumsBatch)
+	err = albumsSearchIdx.Batch(albumsBatch)
 	if err != nil {
 		return err
 	}
@@ -76,7 +100,7 @@ func initSearchIndex() error {
 func SearchAlbums(keyword string) []AlbumDetails {
 	query := bleve.NewMatchQuery(keyword)
 	search := bleve.NewSearchRequest(query)
-	searchResults, err := albumsIdx.Search(search)
+	searchResults, err := albumsSearchIdx.Search(search)
 	if err != nil {
 		return nil
 	}
@@ -98,7 +122,7 @@ func SearchAlbums(keyword string) []AlbumDetails {
 func SearchTracks(keyword string) []TrackInfoWithAlbum {
 	query := bleve.NewMatchQuery(keyword)
 	search := bleve.NewSearchRequest(query)
-	searchResults, err := tracksIdx.Search(search)
+	searchResults, err := tracksSearchIdx.Search(search)
 	if err != nil {
 		return nil
 	}

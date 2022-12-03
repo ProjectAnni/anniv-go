@@ -77,9 +77,9 @@ type TrackDetail struct {
 }
 
 type Tag struct {
-	Name  string   `json:"name" toml:"name"`
-	Type  string   `json:"type" toml:"type"`
-	Alias []string `json:"alias" toml:"alias"`
+	Name  string            `json:"name" toml:"name"`
+	Type  string            `json:"type" toml:"type"`
+	Names map[string]string `json:"names" toml:"names"`
 }
 
 type TrackInfoWithAlbum struct {
