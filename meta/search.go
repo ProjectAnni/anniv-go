@@ -100,6 +100,7 @@ func initSearchIndex() error {
 func SearchAlbums(keyword string) []AlbumDetails {
 	query := bleve.NewMatchQuery(keyword)
 	search := bleve.NewSearchRequest(query)
+	search.Size = 50
 	searchResults, err := albumsSearchIdx.Search(search)
 	if err != nil {
 		return nil
@@ -122,6 +123,7 @@ func SearchAlbums(keyword string) []AlbumDetails {
 func SearchTracks(keyword string) []TrackInfoWithAlbum {
 	query := bleve.NewMatchQuery(keyword)
 	search := bleve.NewSearchRequest(query)
+	search.Size = 50
 	searchResults, err := tracksSearchIdx.Search(search)
 	if err != nil {
 		return nil
