@@ -57,8 +57,9 @@ func initSearchIndex() error {
 				//for _, tag := range album.Tags {
 				//	val.AlbumTags = append(val.AlbumTags, tagNameIdx[tag])
 				//}
-				for _, tagName := range albumIdx[t.AlbumID].Discs[t.DiscID-1].Tracks[t.TrackID-1].Tags {
-					val.Tags = append(val.Tags, tagNameIdx[tagName])
+				for _, tagRef := range albumIdx[t.AlbumID].Discs[t.DiscID-1].Tracks[t.TrackID-1].Tags {
+					tag, _ := QueryTag(tagRef)
+					val.Tags = append(val.Tags, *tag)
 				}
 				if err := tracksBatch.Index(string(key), val); err != nil {
 					return err
@@ -79,8 +80,10 @@ func initSearchIndex() error {
 	for _, v := range albumIdx {
 		key, _ := json.Marshal(v)
 		val := albumDetails{AlbumDetails: v}
-		for _, tagName := range v.Tags {
-			val.Tags = append(val.Tags, tagNameIdx[tagName])
+		// TODO
+		for _, tagRef := range v.Tags {
+			tag, _ := QueryTag(tagRef)
+			val.Tags = append(val.Tags, *tag)
 		}
 		if err := albumsBatch.Index(string(key), val); err != nil {
 			return err

@@ -41,9 +41,9 @@ func Read(p string) error {
 		albumIdx[v.AlbumID] = v
 	}
 
-	tagNameIdx = make(map[string]Tag)
+	tagNameIdx = make(map[string][]Tag)
 	for _, v := range tags {
-		tagNameIdx[v.Name] = v
+		tagNameIdx[v.Name] = append(tagNameIdx[v.Name], v)
 	}
 
 	tmp := make(map[string]map[AlbumIdentifier]bool)

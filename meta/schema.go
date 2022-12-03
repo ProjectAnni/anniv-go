@@ -41,7 +41,7 @@ type AlbumInfo struct {
 type AlbumDetails struct {
 	AlbumInfo
 	Artists *Artists       `json:"artists,omitempty" toml:"artists"`
-	Tags    []string       `json:"tags" toml:"tags"`
+	Tags    []TagRef       `json:"tags" toml:"tags"`
 	Discs   []*DiscDetails `json:"discs" toml:"discs"`
 }
 
@@ -60,7 +60,7 @@ type DiscInfo struct {
 type DiscDetails struct {
 	DiscInfo
 	Artists *Artists       `json:"artists,omitempty" toml:"artists"`
-	Tags    []string       `json:"tags,omitempty" toml:"tags"`
+	Tags    []TagRef       `json:"tags,omitempty" toml:"tags"`
 	Tracks  []*TrackDetail `json:"tracks" toml:"tracks"`
 }
 
@@ -73,7 +73,7 @@ type TrackInfo struct {
 type TrackDetail struct {
 	TrackInfo
 	Artists *Artists `json:"artists,omitempty" toml:"artists"`
-	Tags    []string `json:"tags,omitempty" toml:"tags"`
+	Tags    []TagRef `json:"tags,omitempty" toml:"tags"`
 }
 
 type Tag struct {
