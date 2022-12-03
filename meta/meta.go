@@ -287,6 +287,13 @@ func readAlbums(p string) ([]AlbumDetails, error) {
 				discTags[v] = true
 			}
 			for _, track := range disc.Tracks {
+				trackTags := map[string]bool{}
+				for _, v := range track.Tags {
+					trackTags[v] = true
+				}
+				for _, v := range disc.Tags {
+					trackTags[v] = true
+				}
 				if track.Artist == nil {
 					track.Artist = disc.Artist
 				}
@@ -296,6 +303,7 @@ func readAlbums(p string) ([]AlbumDetails, error) {
 				if track.Artists == nil {
 					track.Artists = disc.Artists
 				}
+				track.Tags = toArray(trackTags)
 				for _, tag := range track.Tags {
 					discTags[tag] = true
 					albumTags[tag] = true
