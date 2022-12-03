@@ -10,8 +10,8 @@ import (
 
 type trackDetails struct {
 	TrackInfoWithAlbum
-	AlbumTags []Tag
-	//Tags  []Tag        `json:"tags"`
+	//AlbumTags []Tag
+	Tags []Tag
 }
 
 type albumDetails struct {
@@ -54,12 +54,12 @@ func initSearchIndex() error {
 				val := trackDetails{
 					TrackInfoWithAlbum: t,
 				}
-				for _, tag := range album.Tags {
-					val.AlbumTags = append(val.AlbumTags, tagNameIdx[tag])
-				}
-				//for _, tagName := range albumIdx[t.AlbumID].Discs[t.DiscID-1].Tracks[t.TrackID-1].Tags {
-				//	val.Tags = append(val.Tags, tagNameIdx[tagName])
+				//for _, tag := range album.Tags {
+				//	val.AlbumTags = append(val.AlbumTags, tagNameIdx[tag])
 				//}
+				for _, tagName := range albumIdx[t.AlbumID].Discs[t.DiscID-1].Tracks[t.TrackID-1].Tags {
+					val.Tags = append(val.Tags, tagNameIdx[tagName])
+				}
 				if err := tracksBatch.Index(string(key), val); err != nil {
 					return err
 				}
