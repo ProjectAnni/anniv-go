@@ -38,13 +38,13 @@ func Read(p string) error {
 	}
 
 	// add album tag relations
-	for _, album := range albums {
+	for idx, album := range albums {
 		for _, tag := range album.Tags {
 			tagRef, err := tagSet.FindTag(tag)
 			if err != nil {
 				return err
 			}
-			tagRef.AddAlbum(&album)
+			tagRef.AddAlbum(&albums[idx])
 		}
 	}
 
