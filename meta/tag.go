@@ -137,7 +137,8 @@ func NewTagSet(tagsIn []Tag) (*TagSet, error) {
 			if err != nil {
 				return nil, err
 			}
-			tag.parentTagsRef = append(tag.parentTagsRef, parentTag)
+			//tag.parentTagsRef = append(tag.parentTagsRef, parentTag)
+			set.tags[idx].parentTagsRef = append(set.tags[idx].parentTagsRef, parentTag)
 			parentTag.childrenRef = append(parentTag.childrenRef, &set.tags[idx])
 		}
 	}
