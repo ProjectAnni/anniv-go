@@ -103,32 +103,30 @@ func initRepo(path, url string) error {
 func GetTags() []Tag {
 	lock.RLock()
 	defer lock.RUnlock()
-	return tags
+	return tagSet.tags
 }
 
 func GetAlbumDetails(id string) (AlbumDetails, bool) {
 	lock.RLock()
 	defer lock.RUnlock()
 	res, ok := albumIdx[AlbumIdentifier(id)]
-	return res, ok
+	return *res, ok
 }
 
 func GetAlbumsByTag(tag string, recursive bool) ([]AlbumDetails, bool) {
 	lock.RLock()
 	defer lock.RUnlock()
-	if recursive {
-		res, ok := tagIdx[tag]
-		return res, ok
-	} else {
-		res, ok := tagIdxNonRecursive[tag]
-		return res, ok
+	tagRef, err := tagSet.FindTag(tag)
+	if err != nil {
+		return nil, false
 	}
+	return tagRef.GetAlbums(recursive), true
 }
 
 func GetTagGraph() map[string][]string {
 	lock.RLock()
 	defer lock.RUnlock()
-	return tagGraph
+	return tagSet.tagGraph
 }
 
 func GetAlbums() []AlbumDetails {
@@ -136,7 +134,7 @@ func GetAlbums() []AlbumDetails {
 	defer lock.RUnlock()
 	res := make([]AlbumDetails, 0, len(albumIdx))
 	for _, v := range albumIdx {
-		res = append(res, v)
+		res = append(res, *v)
 	}
 	return res
 }

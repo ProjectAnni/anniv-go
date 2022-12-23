@@ -76,12 +76,6 @@ type TrackDetail struct {
 	Tags    []string `json:"tags,omitempty" toml:"tags"`
 }
 
-type Tag struct {
-	Name  string            `json:"name" toml:"name"`
-	Type  string            `json:"type" toml:"type"`
-	Names map[string]string `json:"names" toml:"names"`
-}
-
 type TrackInfoWithAlbum struct {
 	TrackIdentifier
 	TrackInfo
@@ -90,8 +84,8 @@ type TrackInfoWithAlbum struct {
 
 type tagDef struct {
 	Tag
-	Includes   map[string][]string `json:"includes" toml:"includes"`
-	IncludedBy []string            `json:"included-by" toml:"included-by"`
+	Includes   []string `json:"includes" toml:"includes"`
+	IncludedBy []string `json:"included-by" toml:"included-by"`
 }
 
 type record struct {
