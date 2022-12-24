@@ -110,7 +110,10 @@ func GetAlbumDetails(id string) (AlbumDetails, bool) {
 	lock.RLock()
 	defer lock.RUnlock()
 	res, ok := albumIdx[AlbumIdentifier(id)]
-	return *res, ok
+	if res != nil {
+		return *res, ok
+	}
+	return AlbumDetails{}, false
 }
 
 func GetAlbumsByTag(tag string, recursive bool) ([]AlbumDetails, bool) {
