@@ -33,8 +33,8 @@ func Read(p string) error {
 
 	// build album id -> details index
 	albumIdx = make(map[AlbumIdentifier]*AlbumDetails)
-	for _, v := range albums {
-		albumIdx[v.AlbumID] = &v
+	for idx, v := range albums {
+		albumIdx[v.AlbumID] = &albums[idx]
 	}
 
 	// add album tag relations
