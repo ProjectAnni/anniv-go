@@ -189,7 +189,7 @@ func TagFromStr(str string) (*Tag, error) {
 	return &tag, nil
 }
 
-var validTypes = []string{"artist", "group", "animation", "series", "project", "game", "organization", "default", "category"}
+var validTypes = []string{"artist", "group", "animation", "radio", "series", "project", "game", "organization", "unknown", "category"}
 
 func validateTagType(p string) bool {
 	for _, v := range validTypes {
