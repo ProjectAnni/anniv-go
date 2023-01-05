@@ -51,7 +51,7 @@ func (tag *Tag) AddAlbum(album *AlbumDetails) {
 }
 
 func (tag *Tag) GetAlbums(recursive bool) []AlbumDetails {
-	var res []AlbumDetails
+	res := make([]AlbumDetails, 0)
 	if recursive {
 		for album := range tag.includeAlbumsRecursive {
 			res = append(res, *album)
