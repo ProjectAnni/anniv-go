@@ -48,6 +48,14 @@ func Read(p string) error {
 		}
 	}
 
+	// expand tags
+	for idx := range albums {
+		err := tagSet.ExpandTagsDef(&albums[idx])
+		if err != nil {
+			return err
+		}
+	}
+
 	err = generateAnniDb()
 	if err != nil {
 		log.Printf("Failed to generate anni db: %v\n", err)

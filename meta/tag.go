@@ -95,6 +95,38 @@ func (set *TagSet) FindTag(str string) (*Tag, error) {
 	}
 }
 
+func (set *TagSet) expandTagsDef(tags []string) error {
+	for idx, v := range tags {
+		tagRef, err := set.FindTag(v)
+		if err != nil {
+			return err
+		}
+		tags[idx] = tagRef.Str()
+	}
+	return nil
+}
+
+func (set *TagSet) ExpandTagsDef(album *AlbumDetails) error {
+	err := set.expandTagsDef(album.Tags)
+	if err != nil {
+		return err
+	}
+
+	for discIdx := range album.Discs {
+		err = set.expandTagsDef(album.Discs[discIdx].Tags)
+		if err != nil {
+			return err
+		}
+		for trackIdx := range album.Discs[discIdx].Tracks {
+			err = set.expandTagsDef(album.Discs[discIdx].Tracks[trackIdx].Tags)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 func NewTagSet(tagsIn []Tag) (*TagSet, error) {
 	set := TagSet{
 		tags:       tagsIn,
