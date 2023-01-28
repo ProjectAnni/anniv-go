@@ -13,6 +13,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -289,6 +290,9 @@ func signUserTokens(user string) ([]Token, error) {
 			return nil, err
 		}
 		if resp.StatusCode != 200 {
+			log.Printf("Failed to sign default tokens: response code %d\n", resp.StatusCode)
+			b, _ := ioutil.ReadAll(resp.Body)
+			log.Println(string(b))
 			return nil, errors.New("invalid response code")
 		}
 
