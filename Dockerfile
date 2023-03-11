@@ -1,4 +1,4 @@
-FROM golang:1.17-alpine AS build
+FROM golang:1.20-alpine AS build
 RUN apk add --no-cache gcc g++ upx
 WORKDIR /app/
 COPY ./ /app/

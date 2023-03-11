@@ -1,6 +1,6 @@
 module github.com/ProjectAnni/anniv-go
 
-go 1.17
+go 1.20
 
 require (
 	github.com/blevesearch/bleve/v2 v2.3.6
@@ -13,10 +13,10 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.7
 	github.com/pquerna/otp v1.4.0
 	github.com/satori/go.uuid v1.2.0
-	golang.org/x/crypto v0.6.0
-	gorm.io/driver/postgres v1.4.8
+	golang.org/x/crypto v0.7.0
+	gorm.io/driver/postgres v1.5.0
 	gorm.io/driver/sqlite v1.4.4
-	gorm.io/gorm v1.24.5
+	gorm.io/gorm v1.24.7-0.20230306060331-85eaf9eeda11
 )
 
 require (
@@ -41,7 +41,7 @@ require (
 	github.com/blevesearch/zapx/v14 v14.3.7 // indirect
 	github.com/blevesearch/zapx/v15 v15.3.9 // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
-	github.com/bytedance/sonic v1.8.2 // indirect
+	github.com/bytedance/sonic v1.8.3 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/cloudflare/circl v1.3.2 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
@@ -53,7 +53,7 @@ require (
 	github.com/go-playground/validator/v10 v10.11.2 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/golang/geo v0.0.0-20210211234256-740aa86cb551 // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -75,16 +75,16 @@ require (
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/skeema/knownhosts v1.1.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
-	github.com/ugorji/go/codec v1.2.10 // indirect
+	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	go.etcd.io/bbolt v1.3.7 // indirect
-	golang.org/x/arch v0.2.0 // indirect
-	golang.org/x/mod v0.8.0 // indirect
-	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
-	golang.org/x/tools v0.6.0 // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
+	golang.org/x/arch v0.3.0 // indirect
+	golang.org/x/mod v0.9.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
+	golang.org/x/tools v0.7.0 // indirect
+	google.golang.org/protobuf v1.29.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
