@@ -1,5 +1,5 @@
-FROM tetafro/golang-gcc:1.16-alpine AS build
-RUN apk add upx
+FROM golang:1.17-alpine AS build
+RUN apk add --no-cache gcc g++ upx
 WORKDIR /app/
 COPY ./ /app/
 RUN --mount=type=cache,target=/go\
