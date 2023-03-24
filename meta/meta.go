@@ -217,6 +217,9 @@ func generateAnniDb() error {
 		return err
 	}
 	_ = os.Mkdir("./tmp/prebuilt", fs.ModePerm)
-	cmd := exec.Command("anni", "repo", "--root", "./tmp/meta", "db", "./tmp/prebuilt")
-	return cmd.Run()
+	output, err := exec.Command("anni", "repo", "--root", "./tmp/meta", "db", "./tmp/prebuilt").CombinedOutput()
+	if err != nil {
+		log.Println(string(output))
+	}
+	return err
 }
