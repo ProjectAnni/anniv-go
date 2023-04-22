@@ -52,11 +52,11 @@ type Playlist struct {
 
 type PlaylistSong struct {
 	gorm.Model
-	PlaylistID  uint `gorm:"uniqueIndex:playlist_song_index"`
+	PlaylistID  uint
 	Playlist    Playlist
-	AlbumID     string `gorm:"uniqueIndex:playlist_song_index"`
-	DiscID      uint   `gorm:"uniqueIndex:playlist_song_index"`
-	TrackID     uint   `gorm:"uniqueIndex:playlist_song_index"`
+	AlbumID     string
+	DiscID      uint
+	TrackID     uint
 	Description string
 	Type        string         `gorm:"check:type='normal' OR type='dummy' OR type='album'"`
 	TrackInfo   meta.TrackInfo `gorm:"embedded;embeddedPrefix:track_info_"`
