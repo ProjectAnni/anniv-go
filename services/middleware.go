@@ -36,7 +36,7 @@ func AuthRequired(ctx *gin.Context) {
 		db.Save(&session)
 	}
 	// Renew cookie
-	ctx.SetCookie("session", session.SessionID, 86400*7, "/", "", true, true)
+	ctx.SetCookie("session", session.SessionID, 86400*7, "/", "", false, true)
 	ctx.Set("user", session.User)
 	ctx.Set("session", session)
 	if config.Cfg.Enforce2FA {
