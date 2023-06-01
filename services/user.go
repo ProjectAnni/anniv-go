@@ -144,7 +144,7 @@ func EndpointUser(ng *gin.Engine) {
 			ctx.JSON(http.StatusOK, writeErr(err))
 			return
 		}
-		ctx.SetCookie("session", session.SessionID, 86400, "/", "", true, true)
+		ctx.SetCookie("session", session.SessionID, 86400, "/", "", false, true)
 		ctx.JSON(http.StatusOK, resOk(userInfo(user)))
 	})
 
