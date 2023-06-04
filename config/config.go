@@ -20,11 +20,12 @@ type Config struct {
 }
 
 type AnnilToken struct {
-	Enabled    bool   `yaml:"enabled"`
-	Name       string `yaml:"name"`
-	URL        string `yaml:"url"`
-	Credential string `yaml:"credential"`
-	AllowShare bool   `yaml:"allow_share"`
+	Enabled      bool   `yaml:"enabled"`
+	Name         string `yaml:"name"`
+	URL          string `yaml:"url"`
+	AdminBaseURL string `yaml:"admin_base_url"`
+	Credential   string `yaml:"credential"`
+	AllowShare   bool   `yaml:"allow_share"`
 }
 
 var Cfg = Config{
