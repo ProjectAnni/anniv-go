@@ -29,8 +29,12 @@ func initSearchIndex() error {
 	lock.RLock()
 	defer lock.RUnlock()
 
-	_ = tracksSearchIdx.Close()
-	_ = albumsSearchIdx.Close()
+	if tracksSearchIdx != nil {
+		_ = tracksSearchIdx.Close()
+	}
+	if albumsSearchIdx != nil {
+		_ = albumsSearchIdx.Close()
+	}
 
 	mapping := bleve.NewIndexMapping()
 	tracksSearchIdx, err = bleve.New("", mapping)
