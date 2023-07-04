@@ -17,6 +17,7 @@ type Config struct {
 	RequireInvite  bool              `yaml:"require_invite"`
 	InviteCode     string            `yaml:"invite_code"`
 	AnnilToken     []AnnilToken      `yaml:"annil_token"`
+	Debug          DebugConfig       `yaml:"debug"`
 }
 
 type AnnilToken struct {
@@ -26,6 +27,11 @@ type AnnilToken struct {
 	AdminBaseURL string `yaml:"admin_base_url,omitempty"`
 	Credential   string `yaml:"credential"`
 	AllowShare   bool   `yaml:"allow_share"`
+}
+
+type DebugConfig struct {
+	Enabled        bool   `yaml:"enabled"`
+	MemProfilePath string `yaml:"mem_profile_path"`
 }
 
 var Cfg = Config{
@@ -45,6 +51,10 @@ var Cfg = Config{
 			Credential: "",
 			AllowShare: false,
 		},
+	},
+	Debug: DebugConfig{
+		Enabled:        false,
+		MemProfilePath: "mem.prof",
 	},
 }
 
