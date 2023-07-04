@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"regexp"
@@ -295,12 +295,12 @@ func signUserTokens(user string) ([]Token, error) {
 		}
 		if resp.StatusCode != 200 {
 			log.Printf("Failed to sign default tokens: response code %d\n", resp.StatusCode)
-			b, _ := ioutil.ReadAll(resp.Body)
+			b, _ := io.ReadAll(resp.Body)
 			log.Println(string(b))
 			return nil, errors.New("invalid response code")
 		}
 
-		tokenBytes, err := ioutil.ReadAll(resp.Body)
+		tokenBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
 		}
