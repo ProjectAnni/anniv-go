@@ -2,15 +2,16 @@ package services
 
 import (
 	"errors"
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/ProjectAnni/anniv-go/meta"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"net/http"
-	"strconv"
-	"time"
 )
 
 type PatchedPlaylistInfo struct {
@@ -463,6 +464,7 @@ func playlistInfo(p model.Playlist) PlaylistInfo {
 func queryPlaylist(p model.Playlist) (*PlaylistDetails, error) {
 	ret := PlaylistDetails{
 		PlaylistInfo: playlistInfo(p),
+		Items:        []PlaylistItemWithId{},
 	}
 
 	var songs []model.PlaylistSong
