@@ -2,11 +2,12 @@ package meta
 
 import (
 	"errors"
-	"github.com/go-git/go-git/v5"
 	"log"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/go-git/go-git/v5"
 )
 
 var lock = &sync.RWMutex{}

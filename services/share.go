@@ -3,14 +3,15 @@ package services
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ProjectAnni/anniv-go/meta"
-	"github.com/ProjectAnni/anniv-go/model"
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
 	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/ProjectAnni/anniv-go/meta"
+	"github.com/ProjectAnni/anniv-go/model"
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type ShareEntry struct {

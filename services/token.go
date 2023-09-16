@@ -1,11 +1,12 @@
 package services
 
 import (
+	"net/http"
+
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	uuid "github.com/satori/go.uuid"
-	"net/http"
 )
 
 type Token struct {

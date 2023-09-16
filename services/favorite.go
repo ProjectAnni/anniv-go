@@ -1,11 +1,12 @@
 package services
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/ProjectAnni/anniv-go/meta"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"strconv"
 )
 
 type AlbumFavForm struct {

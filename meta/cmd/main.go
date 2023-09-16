@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/ProjectAnni/anniv-go/meta"
 	"os"
+
+	"github.com/ProjectAnni/anniv-go/meta"
 )
 
 func main() {

@@ -2,12 +2,13 @@ package meta
 
 import (
 	"errors"
-	"github.com/pelletier/go-toml/v2"
 	"io/fs"
 	"log"
 	"os"
 	"os/exec"
 	"path"
+
+	"github.com/pelletier/go-toml/v2"
 )
 
 var albumIdx map[AlbumIdentifier]*AlbumDetails

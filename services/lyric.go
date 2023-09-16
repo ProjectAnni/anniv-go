@@ -1,11 +1,12 @@
 package services
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"net/http"
-	"strconv"
 )
 
 func EndpointLyric(ng *gin.Engine) {

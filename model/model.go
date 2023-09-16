@@ -2,9 +2,10 @@ package model
 
 import (
 	"errors"
+	"time"
+
 	"github.com/ProjectAnni/anniv-go/meta"
 	"gorm.io/gorm"
-	"time"
 )
 
 type User struct {

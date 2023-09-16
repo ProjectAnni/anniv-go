@@ -2,10 +2,11 @@ package meta
 
 import (
 	"encoding/json"
-	"github.com/blevesearch/bleve/v2"
 	"log"
 	"sort"
 	"time"
+
+	"github.com/blevesearch/bleve/v2"
 )
 
 type trackDetails struct {

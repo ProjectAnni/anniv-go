@@ -3,6 +3,9 @@ package services
 import (
 	"errors"
 	"flag"
+	"log"
+	"os"
+
 	"github.com/ProjectAnni/anniv-go/config"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-contrib/static"
@@ -11,8 +14,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"log"
-	"os"
 )
 
 var db *gorm.DB

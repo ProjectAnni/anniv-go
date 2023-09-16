@@ -1,14 +1,15 @@
 package services
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/ProjectAnni/anniv-go/config"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
 	"github.com/pquerna/otp/totp"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"net/http"
-	"time"
 )
 
 func AuthRequired(ctx *gin.Context) {

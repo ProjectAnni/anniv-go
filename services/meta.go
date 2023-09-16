@@ -1,10 +1,11 @@
 package services
 
 import (
+	"net/http"
+
 	"github.com/ProjectAnni/anniv-go/meta"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func EndpointMeta(ng *gin.Engine) {

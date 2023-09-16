@@ -1,10 +1,11 @@
 package services
 
 import (
+	"net/http"
+
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
 	"github.com/pquerna/otp/totp"
-	"net/http"
 )
 
 func Endpoint2FA(ng *gin.Engine) {

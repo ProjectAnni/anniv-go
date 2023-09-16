@@ -1,11 +1,12 @@
 package services
 
 import (
+	"net/http"
+	"strings"
+
 	"github.com/ProjectAnni/anniv-go/meta"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"strings"
 )
 
 type SearchResult struct {

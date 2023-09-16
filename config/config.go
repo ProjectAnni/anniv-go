@@ -1,9 +1,10 @@
 package config
 
 import (
+	"os"
+
 	"github.com/go-yaml/yaml"
 	uuid "github.com/satori/go.uuid"
-	"os"
 )
 
 type Config struct {

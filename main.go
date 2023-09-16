@@ -3,14 +3,15 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/ProjectAnni/anniv-go/config"
-	"github.com/ProjectAnni/anniv-go/meta"
-	"github.com/ProjectAnni/anniv-go/services"
 	"log"
 	"os"
 	"runtime"
 	"runtime/pprof"
 	"time"
+
+	"github.com/ProjectAnni/anniv-go/config"
+	"github.com/ProjectAnni/anniv-go/meta"
+	"github.com/ProjectAnni/anniv-go/services"
 )
 
 func main() {
