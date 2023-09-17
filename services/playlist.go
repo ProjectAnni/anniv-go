@@ -495,16 +495,10 @@ func queryPlaylist(p model.Playlist) (*PlaylistDetails, error) {
 			item.Info = meta.GetTrackInfo(id)
 		} else if v.Type == "dummy" {
 			item.Info = v.TrackInfo
+		} else if v.Type == "album" {
+			item.Info = v.AlbumID
 		} else {
-			// type = album
-			album, ok := meta.GetAlbumDetails(v.AlbumID)
-			info := meta.AlbumInfo{}
-			if !ok {
-				info.AlbumID = meta.AlbumIdentifier(v.AlbumID)
-			} else {
-				info = album.AlbumInfo
-			}
-			item.Info = info
+			return nil, errors.New("unknown type: " + v.Type)
 		}
 		ret.Items = append(ret.Items, item)
 	}
