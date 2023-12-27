@@ -13,7 +13,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.8
 	github.com/pquerna/otp v1.4.0
 	github.com/satori/go.uuid v1.2.0
-	golang.org/x/crypto v0.16.0
+	golang.org/x/crypto v0.17.0
 	gorm.io/driver/postgres v1.5.0
 	gorm.io/driver/sqlite v1.4.4
 	gorm.io/gorm v1.24.7-0.20230306060331-85eaf9eeda11
