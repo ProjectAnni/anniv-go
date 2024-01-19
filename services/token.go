@@ -6,7 +6,7 @@ import (
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 )
 
 type Token struct {
@@ -87,7 +87,7 @@ func EndpointToken(ng *gin.Engine) {
 			return
 		}
 		token := model.Token{
-			TokenID:    uuid.NewV4().String(),
+			TokenID:    uuid.NewString(),
 			Name:       form.Name,
 			URL:        form.URL,
 			Token:      form.Token,

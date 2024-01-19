@@ -14,8 +14,8 @@ import (
 	"github.com/ProjectAnni/anniv-go/config"
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/pquerna/otp/totp"
-	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -89,7 +89,7 @@ func EndpointUser(ng *gin.Engine) {
 			}
 			for _, v := range tokens {
 				t := model.Token{
-					TokenID:    uuid.NewV4().String(),
+					TokenID:    uuid.NewString(),
 					Name:       v.Name,
 					URL:        v.URL,
 					Token:      v.Token,
@@ -136,7 +136,7 @@ func EndpointUser(ng *gin.Engine) {
 		session := model.Session{
 			UserID:       user.ID,
 			User:         user,
-			SessionID:    uuid.NewV4().String(),
+			SessionID:    uuid.NewString(),
 			UserAgent:    ctx.Request.UserAgent(),
 			LastAccessed: time.Now(),
 			IP:           ctx.ClientIP(),

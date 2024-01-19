@@ -10,7 +10,7 @@ import (
 	"github.com/ProjectAnni/anniv-go/model"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -52,7 +52,7 @@ func Start(listen string) error {
 				}
 				for _, token := range tokens {
 					err := tx.Create(&model.Token{
-						TokenID:    uuid.NewV4().String(),
+						TokenID:    uuid.NewString(),
 						Name:       token.Name,
 						URL:        token.URL,
 						Token:      token.Token,

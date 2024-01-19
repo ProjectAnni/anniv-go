@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/go-yaml/yaml"
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 )
 
 type Config struct {
@@ -43,7 +43,7 @@ var Cfg = Config{
 	TrustedProxies: []string{"127.0.0.1/32"},
 	RepoURL:        "https://github.com/ProjectAnni/repo.git",
 	RequireInvite:  false,
-	InviteCode:     uuid.NewV4().String(),
+	InviteCode:     uuid.NewString(),
 	AnnilToken: []AnnilToken{
 		{
 			Enabled:    false,
