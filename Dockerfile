@@ -1,5 +1,5 @@
 FROM golang:1.20-alpine AS build
-RUN apk add --no-cache gcc g++ upx
+RUN apk add --no-cache gcc g++ upx git
 WORKDIR /app/
 COPY ./ /app/
 RUN --mount=type=cache,target=/go\
