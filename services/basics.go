@@ -2,6 +2,8 @@ package services
 
 import (
 	"net/http"
+	"runtime"
+	"runtime/debug"
 
 	"github.com/ProjectAnni/anniv-go/config"
 	"github.com/ProjectAnni/anniv-go/meta"
@@ -13,7 +15,24 @@ type SiteInfo struct {
 	Description     string   `json:"description"`
 	ProtocolVersion string   `json:"protocol_version"`
 	Features        []string `json:"features"`
+	Custom          any      `json:"__anniv-go"`
 }
+
+var customInfo = func() any {
+	info := make(map[string]string)
+
+	info["goVersion"] = runtime.Version()
+
+	if buildInfo, ok := debug.ReadBuildInfo(); ok {
+		for _, v := range buildInfo.Settings {
+			if v.Key == "vcs.revision" || v.Key == "vcs.time" || v.Key == "vcs.modified" {
+				info[v.Key] = v.Value
+			}
+		}
+	}
+
+	return info
+}()
 
 func siteInfo() SiteInfo {
 	features := make([]string, 0)
@@ -33,6 +52,7 @@ func siteInfo() SiteInfo {
 		Description:     config.Cfg.Description,
 		ProtocolVersion: "1",
 		Features:        features,
+		Custom:          customInfo,
 	}
 }
 
