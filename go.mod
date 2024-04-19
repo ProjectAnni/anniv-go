@@ -13,7 +13,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/pelletier/go-toml/v2 v2.1.1
 	github.com/pquerna/otp v1.4.0
-	golang.org/x/crypto v0.18.0
+	golang.org/x/crypto v0.21.0
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/driver/sqlite v1.5.4
 	gorm.io/gorm v1.25.5
@@ -84,9 +84,9 @@ require (
 	go.etcd.io/bbolt v1.3.8 // indirect
 	golang.org/x/arch v0.7.0 // indirect
 	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/net v0.20.0 // indirect
+	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.17.0 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
