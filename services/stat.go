@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -39,10 +40,14 @@ func EndpointStat(ng *gin.Engine) {
 		err := db.Transaction(func(tx *gorm.DB) error {
 			for _, v := range form {
 				for _, t := range v.At {
+					timeParsed := time.Unix(t, 0)
+					if timeParsed.After(time.Now().Add(time.Hour)) {
+						return fmt.Errorf("play time is significantly larger than current time: %v", timeParsed)
+					}
 					record := model.PlayRecord{
 						UserID: user.ID,
 						Track:  v.Track,
-						At:     time.Unix(t, 0),
+						At:     timeParsed,
 					}
 					if err := tx.Save(&record).Error; err != nil {
 						return err
