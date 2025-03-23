@@ -88,7 +88,9 @@ func Start(listen string) error {
 	EndpointToken(g)
 	Endpoint2FA(g)
 	EndpointPlaylist(g)
-	EndpointMeta(g)
+	if config.Cfg.EnableMeta {
+		EndpointMeta(g)
+	}
 	EndpointSearch(g)
 	EndpointShare(g)
 	EndpointFavorite(g)

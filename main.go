@@ -46,10 +46,12 @@ func main() {
 		}()
 	}
 
-	err = meta.Init("./tmp/meta", config.Cfg.RepoURL)
-	if err != nil {
-		log.Printf("Failed to init meta repo: %v\n", err)
-		os.Exit(1)
+	if config.Cfg.EnableMeta {
+		err = meta.Init("./tmp/meta", config.Cfg.RepoURL)
+		if err != nil {
+			log.Printf("Failed to init meta repo: %v\n", err)
+			os.Exit(1)
+		}
 	}
 
 	err = services.Start(config.Cfg.Listen)

@@ -19,6 +19,7 @@ type Config struct {
 	InviteCode     string            `yaml:"invite_code"`
 	AnnilToken     []AnnilToken      `yaml:"annil_token"`
 	Debug          DebugConfig       `yaml:"debug"`
+	EnableMeta     bool              `yaml:"enable_meta"`
 }
 
 type AnnilToken struct {
@@ -57,6 +58,7 @@ var Cfg = Config{
 		Enabled:        false,
 		MemProfilePath: "mem.prof",
 	},
+	EnableMeta: true,
 }
 
 func Load() error {
